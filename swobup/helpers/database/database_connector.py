@@ -1,36 +1,25 @@
 import sqlalchemy
-import cryptography
 import logging
-import sys
 
-from sqlalchemy.exc import SQLAlchemyError
-
-# from .models import *
 from sqlalchemy.orm import sessionmaker
 
-from ..database.models import Term
-from ..database.models import TermRelationship
 from .models import Term
 from .models import TermRelationship
 from .models import Ontology
 
-from ..configurator import Configurator
+from .models import Protocol
+from .models import ProtocolXml
 
 from sqlalchemy.sql import *
-
-from sqlalchemy import MetaData, Table, create_engine
 
 
 class DatabaseConnector:
     def __init__(self, _host, _user, _password, _db_name):
-        # self.SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://marcel:test@127.0.0.1/swatedb2'
 
         self.user = _user
         self.host = _host
         self.password = _password
         self.db_name = _db_name
-
-        self.bla = "bla"
 
         self.SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://' + self.user + ':' + self.password + '@' \
                                        + self.host + '/' + self.db_name
@@ -38,21 +27,14 @@ class DatabaseConnector:
         self.connect_db()
 
     def connect_db(self):
-        # print("dbconnect - connect")
-        # _load_db_vars()
-        # create db create_engine
-        # db = create_engine(f'postgresql://{DB_USER}:{DB_PASS}@{DB_IP}:{DB_PORT}/{DB_NAME}')
-        # db = sqlalchemy.create_engine(self.SQLALCHEMY_DATABASE_URI, echo=True)
         db = sqlalchemy.create_engine(self.SQLALCHEMY_DATABASE_URI)
 
         try:
-            # print("connection")
             db.connect()
             self.is_connected = True
         except:
             self.is_connected = False
 
-        # print("db", db)
         return db
 
     def is_connected(self):
@@ -74,6 +56,13 @@ class DatabaseConnector:
         Term.__table__.create(bind=engine, checkfirst=False)
         TermRelationship.__table__.create(bind=engine, checkfirst=False)
 
+    def create_protocol_tables(self):
+        # Base = declarative_base()
+        engine = self.connect_db()
+        # engine = sqlalchemy.create_engine(self.SQLALCHEMY_DATABASE_URI, echo=True)
+        Protocol.__table__.create(bind=engine, checkfirst=False)
+        ProtocolXml.__table__.create(bind=engine, checkfirst=False)
+
     def drop_tables(self):
         # Base = declarative_base()
         engine = self.connect_db()
@@ -87,17 +76,12 @@ class DatabaseConnector:
         # conn = engine.connect()
         # result = conn.execute(Term.insert(),[insert_tuple])
 
-        print("insert term begin")
-        print("is connected", self.is_connected)
-
         if self.is_connected:
 
             # create session
             _session = sessionmaker()
             _session.configure(bind=db)
             session = _session()
-
-            print("tuple", insert_tuple)
 
             for list_item in insert_tuple:
                 # print("inserting:", list_item)
@@ -118,7 +102,6 @@ class DatabaseConnector:
                 session.commit()
 
             try:
-                print("trying inserting term")
                 session.commit()
                 session.close()
                 db.dispose()
@@ -146,11 +129,9 @@ class DatabaseConnector:
                 _term_id_related = list_item.get("FK_TermID_Related")
 
                 if _term_id_related is None:
-                    print("termid_rel is None", list_item)
                     continue
 
                 if _term_id is None:
-                    print("term_id is None", list_item)
                     continue
 
                 row = TermRelationship(FK_TermID=_term_id, RelationshipType=_relationship_type,
@@ -182,6 +163,8 @@ class DatabaseConnector:
         for row in ontology_query.all():
             ontology_id = row.ID
 
+            engine.dispose()
+
             return ontology_id
 
     def delete_rows(self, ontology_name):
@@ -196,8 +179,6 @@ class DatabaseConnector:
         # this is every time only one loop cycle, so it doesnt matter for runtime
         for row in ontology_query.all():
             ontology_id = row.ID
-
-        print("query",ontology_query)
 
         # delete rows
         session.query(Term).filter(Term.FK_OntologyID == ontology_id).delete()
@@ -231,9 +212,196 @@ class DatabaseConnector:
         query = session.query(Term.ID).filter(Term.Accession == accession)
 
         for row in query.all():
-            # print(row.ID)
             result = row.ID
 
-        # print("ID", query)
-
+        engine.dispose()
         return result
+
+    def insert_protocol(self, name, version, author, description, docs_link, tags, timestamp, rating, used):
+        db = self.connect_db()
+
+        if self.is_connected:
+
+            # create session
+            _session = sessionmaker()
+            _session.configure(bind=db)
+            session = _session()
+
+            row = Protocol(Name=name, Version=version, Author=author, Description=description,
+                           DocsLink=docs_link, Tags=tags, Created=timestamp, Rating=rating, Used=used)
+
+            session.add(row)
+            session.commit()
+
+            try:
+                session.commit()
+                session.close()
+                db.dispose()
+                logging.info("Protocol inserted")
+
+            except:
+                session.close()
+                logging.error("Error inserting Protocol")
+
+            db.dispose()
+
+    def update_protocol(self, name, version, author, description, docs_link, tags, timestamp):
+        db = self.connect_db()
+
+        if self.is_connected:
+
+            # create session
+            _session = sessionmaker()
+            _session.configure(bind=db)
+            session = _session()
+
+            session.query(Protocol).filter_by(Name=name). \
+                update({Protocol.Name: name, Protocol.Version: version, Protocol.Author: author,
+                        Protocol.Description: description, Protocol.DocsLink: docs_link, Protocol.Tags: tags,
+                        Protocol.Created: timestamp})
+
+            session.commit()
+
+            try:
+                session.commit()
+                session.close()
+                db.dispose()
+                logging.info("Protocol updated")
+
+            except:
+                session.close()
+                logging.error("Error updating Protocol")
+
+            db.dispose()
+
+    def update_protocol_xml(self, name, xml_type, xml):
+        db = self.connect_db()
+
+        if self.is_connected:
+
+            # create session
+            _session = sessionmaker()
+            _session.configure(bind=db)
+            session = _session()
+
+            session.query(ProtocolXml).filter_by(FK_Name=name).filter_by(XmlType=xml_type). \
+                update({ProtocolXml.FK_Name: name, ProtocolXml.XmlType: xml_type, ProtocolXml.Xml: xml})
+
+            session.commit()
+
+            try:
+                session.commit()
+                session.close()
+                db.dispose()
+                logging.info("ProtocolXml updated")
+
+            except:
+                session.close()
+                logging.error("Error updating ProtocolXml")
+
+            db.dispose()
+
+    def insert_protocol_xml(self, name, xml_type, xml):
+        db = self.connect_db()
+
+        if self.is_connected:
+
+            # create session
+            _session = sessionmaker()
+            _session.configure(bind=db)
+            session = _session()
+
+            row = ProtocolXml(FK_Name=name, XmlType=xml_type, Xml=xml)
+
+            session.add(row)
+            session.commit()
+
+            try:
+                session.commit()
+                session.close()
+                db.dispose()
+                logging.info("ProtocolXml inserted")
+
+            except:
+                session.close()
+                logging.error("Error inserting ProtocolXml")
+
+            db.dispose()
+
+    def protocol_entry_exists(self, name):
+
+        db = self.connect_db()
+
+        _session = sessionmaker()
+        _session.configure(bind=db)
+        session = _session()
+
+        exists = session.query(Protocol.Name).filter_by(Name=name).first() is not None
+
+        db.dispose()
+
+        return exists
+
+    def protocolxml_entry_exists(self, name, table_type):
+
+        db = self.connect_db()
+
+        _session = sessionmaker()
+        _session.configure(bind=db)
+        session = _session()
+
+        table_exists = session.query(ProtocolXml.FK_Name).filter(and_(ProtocolXml.FK_Name.like(name),
+                                                                      ProtocolXml.XmlType.like(
+                                                                          table_type))).first() is not None
+        db.dispose()
+
+        exists = False
+
+        if table_exists:
+            exists = True
+
+        return exists
+
+    def delete_protocol_row(self, protocol_name):
+        engine = self.connect_db()
+
+        _session = sessionmaker()
+        _session.configure(bind=engine)
+        session = _session()
+
+        # delete rows
+        session.query(Protocol).filter(Protocol.Name == protocol_name).delete()
+
+        try:
+            session.commit()
+            logging.info("Rows deleted")
+            session.close()
+            engine.dispose()
+        except:
+            logging.error("Rows could not deleted.")
+
+    def get_used_rating(self, template_name):
+        engine = self.connect_db()
+
+        _session = sessionmaker()
+        _session.configure(bind=engine)
+        session = _session()
+
+        protocol_query = session.query(Protocol).filter(Protocol.Name == template_name)
+
+        query_dict = {"rating": 0, "used": 0}
+
+        try:
+            for row in protocol_query.all():
+                protocol_rating = row.Rating
+                protocol_used = row.Used
+
+                query_dict["rating"] = protocol_rating
+                query_dict["used"] = protocol_used
+
+                engine.dispose()
+
+        except:
+            logging.info("table not found")
+
+        return query_dict

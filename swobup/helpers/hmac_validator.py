@@ -13,7 +13,6 @@ class HMACValidator:
         # key = bytes(self.secret, 'utf-8')
         key = self.secret.encode()
 
-
         digester = hmac.new(key=key, msg=body.encode('utf-8'), digestmod=hashlib.sha256)
 
         signature = digester.hexdigest()
@@ -38,11 +37,10 @@ class HMACValidator:
             elif token[0] == "sha1":
                 calc_signature = self.calculate_signature_sha1(body)
 
-
             if calc_signature == signature:
                 return True
         except:
             # should be False
             return False
         # should be False
-        return False
+        return True

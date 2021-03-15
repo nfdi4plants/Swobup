@@ -5,24 +5,24 @@ Swobup (Swate OBO Updater) dient zur Synchronisation von Terms in einer zuvor de
 
 ## Installation
 
-#### Erstellen der Virtual Environment
+#### Create Virtual Environment
 ```
 python3 -m venv /opt/oboswateupdater/.venv
 
 ```
 
-#### Aktivieren der Virtual Environment
+#### Activate the virtual environment
 ```
 cd /opt/oboswateupdater/
 source .venv/bin/activate
 ```
 
-#### Installation der Packete in der Virtual Environment
+#### Installation of packages in virtual environment
 ```
 pip3 install falcon requests gunicorn sqlalchemy cryptography pymysql obonet
 ```
 
-#### Beispielkonfiguration Systemd:
+#### Example konfiguration Systemd:
 
 ```
 [Unit]
@@ -56,7 +56,7 @@ WantedBy=multi-user.target
 
 ```
 
-#### Beispielkonfiguration Nginx:
+#### example konfiguration Nginx:
 
 ```
 server {
@@ -90,7 +90,7 @@ server {
 
 ```
 
-#### Konfiguration Swobup in /opt/oboswateupdater/swobup/config/swobup.conf:
+#### Konfiguration of Swobup in /opt/oboswateupdater/swobup/config/swobup.conf:
 
 ```
 [github]

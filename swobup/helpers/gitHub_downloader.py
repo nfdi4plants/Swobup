@@ -2,7 +2,7 @@ import json
 import falcon
 from falcon.http_status import HTTPStatus
 import requests
-import sys
+import logging
 
 from ..helpers.configurator import Configurator
 
@@ -22,12 +22,29 @@ class GithubDownloader:
 
     def download_file(self, commit_hash, file_name):
         location = "https://raw.githubusercontent.com/" + self.github_repository + "/" + commit_hash + "/" + file_name
-        # print(location)
 
         response = requests.get(location, headers=self.headers)
 
-        # print("resonse", response.text)
+        if response.status_code != 200:
+            print("file not found")
+            logging.info("File not found: ", location)
+            return {}
 
-        modified_file = response.text
+        modified_file = response.content
 
         return modified_file
+
+    # not used but good example
+    def get_tree(self, tree_hash):
+        location = "https://api.github.com/repos/" + self.github_repository + "/git/trees/7c249acabf538c84c0a6e18013e465c8f2d5b42a"
+
+        print(location)
+
+        location = "https://api.github.com/repos/" + self.github_repository + "/git/trees/" + tree_hash
+
+        print(location)
+
+        response = requests.get(location, headers=self.headers)
+        print(response)
+
+        print(response.content)

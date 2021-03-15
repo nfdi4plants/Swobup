@@ -6,9 +6,11 @@ from .middleware.cors_middleware import HandleCORS
 from .middleware.hmacAuth_middleware import AuthMiddleware
 
 # API
-from .ApiCalls.update_database import UpdateDatabase
+from .ApiCalls.ontology_update import OntologyUpdate
 from .ApiCalls.delete_database import DeleteDatabase
 from .ApiCalls.create_tables import CreateTables
+
+from .ApiCalls.template_update import TemplateUpdate
 
 api = application = falcon.API(middleware=[
     HandleCORS(),
@@ -17,12 +19,16 @@ api = application = falcon.API(middleware=[
 ])
 
 print("falcon version:", falcon.__version__)
+print("swobup version: ", "2.0")
 
-update_database = UpdateDatabase()
 delete_database = DeleteDatabase()
 create_tables = CreateTables()
 
-api.add_route('/api/v1/update', update_database)
+ontology_update = OntologyUpdate()
+template_update = TemplateUpdate()
+
+api.add_route('/api/v1/ontology', ontology_update)
+api.add_route('/api/v1/template', template_update)
 
 # testing routes
 # api.add_route('/api/v1/delete', delete_database)

@@ -17,10 +17,16 @@ class CreateTables(object):
 
         config = Configurator("swobup/config/config.conf")
 
+        db_host = config.get_config("database", "host")
+        db_user = config.get_config("database", "user")
+        db_password = config.get_config("database", "password")
+        db_name = config.get_config("database", "dbname")
+
         body = req.media
 
-        database = DatabaseConnector()
-        database.create_tables()
+        database = DatabaseConnector(db_host, db_user, db_password, db_name)
+        #database.create_tables()
+        database.create_protocol_tables()
 
 
         result_json = {
