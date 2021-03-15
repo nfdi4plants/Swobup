@@ -3,6 +3,7 @@ import json
 
 from io import StringIO
 
+from ..helpers.configurator import Configurator
 from ..helpers.gitHub_downloader import GithubDownloader
 
 from ..helpers.database.database_connector import *
@@ -11,7 +12,7 @@ from ..helpers.obo_store import *
 from ..helpers.request_store import RequestStore
 
 
-class UpdateDatabase(object):
+class OntologyUpdate(object):
     def on_post(self, req, resp):
 
         # database handler should be in a middleware in a future version
@@ -43,7 +44,7 @@ class UpdateDatabase(object):
             if file in file_name_list:
 
                 github_downloader = GithubDownloader(repository_name)
-                mod_file = github_downloader.download_file(commit_hash, file)
+                mod_file = github_downloader.download_file(commit_hash, file).decode()
                 fake_file = StringIO(mod_file)
 
                 obo_store = OboStore(fake_file)
@@ -81,7 +82,7 @@ class UpdateDatabase(object):
                                 rel_errors.append("Term has no ID in database: " + item.get("Accession"))
 
                             if database.accession_to_id(is_a) is None:
-                                print("ISA", item.get("Accession --> " + is_a))
+                                # print("ISA", item.get("Accession --> " + is_a))
                                 rel_errors.append("TermRelated has no ID in database: " + is_a)
 
                             obo_store.add_rel(database.accession_to_id(item.get("Accession")),
