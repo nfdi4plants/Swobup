@@ -1,7 +1,10 @@
+import datetime
+
 import falcon
 import json
 
 from io import StringIO
+from io import BytesIO
 
 from ..helpers.configurator import Configurator
 from ..helpers.gitHub_downloader import GithubDownloader
@@ -21,7 +24,7 @@ class OntologyUpdate(object):
 
         body = json.loads(RequestStore.body)
 
-        file_name = config.get_config("file", "name")
+        # file_name = config.get_config("file", "name")
         # ontology_name = config.get_config("file", "ontology")
 
         db_host = config.get_config("database", "host")
@@ -31,17 +34,17 @@ class OntologyUpdate(object):
 
         modified_files = body.get("head_commit").get("modified")
         added_files = body.get("head_commit").get("added")
+        removed_files = body.get("head_commit").get("removed")
         repository_name = body.get("repository").get("full_name")
         commit_hash = body.get("head_commit").get("id")
 
         database = DatabaseConnector(db_host, db_user, db_password, db_name)
 
         # build file name list to support multiple obo files
-        file_name_list = file_name.split(',')
+        # file_name_list = file_name.split(',')
 
         for file in modified_files or added_files:
-            # if file_name == file:
-            if file in file_name_list:
+            if ".obo" in file:
 
                 github_downloader = GithubDownloader(repository_name)
                 mod_file = github_downloader.download_file(commit_hash, file).decode()
@@ -49,8 +52,6 @@ class OntologyUpdate(object):
 
                 obo_store = OboStore(fake_file)
                 ontology_name = obo_store.get_ontology()
-                ontology_id = database.get_ontology_id(ontology_name)
-                obo_store.parse(ontology_id)
 
                 stored_terms = obo_store.get_storage()
 
@@ -61,6 +62,16 @@ class OntologyUpdate(object):
                     }
 
                     raise falcon.HTTPUnauthorized(result_json)
+
+                if not database.ontology_entry_exists(ontology_name):
+                    name = obo_store.get_name()
+                    version = obo_store.get_version()
+                    author = obo_store.get_saved_by()
+                    timestamp = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
+                    database.insert_ontology(name, version, "", timestamp, author)
+
+                ontology_id = database.get_ontology_id(ontology_name)
+                obo_store.parse(ontology_id)
 
                 # delete all terms with specific ontology_name
                 database.delete_rows(ontology_name)
@@ -100,3 +111,27 @@ class OntologyUpdate(object):
 
                 resp.body = json.dumps(result_json, ensure_ascii=False)
                 resp.status = falcon.HTTP_200
+
+        if removed_files:
+            # get id of last version
+            before_commit_hash = body.get("before")
+            for removed_file in removed_files:
+                if ".obo" in removed_file:
+                    github_downloader = GithubDownloader(repository_name)
+                    obo_file = github_downloader.download_file(before_commit_hash, removed_file).decode()
+                    ontology_buffer = StringIO(obo_file)
+
+                    obo_store = OboStore(ontology_buffer)
+                    ontology_name = obo_store.get_name()
+                    if ontology_name is None:
+                        print("no name found")
+                        continue
+                    else:
+                        database.delete_ontology_row(ontology_name)
+
+            result_json = {
+                "status": "successfully removed template: " + ontology_name
+            }
+
+            resp.body = json.dumps(result_json, ensure_ascii=False)
+            resp.status = falcon.HTTP_200

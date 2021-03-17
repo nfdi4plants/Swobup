@@ -113,6 +113,49 @@ class DatabaseConnector:
 
             db.dispose()
 
+    def insert_ontology(self, _name, _current_version, _definition, _date_created, _user_id):
+        db = self.connect_db()
+
+        if self.is_connected:
+
+            # create session
+            _session = sessionmaker()
+            _session.configure(bind=db)
+            session = _session()
+
+            row = Ontology(Name=_name, CurrentVersion=_current_version, Definition=_definition,
+                           DateCreated=_date_created, UserID=_user_id)
+
+            session.add(row)
+
+            session.commit()
+
+            try:
+                session.commit()
+                session.close()
+                db.dispose()
+                logging.info("new ontology " + _name + " inserted")
+
+            except:
+                session.close()
+                logging.error("Error inserting Ontology: " + _name)
+
+            db.dispose()
+
+    def ontology_entry_exists(self, name):
+
+        db = self.connect_db()
+
+        _session = sessionmaker()
+        _session.configure(bind=db)
+        session = _session()
+
+        ontology_exists = session.query(Ontology.Name).filter_by(Name=name).first() is not None
+
+        db.dispose()
+
+        return ontology_exists
+
     def insert_relterms(self, insert_dict):
         db = self.connect_db()
 
@@ -166,6 +209,24 @@ class DatabaseConnector:
             engine.dispose()
 
             return ontology_id
+
+    def delete_ontology_row(self, ontology_name):
+        engine = self.connect_db()
+
+        _session = sessionmaker()
+        _session.configure(bind=engine)
+        session = _session()
+
+        # delete rows
+        session.query(Ontology).filter(Ontology.Name == ontology_name).delete()
+
+        try:
+            session.commit()
+            logging.info("Ontology deleted: " + ontology_name)
+            session.close()
+            engine.dispose()
+        except:
+            logging.error("Ontology" + ontology_name + " could not be deleted.")
 
     def delete_rows(self, ontology_name):
         engine = self.connect_db()

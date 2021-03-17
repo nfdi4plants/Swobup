@@ -2,6 +2,7 @@ import falcon
 import json
 import datetime
 
+from ..helpers.configurator import Configurator
 from ..helpers.gitHub_downloader import GithubDownloader
 
 from ..helpers.database.database_connector import *
@@ -130,7 +131,7 @@ class TemplateUpdate(object):
                         database.delete_protocol_row(current_name)
 
             result_json = {
-                "status": "success"
+                "status": "successfully removed template: " +current_name
             }
 
             resp.body = json.dumps(result_json, ensure_ascii=False)

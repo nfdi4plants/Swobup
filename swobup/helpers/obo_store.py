@@ -1,5 +1,6 @@
 # from pobo import Parser
 import obonet
+import sys
 
 
 class OboStore:
@@ -11,13 +12,22 @@ class OboStore:
         # self.parser = Parser(file)
         self.graph = obonet.read_obo(file)
 
-
     def get_ontology(self):
         return str(self.graph)
 
-    def parse(self, ontology_id):
+    def get_version(self):
+        return self.graph.graph["data-version"]
 
-        for item in self.graph:
+    def get_saved_by(self):
+        return self.graph.graph["saved-by"]
+
+    def get_name(self):
+        return self.graph.name
+
+    def parse(self, ontology_id):
+        #print(self.graph.pred)
+
+        for item in self.graph.nodes:
             term_dict = dict()
 
             current = self.graph.nodes[item]
