@@ -1,7 +1,16 @@
-# Swobup
+<h1 align="center">Swobup</h1>
+<h3 align="center">The Swate OBO Updater</h3>
 
-## Beschreibung
-Swobup (Swate OBO Updater) dient zur Synchronisation von Terms in einer zuvor definierten OBO-File, die von einem authorisierten Benutzer in ein Github Repository hochgeladen wird. Swobup analysiert die OBO-File und arbeitet die Änderungen in die Swate-Datenbank ein. Der Nutzer hat die aktualisierten Terme anschließend in dem Swatetool zur Verfügung, ohne dass dieser einzelne Terme über das Tool manuell eintragen muss. 
+---
+
+<p align="center">
+<img alt="Logo Banner" src="https://github.com/Zerskk/Branding/blob/master/logos/Swobup/logo-text/logo-blue-text.png"/>
+
+---
+
+Swobup (Swate OBO Updater) is a tool to synchronize terms in a previously defined OBO file uploaded to a Github repository by an authorized user. Also Swobup can be used to synchronize templates with the Swate database by committing templates to defined sharedGithub repository for them. 
+Swobup parses the OBO or template file and incorporates the changes into the Swate database. The user then has the updated templates or terms available in the Swate tool without having to manually create templates or enter individual terms.
+
 
 ## Installation
 
