@@ -4,7 +4,7 @@
 ---
 
 <p align="center">
-<img alt="Logo Banner" src="https://github.com/Zerskk/Branding/blob/master/logos/Swobup/logo-text/logo-blue-text.png"/>
+<img alt="Logo Banner" src="https://raw.githubusercontent.com/Zerskk/Branding/master/logos/Swobup/logo-text/logo-blue-text.png"/>
 
 ---
 
@@ -65,7 +65,7 @@ WantedBy=multi-user.target
 
 ```
 
-#### example konfiguration Nginx:
+#### example configuration Nginx:
 
 ```
 server {
@@ -82,8 +82,8 @@ server {
     server_name <url>;
 
 
-    ssl_certificate     /etc/ssl/localcerts/swobup.pem;
-    ssl_certificate_key /etc/ssl/localcerts/swobup.key;
+    ssl_certificate     <path to certificate file>;
+    ssl_certificate_key <path to private key>;
     ssl_protocols       TLSv1.2 TLSv1.3;
     ssl_ciphers         HIGH:!aNULL:!MD5;
     gzip off;
@@ -99,7 +99,7 @@ server {
 
 ```
 
-#### Konfiguration of Swobup in /opt/oboswateupdater/swobup/config/swobup.conf:
+#### Configuration file (swobup.conf) of Swobup:
 
 ```
 [github]
@@ -108,16 +108,12 @@ hash_method: sha256
 token: <token>
 download_path: https://raw.githubusercontent.com
 user: <github_user>
-repository: nfdi4plants
 
-[file]
-name:nfdi4plants_ontology.obo
-ontology: nfdi4pso
 
 [database]
-host: localhost
+host: <host_name>
 user: <db_user>
 password: <password>
-dbname: SwateDB
+dbname: <database_name>
 
 ```
