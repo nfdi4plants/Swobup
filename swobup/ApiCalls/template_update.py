@@ -98,7 +98,7 @@ class TemplateUpdate(object):
                                                                        + file)
 
                     except Exception as e:
-                        message = "ERROR: An error appeared in downloading the JSON meta file.\n"
+                        message = "ERROR: An error occurred while downloading the JSON meta file.\n"
                         message_collector.add_template_error(template_folder, message)
                         continue
 
@@ -116,7 +116,7 @@ class TemplateUpdate(object):
                         template_collector.create_template_object(meta_json)
 
                     except Exception as e:
-                        message = "ERROR: An error appeared in parsing the JSON meta file.\n " \
+                        message = "ERROR: An error occurred while parsing the JSON meta file.\n " \
                                   "Please check the file for errors."
                         message_collector.add_template_error(template_folder, message)
                         continue
@@ -133,7 +133,7 @@ class TemplateUpdate(object):
 
                             except Exception as e:
 
-                                message = "ERROR: An error appeared in downloading the XSLX file " + file + " .\n "
+                                message = "ERROR: An error occurred while downloading the XSLX file " + file + " .\n "
                                 message_collector.add_template_error(template_folder, message)
                                 continue
 
@@ -143,15 +143,15 @@ class TemplateUpdate(object):
                                 template_collector.parse_xslx(xlsx_buffer, template_folder)
                             except Exception as e:
 
-                                message = "ERROR: An error appeared in downloading the XSLX file " + file + " .\n " \
-                                                                                                            "Please check " \
-                                                                                                            "the file for " \
-                                                                                                            "errors. "
+                                message = "ERROR: An error occurred while downloading the XSLX file " \
+                                          + file + " .\n Please check the file for errors. "
+
                                 message_collector.add_template_error(template_folder, message)
                                 continue
 
                 else:
-                    message = "ERROR: No JSON in template folder, please add a meta JSON file and commit again. \n"
+                    message = "ERROR: There is no JSON in template folder, please add a meta JSON file " \
+                              "and re-commit it. \n"
                     message_collector.add_template_error(template_folder, message)
                     continue
 
@@ -188,7 +188,7 @@ class TemplateUpdate(object):
                     database.insert_protocol_xml(temp.get_name(), "TableXml", table_xml)
 
                 except Exception as e:
-                    message = "ERROR: An error occurred in inserting the table XML of" + temp.get_name() + "\n"
+                    message = "ERROR: An error occurred while inserting the table XML of" + temp.get_name() + "\n"
                     message_collector.add_template_error(temp.template_folder, message)
 
                 # create CustomXml
@@ -197,7 +197,7 @@ class TemplateUpdate(object):
                     database.insert_protocol_xml(temp.get_name(), "CustomXml", custom_xml)
 
                 except Exception as e:
-                    message = "ERROR: An error occurred in inserting the Custom XML of " + temp.get_name() + "\n"
+                    message = "ERROR: An error occurred while inserting the custom XML of " + temp.get_name() + "\n"
                     message_collector.add_template_error(temp.template_folder, message)
 
                 message = "The template: <b>" + temp.get_name() + "</b> was successfully added to the Swate " \
@@ -234,7 +234,7 @@ class TemplateUpdate(object):
                                                                        + file)
 
                     except Exception as e:
-                        message = "ERROR: An error appeared in downloading the JSON meta file.\n"
+                        message = "ERROR: An error occurred while downloading the JSON meta file.\n"
                         message_collector.add_template_error(template_folder, message)
                         continue
 
@@ -252,7 +252,7 @@ class TemplateUpdate(object):
                         template_collector.create_template_object(meta_json)
 
                     except Exception as e:
-                        message = "ERROR: An error appeared in parsing the JSON meta file.\n " \
+                        message = "ERROR: An error occurred while parsing the JSON metafile.\n " \
                                   "Please check the file for errors."
                         message_collector.add_template_error(template_folder, message)
                         continue
@@ -267,7 +267,7 @@ class TemplateUpdate(object):
 
                             except Exception as e:
 
-                                message = "ERROR: An error appeared in downloading the XSLX file " + file + " .\n "
+                                message = "ERROR: An error occurred while downloading the XSLX file " + file + " .\n "
                                 message_collector.add_template_error(template_folder, message)
                                 continue
 
@@ -277,7 +277,7 @@ class TemplateUpdate(object):
                                 template_collector.parse_xslx(xlsx_buffer, template_folder)
                             except Exception as e:
 
-                                message = "ERROR: An error appeared in downloading the XSLX file " + file + " .\n " \
+                                message = "ERROR: An error occurred while downloading the XSLX file " + file + " .\n " \
                                                                                                             "Please check " \
                                                                                                             "the file for " \
                                                                                                             "errors. "
@@ -285,8 +285,8 @@ class TemplateUpdate(object):
                                 continue
 
                 else:
-                    message = "ERROR: No JSON file committed with template, " \
-                              "please add a meta JSON file in the commit and try again. \n"
+                    message = "ERROR: There is no JSON in template folder, please add a meta JSON file " \
+                              "and re-commit it. \n"
                     message_collector.add_template_error(template_folder, message)
                     continue
 
@@ -321,7 +321,7 @@ class TemplateUpdate(object):
                         database.insert_protocol_xml(template.get_name(), "TableXml", table_xml)
 
                 except Exception as e:
-                    message = "ERROR: An error occurred updating table XML of" + template.get_name() + "\n"
+                    message = "ERROR: An error occurred while updating table XML of" + template.get_name() + "\n"
                     message_collector.add_template_error(template.template_folder, message)
 
                 try:
@@ -339,7 +339,7 @@ class TemplateUpdate(object):
                         database.insert_protocol_xml(template.get_name(), "CustomXml", custom_xml)
 
                 except Exception as e:
-                    message = "ERROR: An error occurred in inserting the Custom XML of " + template.get_name() + "\n"
+                    message = "ERROR: An error occurred while inserting the Custom XML of " + template.get_name() + "\n"
                     message_collector.add_template_error(template.template_folder, message)
 
                 message = "The template <b>" + template.get_name() + "</b> was successfully updated in Swate " \
@@ -383,7 +383,7 @@ class TemplateUpdate(object):
                         print("meta_json", meta_json)
                         current_name = meta_json.get("name", "None")
                     except Exception as e:
-                        message = "An error appeared in parsing the JSON meta file.\n " \
+                        message = "An error occurred while parsing the JSON meta file.\n " \
                                   "Please check the file for errors."
                         message_collector.add_template_error(template_folder, message)
                     if current_name is None:
@@ -400,7 +400,7 @@ class TemplateUpdate(object):
                                 message_collector.add_template_info(template_folder, message)
                                 print("success")
                         except Exception as e:
-                            message = "An error appeared in deleting the template " + current_name + " .\n "
+                            message = "An error occurred while deleting the template " + current_name + " .\n "
                             message_collector.add_template_error(template_folder, message)
                             print("error")
 

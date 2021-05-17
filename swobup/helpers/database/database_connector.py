@@ -102,23 +102,15 @@ class DatabaseConnector:
                 # sys.exit(0)
                 session.commit()
 
-            try:
-                session.commit()
-                session.close()
-                db.dispose()
-                logging.info("Term inserted")
-
-            except:
-                session.close()
-                logging.error("Error inserting Term")
-
+            session.commit()
+            session.close()
             db.dispose()
+            logging.info("Term inserted")
 
     def insert_ontology(self, _name, _current_version, _definition, _date_created, _user_id):
         db = self.connect_db()
 
         if self.is_connected:
-
             # create session
             _session = sessionmaker()
             _session.configure(bind=db)
@@ -130,18 +122,9 @@ class DatabaseConnector:
             session.add(row)
 
             session.commit()
-
-            try:
-                session.commit()
-                session.close()
-                db.dispose()
-                logging.info("new ontology " + _name + " inserted")
-
-            except:
-                session.close()
-                logging.error("Error inserting Ontology: " + _name)
-
+            session.close()
             db.dispose()
+            logging.info("new ontology " + _name + " inserted")
 
     def ontology_entry_exists(self, name):
 
@@ -157,7 +140,7 @@ class DatabaseConnector:
 
         return ontology_exists
 
-    def insert_relterms(self, insert_dict):
+    def insert_relterms(self, insert_dict, ontology_name):
         db = self.connect_db()
 
         if self.is_connected:
@@ -178,21 +161,17 @@ class DatabaseConnector:
                 if _term_id is None:
                     continue
 
-                row = TermRelationship(FK_TermAccession=_term_id, RelationshipType=_relationship_type,
+                row = TermRelationship(FK_TermAccession=_term_id, FK_OntologyName=ontology_name,
+                                       RelationshipType=_relationship_type,
                                        FK_TermAccession_Related=_term_id_related)
 
                 # print(row.FK_TermID, row.RelationshipType, row.FK_TermID_Related)
                 session.add(row)
 
-            try:
-                session.commit()
-                session.close()
-
-                logging.info("Related Term inserted")
-            except:
-                logging.error("Error inserting Related Term")
-
+            session.commit()
+            session.close()
             db.dispose()
+
             # session.close()
 
     def get_ontology_id(self, ontology_name):
@@ -221,13 +200,10 @@ class DatabaseConnector:
         # delete rows
         session.query(Ontology).filter(Ontology.Name == ontology_name).delete()
 
-        try:
-            session.commit()
-            logging.info("Ontology deleted: " + ontology_name)
-            session.close()
-            engine.dispose()
-        except:
-            logging.error("Ontology" + ontology_name + " could not be deleted.")
+        session.commit()
+        logging.info("Ontology deleted: " + ontology_name)
+        session.close()
+        engine.dispose()
 
     def delete_rows(self, ontology_name):
         engine = self.connect_db()
@@ -245,13 +221,10 @@ class DatabaseConnector:
         # delete rows
         session.query(Term).filter(Term.FK_OntologyName == ontology_name).delete()
 
-        try:
-            session.commit()
-            logging.info("Rows deleted")
-            session.close()
-            engine.dispose()
-        except:
-            logging.error("Rows could not deleted.")
+        session.commit()
+        logging.info("Rows deleted")
+        session.close()
+        engine.dispose()
 
     def select_rows(self):
         engine = self.connect_db()
@@ -297,7 +270,6 @@ class DatabaseConnector:
         db = self.connect_db()
 
         if self.is_connected:
-
             # create session
             _session = sessionmaker()
             _session.configure(bind=db)
@@ -309,23 +281,15 @@ class DatabaseConnector:
             session.add(row)
             session.commit()
 
-            try:
-                session.commit()
-                session.close()
-                db.dispose()
-                logging.info("Protocol inserted")
-
-            except:
-                session.close()
-                logging.error("Error inserting Protocol")
-
+            session.commit()
+            session.close()
             db.dispose()
+            logging.info("Protocol inserted")
 
     def update_protocol(self, name, version, author, description, docs_link, tags, timestamp):
         db = self.connect_db()
 
         if self.is_connected:
-
             # create session
             _session = sessionmaker()
             _session.configure(bind=db)
@@ -338,17 +302,10 @@ class DatabaseConnector:
 
             session.commit()
 
-            try:
-                session.commit()
-                session.close()
-                db.dispose()
-                logging.info("Protocol updated")
-
-            except:
-                session.close()
-                logging.error("Error updating Protocol")
-
+            session.commit()
+            session.close()
             db.dispose()
+            logging.info("Protocol updated")
 
     def update_protocol_xml(self, name, xml_type, xml):
         db = self.connect_db()
@@ -365,17 +322,12 @@ class DatabaseConnector:
 
             session.commit()
 
-            try:
-                session.commit()
-                session.close()
-                db.dispose()
-                logging.info("ProtocolXml updated")
 
-            except:
-                session.close()
-                logging.error("Error updating ProtocolXml")
-
+            session.commit()
+            session.close()
             db.dispose()
+            logging.info("ProtocolXml updated")
+
 
     def insert_protocol_xml(self, name, xml_type, xml):
         db = self.connect_db()
@@ -392,17 +344,12 @@ class DatabaseConnector:
             session.add(row)
             session.commit()
 
-            try:
-                session.commit()
-                session.close()
-                db.dispose()
-                logging.info("ProtocolXml inserted")
 
-            except:
-                session.close()
-                logging.error("Error inserting ProtocolXml")
-
+            session.commit()
+            session.close()
             db.dispose()
+            logging.info("ProtocolXml inserted")
+
 
     def protocol_entry_exists(self, name):
 
@@ -448,13 +395,12 @@ class DatabaseConnector:
         # delete rows
         session.query(Protocol).filter(Protocol.Name == protocol_name).delete()
 
-        try:
-            session.commit()
-            logging.info("Rows deleted")
-            session.close()
-            engine.dispose()
-        except:
-            logging.error("Rows could not deleted.")
+
+        session.commit()
+        logging.info("Rows deleted")
+        session.close()
+        engine.dispose()
+
 
     def get_used_rating(self, template_name):
         engine = self.connect_db()

@@ -54,7 +54,6 @@ class OntologyUpdate(object):
         database = DatabaseConnector(db_host, db_user, db_password, db_name)
         message_collector = MessageCollector()
 
-
         files = modified_files + added_files
 
         for file in files:
@@ -76,7 +75,7 @@ class OntologyUpdate(object):
                     #                                    + "</b> downloaded successfully.")
                 except Exception as e:
                     message_collector.add_template_error(file,
-                                                         "ERROR : Error in downloading ontology file: <b>" + file
+                                                         "ERROR : Error while downloading ontology file: <b>" + file
                                                          + "</b>.")
                     continue
 
@@ -88,41 +87,42 @@ class OntologyUpdate(object):
 
                     raise falcon.HTTPUnauthorized(result_json)
 
-                try:
-                    database.delete_ontology_row(ontology_name)
-                except Exception as e:
-                    message_collector.add_template_error(file,
-                                                         "ERROR : An previous version of the ontology <b>" + file
-                                                         + "</b> could not be removed from database.")
-                    continue
-
+                if database.ontology_entry_exists(ontology_name):
+                    try:
+                        database.delete_ontology_row(ontology_name)
+                    except Exception as e:
+                        message_collector.add_template_error(file,
+                                                             "ERROR : An previous version of the ontology <b>" + file
+                                                             + "</b> could not be removed from database.")
+                        continue
 
                 try:
                     name = obo_store.get_name()
                 except Exception as e:
                     message_collector.add_template_error(file,
-                                                         "ERROR : Ontology file has no valid 'name'-field defined.")
+                                                         "ERROR : No valid 'Name' field is defined "
+                                                         "in the ontology file.")
                     continue
                 try:
                     version = obo_store.get_version()
                 except Exception as e:
                     message_collector.add_template_error(file,
-                                                         "ERROR : Ontology file has no "
-                                                         "valid 'version'-field defined.")
+                                                         "ERROR : No valid valid 'version' field is defined."
+                                                         "in the ontology file.")
                     continue
                 try:
                     author = obo_store.get_saved_by()
                 except Exception as e:
                     message_collector.add_template_error(file,
-                                                         "ERROR : Ontology file has no "
-                                                         "valid 'saved-by'-field' defined.")
+                                                         "ERROR : No valid valid 'saved-by' field is defined"
+                                                         "in the ontology file.")
                     continue
 
                 timestamp = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
                 database.insert_ontology(name, version, "", timestamp, author)
                 message_collector.add_template_info(file,
-                                                        "Ontology <b>" + ontology_name
-                                                        + "</b> successfully created.")
+                                                    "Ontology <b>" + ontology_name
+                                                    + "</b> successfully created.")
 
                 # not needed anymore
                 # ontology_id = database.get_ontology_id(ontology_name)
@@ -130,14 +130,15 @@ class OntologyUpdate(object):
                     obo_store.parse(ontology_name)
                 except Exception as e:
                     message_collector.add_template_error(file,
-                                                         "ERROR : Error in reading ontology file: <b>" + file + "</b>.")
+                                                         "ERROR : Error reading the ontology "
+                                                         "file: <b>" + file + "</b>.")
 
                 # we delete the ontology row with cascade option, because of that this isn't required anymore
                 # delete all terms with specific ontology_name
-                #try:
-                    #database.delete_rows(ontology_name)
+                # try:
+                # database.delete_rows(ontology_name)
                 #    database.delete_ontology_row(ontology_name)
-                #except Exception as e:
+                # except Exception as e:
                 #    message_collector.add_template_error(file,
                 #                                         "ERROR : An previous version of the ontology <b>" + file
                 #                                         + "</b> could not be removed.")
@@ -145,22 +146,21 @@ class OntologyUpdate(object):
                 try:
                     # add new terms to ontology with specific ontology_name
                     database.insert_terms(stored_terms)
-                    # message_collector.add_template_info(file,
-                    #                                    "INFO : New Terms of the ontology <b>" + file
-                    #                                    + "</b> successfully inserted to the database.")
+                    message_collector.add_template_info(file,
+                                                        "Terms of the ontology <b>" + file
+                                                        + "</b> successfully inserted into the database.")
                 except Exception as e:
                     message_collector.add_template_error(file,
                                                          "ERROR : New Terms of the ontology <b>" + file
-                                                         + "</b> could not be inserted to the database.")
+                                                         + "</b> could not be inserted into the database.")
                     # relationTerm Table
                 # get reealtionDict
                 stored_relationships = obo_store.get_storage()
-
+                print("stored", stored_relationships)
 
                 for item in stored_relationships:
                     if item.get("is_a"):
                         for is_a in item.get("is_a"):
-
                             # if database.accession_to_id(item.get("Accession")) is None:
                             # rel_errors.append("Term has no ID in database: " + item.get("Accession"))
 
@@ -170,7 +170,6 @@ class OntologyUpdate(object):
 
                             # insert term relationships without checks, this is faster
                             obo_store.add_rel(item.get("Accession"), is_a)
-
 
                             # uncomment this, if all terms with term check should be used
                             # search in all ontologies in database
@@ -193,18 +192,20 @@ class OntologyUpdate(object):
 
                 insert_relations = obo_store.get_relstorage()
 
-                # print("inserted relations", insert_relations)
+                print("inserted relations", insert_relations)
 
                 try:
-                    database.insert_relterms(insert_relations)
+                    database.insert_relterms(insert_relations, ontology_name)
                     # message_collector.add_template_info(file,
                     # "INFO : Term relationships successfully added to database.")
                     message_collector.add_template_info(file,
-                                                        "Ontology terms successfully added to database. ")
+                                                        "Term relationships of ontology <b> " + ontology_name
+                                                        + " </b> have been successfully added "
+                                                          "to the database..")
                 except Exception as e:
                     message_collector.add_template_error(file,
-                                                         "ERROR : Term relationships could not be inserted to the "
-                                                         "database.")
+                                                         "ERROR : Some term relationships could not be inserted "
+                                                         "into the database.")
 
         # if removed_files:
         # get id of last version
@@ -231,8 +232,8 @@ class OntologyUpdate(object):
                 if ontology_name is None:
                     print("no name found")
                     message_collector.add_template_error(removed_file,
-                                                         "ERROR : Ontology file : <b>" + removed_file
-                                                         + "</b> has no defined name.")
+                                                         "ERROR : The ontology file  <b>" + removed_file
+                                                         + "</b> dows not have a defined name.")
                     continue
                 else:
                     database.delete_ontology_row(ontology_name)
