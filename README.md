@@ -116,4 +116,10 @@ user: <db_user>
 password: <password>
 dbname: <database_name>
 
+[mail-notifier]
+server:
+password:
+sender:
+additional_receiver: 
+
 ```
