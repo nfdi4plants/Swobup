@@ -86,7 +86,7 @@ class DatabaseConnector:
             for list_item in insert_tuple:
                 # print("inserting:", list_item)
                 _accession = list_item.get("Accession")
-                _ontology_id = list_item.get("FK_OntologyID")
+                _ontology_name = list_item.get("FK_OntologyName")
                 _name = list_item.get("Name")
                 _definition = list_item.get("Definition")
                 _xref_value = list_item.get("XRefValueType")
@@ -94,10 +94,11 @@ class DatabaseConnector:
                 # for _key, _value in list_item.items():
                 # print(_key + ":" +str(_value))
 
-                row = Term(Accession=_accession, FK_OntologyID=_ontology_id, Name=_name, Definition=_definition,
+                row = Term(Accession=_accession, FK_OntologyName=_ontology_name, Name=_name, Definition=_definition,
                            XRefValueType=_xref_value, isObsolete=_is_obsolete)
 
                 session.add(row)
+                # print("row", row.Name)
                 # sys.exit(0)
                 session.commit()
 
@@ -167,9 +168,9 @@ class DatabaseConnector:
             session = _session()
 
             for list_item in insert_dict:
-                _term_id = list_item.get("FK_TermID")
+                _term_id = list_item.get("FK_TermAccession")
                 _relationship_type = list_item.get("RelationshipType")
-                _term_id_related = list_item.get("FK_TermID_Related")
+                _term_id_related = list_item.get("FK_TermAccession_Related")
 
                 if _term_id_related is None:
                     continue
@@ -177,8 +178,8 @@ class DatabaseConnector:
                 if _term_id is None:
                     continue
 
-                row = TermRelationship(FK_TermID=_term_id, RelationshipType=_relationship_type,
-                                       FK_TermID_Related=_term_id_related)
+                row = TermRelationship(FK_TermAccession=_term_id, RelationshipType=_relationship_type,
+                                       FK_TermAccession_Related=_term_id_related)
 
                 # print(row.FK_TermID, row.RelationshipType, row.FK_TermID_Related)
                 session.add(row)
@@ -236,13 +237,13 @@ class DatabaseConnector:
         session = _session()
 
         # find which ID has the ontology name
-        ontology_query = session.query(Ontology.ID).filter(Ontology.Name == ontology_name)
+        ontology_query = session.query(Ontology.Name).filter(Ontology.Name == ontology_name)
         # this is every time only one loop cycle, so it doesnt matter for runtime
         for row in ontology_query.all():
-            ontology_id = row.ID
+            ontology_name = row.Name
 
         # delete rows
-        session.query(Term).filter(Term.FK_OntologyID == ontology_id).delete()
+        session.query(Term).filter(Term.FK_OntologyName == ontology_name).delete()
 
         try:
             session.commit()
@@ -260,6 +261,20 @@ class DatabaseConnector:
         session = _session()
 
         query = session.query(Term).filter(Term.FK_OntologyID == 2)
+
+    def accession_entry_exists(self, accession):
+
+        db = self.connect_db()
+
+        _session = sessionmaker()
+        _session.configure(bind=db)
+        session = _session()
+
+        exists = session.query(Term.Accession).filter_by(Accession=accession).first() is not None
+
+        db.dispose()
+
+        return exists
 
     def accession_to_id(self, accession):
         engine = self.connect_db()

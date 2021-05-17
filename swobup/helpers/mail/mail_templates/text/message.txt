@@ -1,0 +1,14 @@
+Swobup Commit Report:
+
+New changes were comitted to the Github Repository: $REPO_NAME
+
+Committer details:
+
+Github username: $GITHUB_USERNAME
+Commit username: $COMMIT_NAME
+Mail address: $COMMIT_MAIL
+View diff: $COMMIT_URL
+
+
+This report was generated automatically. Do not reply!
+

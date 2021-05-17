@@ -12,8 +12,8 @@ Base = declarative_base()
 
 class Ontology(Base):
     __tablename__ = "Ontology"
-    ID = Column(BigInteger, primary_key=True, autoincrement=True)
-    Name = Column(String(256), nullable=False, unique=True)
+    #ID = Column(BigInteger, primary_key=True, autoincrement=True)
+    Name = Column(String(256), primary_key=True, nullable=False, unique=True)
     CurrentVersion = Column(String(256), nullable=False)
     Definition = Column(String(1024), nullable=False)
     DateCreated = Column(DATETIME(fsp=6), nullable=False)
@@ -24,30 +24,30 @@ class Ontology(Base):
 
 class Term(Base):
     __tablename__ = 'Term'
-    ID = Column(BigInteger, primary_key=True, autoincrement=True)
-    Accession = Column(String(128), nullable=False, unique=True)
-    FK_OntologyID = Column(BigInteger, ForeignKey('Ontology.ID'), nullable=False)
+    #ID = Column(BigInteger, primary_key=True, autoincrement=True)
+    Accession = Column(String(128), nullable=False, unique=True, primary_key=True)
+    FK_OntologyName = Column(String(256), ForeignKey('Ontology.Name'), nullable=False)
     Name = Column(String(1024), nullable=False, index=True )
     Definition = Column(String(2084), nullable=False,  index=True )
-    XRefValueType = Column(String(50), nullable=True)
+    XRefValueType = Column(String(256), nullable=True)
     isObsolete = Column(Boolean, nullable=False)
     children = relationship(
         "TermRelationship", back_populates="parent",
         cascade="all, delete",
         passive_deletes=True,
-        foreign_keys="TermRelationship.FK_TermID"
+        foreign_keys="TermRelationship.FK_TermAccession"
     )
 
 
 class TermRelationship(Base):
     __tablename__ = 'TermRelationship'
     ID = Column(BigInteger, primary_key=True, autoincrement=True)
-    FK_TermID = Column(BigInteger, ForeignKey('Term.ID', ondelete="CASCADE"), nullable=True)
+    FK_TermAccession = Column(String(128), ForeignKey('Term.Accession', ondelete="CASCADE"), nullable=True)
     RelationshipType = Column(String(64), nullable=True)
     #FK_TermID_Related = Column(BigInteger, ForeignKey('Term.ID', ondelete="CASCADE"), nullable=True)
-    FK_TermID_Related = Column(BigInteger, ForeignKey('Term.ID', ondelete="CASCADE"), nullable=True)
+    FK_TermAccession_Related = Column(String(128), ForeignKey('Term.Accession', ondelete="CASCADE"), nullable=True)
     parent = relationship("Term", back_populates="children",
-                          foreign_keys='TermRelationship.FK_TermID')
+                          foreign_keys='TermRelationship.FK_TermAccession')
 
 
 class Protocol(Base):

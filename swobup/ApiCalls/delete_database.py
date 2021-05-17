@@ -1,8 +1,6 @@
 import falcon
 import json
 import sys
-
-from pobo import Parser
 from io import StringIO
 
 from ..helpers.configurator import Configurator
