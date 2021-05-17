@@ -62,7 +62,7 @@ class TemplateUpdate(object):
 
         commit_user = body.get("head_commit").get("committer").get("name")
         commit_mail = body.get("head_commit").get("committer").get("email")
-        github_username = body.get("head_commit").get("committer").get("username")
+        github_username = body.get("head_commit").get("committer").get("username", "None")
         commit_url = body.get("head_commit").get("url")
 
         database = DatabaseConnector(db_host, db_user, db_password, db_name)
@@ -278,9 +278,9 @@ class TemplateUpdate(object):
                             except Exception as e:
 
                                 message = "ERROR: An error occurred while downloading the XSLX file " + file + " .\n " \
-                                                                                                            "Please check " \
-                                                                                                            "the file for " \
-                                                                                                            "errors. "
+                                                                                                               "Please check " \
+                                                                                                               "the file for " \
+                                                                                                               "errors. "
                                 message_collector.add_template_error(template_folder, message)
                                 continue
 

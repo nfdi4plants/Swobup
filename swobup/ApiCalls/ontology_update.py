@@ -48,7 +48,7 @@ class OntologyUpdate(object):
 
         commit_user = body.get("head_commit").get("committer").get("name")
         commit_mail = body.get("head_commit").get("committer").get("email")
-        github_username = body.get("head_commit").get("committer").get("username")
+        github_username = body.get("head_commit").get("committer").get("username", "None")
         commit_url = body.get("head_commit").get("url")
 
         database = DatabaseConnector(db_host, db_user, db_password, db_name)
@@ -156,7 +156,7 @@ class OntologyUpdate(object):
                     # relationTerm Table
                 # get reealtionDict
                 stored_relationships = obo_store.get_storage()
-                print("stored", stored_relationships)
+                # print("stored", stored_relationships)
 
                 for item in stored_relationships:
                     if item.get("is_a"):
@@ -192,7 +192,7 @@ class OntologyUpdate(object):
 
                 insert_relations = obo_store.get_relstorage()
 
-                print("inserted relations", insert_relations)
+                #print("inserted relations", insert_relations)
 
                 try:
                     database.insert_relterms(insert_relations, ontology_name)
