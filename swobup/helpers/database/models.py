@@ -18,6 +18,19 @@ class Ontology(Base):
     Definition = Column(String(1024), nullable=False)
     DateCreated = Column(DATETIME(fsp=6), nullable=False)
     UserID = Column(String(32), nullable=False)
+    children = relationship(
+        "Term", back_populates="parent",
+        cascade="all, delete",
+        passive_deletes=True,
+        foreign_keys="TermRelationship.FK_OntologyName"
+    )
+    children_termRelation = relationship(
+        "Term", back_populates="parent_termRelation",
+        cascade="all, delete",
+        passive_deletes=True,
+        foreign_keys="Term.FK_OntologyName"
+    )
+
 
 
 
@@ -31,23 +44,22 @@ class Term(Base):
     Definition = Column(String(2084), nullable=False,  index=True )
     XRefValueType = Column(String(256), nullable=True)
     isObsolete = Column(Boolean, nullable=False)
-    children = relationship(
-        "TermRelationship", back_populates="parent",
-        cascade="all, delete",
-        passive_deletes=True,
-        foreign_keys="TermRelationship.FK_TermAccession"
+    parent = relationship(
+        "Ontology", back_populates="parent",
+        foreign_keys="Term.FK_OntologyName"
     )
 
 
 class TermRelationship(Base):
     __tablename__ = 'TermRelationship'
     ID = Column(BigInteger, primary_key=True, autoincrement=True)
-    FK_TermAccession = Column(String(128), ForeignKey('Term.Accession', ondelete="CASCADE"), nullable=True)
+    FK_TermAccession = Column(String(128), nullable=True)
+    FK_OntologyName = Column(String(256), ForeignKey('Ontology.Name',ondelete="CASCADE"), nullable=False)
     RelationshipType = Column(String(64), nullable=True)
     #FK_TermID_Related = Column(BigInteger, ForeignKey('Term.ID', ondelete="CASCADE"), nullable=True)
-    FK_TermAccession_Related = Column(String(128), ForeignKey('Term.Accession', ondelete="CASCADE"), nullable=True)
-    parent = relationship("Term", back_populates="children",
-                          foreign_keys='TermRelationship.FK_TermAccession')
+    FK_TermAccession_Related = Column(String(128), nullable=True)
+    parent_termRelation = relationship("Ontology", back_populates="children_termRelation",
+                          foreign_keys='TermRelationship.FK_OntologyName')
 
 
 class Protocol(Base):

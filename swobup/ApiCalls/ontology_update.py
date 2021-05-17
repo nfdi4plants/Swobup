@@ -54,8 +54,6 @@ class OntologyUpdate(object):
         database = DatabaseConnector(db_host, db_user, db_password, db_name)
         message_collector = MessageCollector()
 
-        # build file name list to support multiple obo files
-        # file_name_list = file_name.split(',')
 
         files = modified_files + added_files
 
@@ -90,33 +88,41 @@ class OntologyUpdate(object):
 
                     raise falcon.HTTPUnauthorized(result_json)
 
-                if not database.ontology_entry_exists(ontology_name):
-                    try:
-                        name = obo_store.get_name()
-                    except Exception as e:
-                        message_collector.add_template_error(file,
-                                                             "ERROR : Ontology file has no valid 'name'-field defined.")
-                        continue
-                    try:
-                        version = obo_store.get_version()
-                    except Exception as e:
-                        message_collector.add_template_error(file,
-                                                             "ERROR : Ontology file has no "
-                                                             "valid 'version'-field defined.")
-                        continue
-                    try:
-                        author = obo_store.get_saved_by()
-                    except Exception as e:
-                        message_collector.add_template_error(file,
-                                                             "ERROR : Ontology file has no "
-                                                             "valid 'saved-by'-field' defined.")
-                        continue
+                try:
+                    database.delete_ontology_row(ontology_name)
+                except Exception as e:
+                    message_collector.add_template_error(file,
+                                                         "ERROR : An previous version of the ontology <b>" + file
+                                                         + "</b> could not be removed from database.")
+                    continue
 
-                    timestamp = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
-                    database.insert_ontology(name, version, "", timestamp, author)
-                    message_collector.add_template_info(file,
-                                                            "Ontology <b>" + ontology_name
-                                                            + "</b> successfully created.")
+
+                try:
+                    name = obo_store.get_name()
+                except Exception as e:
+                    message_collector.add_template_error(file,
+                                                         "ERROR : Ontology file has no valid 'name'-field defined.")
+                    continue
+                try:
+                    version = obo_store.get_version()
+                except Exception as e:
+                    message_collector.add_template_error(file,
+                                                         "ERROR : Ontology file has no "
+                                                         "valid 'version'-field defined.")
+                    continue
+                try:
+                    author = obo_store.get_saved_by()
+                except Exception as e:
+                    message_collector.add_template_error(file,
+                                                         "ERROR : Ontology file has no "
+                                                         "valid 'saved-by'-field' defined.")
+                    continue
+
+                timestamp = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
+                database.insert_ontology(name, version, "", timestamp, author)
+                message_collector.add_template_info(file,
+                                                        "Ontology <b>" + ontology_name
+                                                        + "</b> successfully created.")
 
                 # not needed anymore
                 # ontology_id = database.get_ontology_id(ontology_name)
@@ -126,13 +132,15 @@ class OntologyUpdate(object):
                     message_collector.add_template_error(file,
                                                          "ERROR : Error in reading ontology file: <b>" + file + "</b>.")
 
+                # we delete the ontology row with cascade option, because of that this isn't required anymore
                 # delete all terms with specific ontology_name
-                try:
-                    database.delete_rows(ontology_name)
-                except Exception as e:
-                    message_collector.add_template_error(file,
-                                                         "ERROR : An previous version of the ontology <b>" + file
-                                                         + "</b> could not be removed.")
+                #try:
+                    #database.delete_rows(ontology_name)
+                #    database.delete_ontology_row(ontology_name)
+                #except Exception as e:
+                #    message_collector.add_template_error(file,
+                #                                         "ERROR : An previous version of the ontology <b>" + file
+                #                                         + "</b> could not be removed.")
 
                 try:
                     # add new terms to ontology with specific ontology_name
@@ -148,7 +156,6 @@ class OntologyUpdate(object):
                 # get reealtionDict
                 stored_relationships = obo_store.get_storage()
 
-                rel_errors = []
 
                 for item in stored_relationships:
                     if item.get("is_a"):
@@ -161,25 +168,28 @@ class OntologyUpdate(object):
                             # print("ISA", item.get("Accession --> " + is_a))
                             # rel_errors.append("TermRelated has no ID in database: " + is_a)
 
-                            # search in all ontologies in database
-                            if database.accession_entry_exists(
-                                    item.get("Accession")) and database.accession_entry_exists(is_a):
+                            # insert term relationships without checks, this is faster
+                            obo_store.add_rel(item.get("Accession"), is_a)
 
-                                # alternatively search only in local list for only current ontology after ids
-                                # if obo_store.accession_in_storage(item.get("Accession")) and
-                                # obo_store.accession_in_storage( is_a):
-                                # print("accession", item.get("Accession"))
-                                # print("ia_a", is_a)
-                                obo_store.add_rel(item.get("Accession"), is_a)
-                                # message_collector.add_template_info(file, "INFO : Term relationships successfully
-                                # inserted to the database.")
-                            else:
-                                # print("no accession found")
-                                # print(str(item.get("Accession")) + "-->" + str(is_a))
-                                message_collector.add_template_error(file,
-                                                                     "ERROR : The relationship.  <b>" + item.get(
-                                                                         "Accession") + " -> " + str(is_a)
-                                                                     + "</b> is no valid relation in the database.")
+
+                            # uncomment this, if all terms with term check should be used
+                            # search in all ontologies in database
+                            # if database.accession_entry_exists(
+                            #         item.get("Accession")) and database.accession_entry_exists(is_a):
+                            #
+                            #     # alternatively search only in local list for only current ontology after ids
+                            #     # if obo_store.accession_in_storage(item.get("Accession")) and
+                            #     # obo_store.accession_in_storage( is_a):
+                            #
+                            #     obo_store.add_rel(item.get("Accession"), is_a)
+                            #     # message_collector.add_template_info(file, "INFO : Term relationships successfully
+                            #     # inserted to the database.")
+                            # else:
+                            #     # print(str(item.get("Accession")) + "-->" + str(is_a))
+                            #     message_collector.add_template_error(file,
+                            #                                          "ERROR : The relationship.  <b>" + item.get(
+                            #                                              "Accession") + " -> " + str(is_a)
+                            #                                          + "</b> is no valid relation in the database.")
 
                 insert_relations = obo_store.get_relstorage()
 
