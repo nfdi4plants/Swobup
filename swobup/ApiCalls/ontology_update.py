@@ -50,6 +50,7 @@ class OntologyUpdate(object):
         commit_mail = body.get("head_commit").get("committer").get("email")
         github_username = body.get("head_commit").get("committer").get("username", "None")
         commit_url = body.get("head_commit").get("url")
+        commit_message = body.get("head_commit").get("message", "None")
 
         database = DatabaseConnector(db_host, db_user, db_password, db_name)
         message_collector = MessageCollector()
@@ -245,7 +246,7 @@ class OntologyUpdate(object):
 
         mail_notifier = MailNotifier(mail_sender, commit_mail, mail_additional, mail_password, mail_server,
                                      github_username,
-                                     commit_user, commit_mail, commit_url)
+                                     commit_user, commit_mail, commit_url, commit_message, commit_hash)
 
         messages = message_collector.get_messages()
 

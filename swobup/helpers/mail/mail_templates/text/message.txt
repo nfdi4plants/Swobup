@@ -1,14 +1,18 @@
 Swobup Commit Report:
 
-New changes were comitted to the Github Repository: $REPO_NAME
+New changes were committed to the Github Repository: $REPO_NAME
 
 Committer details:
 
 Github username: $GITHUB_USERNAME
 Commit username: $COMMIT_NAME
 Mail address: $COMMIT_MAIL
+Commit message: $COMMIT_MESSAGE
 View diff: $COMMIT_URL
 
+
+These changes can be reverted by executing :
+git revert $COMMIT_HASH
 
 This report was generated automatically. Do not reply!
 

@@ -45,8 +45,8 @@
               <tr>
                 <td
                         style="color: #153643; font-family: Arial, sans-serif; font-size: 16px; line-height: 24px; padding: 20px 0 90px 0;">
-                  New changes were comitted to the Github Repository: <b>$REPO_NAME</b>.
-                  <!--<p style="margin: 0;">New changes were comitted to the Github Repository: $REPO_NAME.</p>-->
+                  New changes were committed to the Github Repository: <b>$REPO_NAME</b>.
+                  <!--<p style="margin: 0;">New changes were committed to the Github Repository: $REPO_NAME.</p>-->
                   <br><br>
 
                   <table>
@@ -72,18 +72,22 @@
                       <td >$COMMIT_MAIL</td>
                     </tr>
                     <tr>
+                      <td>Commit message: </td>
+                      <td >$COMMIT_MESSAGE</td>
+                    </tr>
+                    <tr>
                       <td>View diff: </td>
                       <td><a href="$COMMIT_URL">$COMMIT_URL</a></td>
                     </tr>
                     </tbody>
                   </table>
-<!--
-                  <p>This automatically generated mail provides information about the individual changes. </p>
-                  <p>
-                    Do not reply
-                    to
-                    this mail.</p>
-                    -->
+                  <!--
+                                    <p>This automatically generated mail provides information about the individual changes. </p>
+                                    <p>
+                                      Do not reply
+                                      to
+                                      this mail.</p>
+                                      -->
                 </td>
               </tr>
               <!-- here -->
@@ -102,6 +106,9 @@
 
                     </tr>
                   </table>
+                  <br><br>
+                  <p  style="color: #153643; font-family: Arial, sans-serif"> These changes can be reverted by executing :</p>
+                  <b style="color: #153643; font-family: Arial, sans-serif;"> git revert $COMMIT_HASH </b>
                   <br><br><br>
                   <p style="color: #153643; font-family: Arial, sans-serif; font-size:20px;">This report was generated automatically. Do not reply!</p>
                 </td>

@@ -10,7 +10,8 @@ import os
 
 
 class MailNotifier:
-    def __init__(self, str_from, str_to, str_cc, password, server, github_username, sender_name, sender_mail, commit_url):
+    def __init__(self, str_from, str_to, str_cc, password, server, github_username, sender_name,
+                 sender_mail, commit_url, commit_message, commit_hash):
         # config = Configurator("swobup/config/config.conf")
 
         self.strFrom = str_from
@@ -23,6 +24,8 @@ class MailNotifier:
         self.sender_name = sender_name
         self.commit_url = commit_url
         self.commit_mail = sender_mail
+        self.commit_message = commit_message
+        self.commit_hash = commit_hash
 
         self.messages = ""
         self.text_messages = ""
@@ -57,7 +60,7 @@ class MailNotifier:
     def build_mail(self, repository_name):
         # Create the root message and fill in the from, to, and subject headers
         msgRoot = MIMEMultipart('related')
-        msgRoot['Subject'] = 'Swobup Commit Report for respository: ' + repository_name
+        msgRoot['Subject'] = 'Swobup Commit Report for repository: ' + repository_name
         msgRoot['From'] = self.strFrom
         msgRoot['To'] = self.strTo
         msgRoot['Cc'] = self.strCc
@@ -74,7 +77,10 @@ class MailNotifier:
         msgText = msgText.replace('$GITHUB_USERNAME', self.github_username)
         msgText = msgText.replace('$COMMIT_NAME', self.sender_name)
         msgText = msgText.replace('$COMMIT_MAIL', self.commit_mail)
+        msgText = msgText.replace('$COMMIT_MESSAGE', self.commit_message)
         msgText = msgText.replace('$COMMIT_URL', self.commit_url)
+        msgText = msgText.replace('$COMMIT_HASH', self.commit_hash)
+
 
         msgText = msgText.replace('$REPO_NAME', repository_name)
 
@@ -92,7 +98,9 @@ class MailNotifier:
         html_file = html_file.replace('$REPO_NAME', repository_name)
         html_file = html_file.replace('$COMMIT_NAME', self.sender_name)
         html_file = html_file.replace('$COMMIT_MAIL', self.commit_mail)
+        html_file = html_file.replace('$COMMIT_MESSAGE', self.commit_message)
         html_file = html_file.replace('$COMMIT_URL', self.commit_url)
+        html_file = html_file.replace('$COMMIT_HASH', self.commit_hash)
 
         html_file = html_file.replace('$MESSAGES', self.messages)
 
