@@ -8,11 +8,14 @@ Github username: $GITHUB_USERNAME
 Commit username: $COMMIT_NAME
 Mail address: $COMMIT_MAIL
 Commit message: $COMMIT_MESSAGE
-View diff: $COMMIT_URL
 
 
-These changes can be reverted by executing :
+This report was generated, because an user made the changes below to the respective repository.
+This changes can be reviewed at Github here: $COMMIT_URL
+
+You can revert the changes by executing the following command in your local git repository:
 git revert $COMMIT_HASH
 
 This report was generated automatically. Do not reply!
+
 

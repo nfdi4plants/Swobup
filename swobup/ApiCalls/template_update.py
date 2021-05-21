@@ -416,10 +416,12 @@ class TemplateUpdate(object):
             mail_notifier.add_headline(template)
             infos = message_collector.get_infos(template)
             errors = message_collector.get_errors(template)
+            mail_notifier.add_message_table_start()
             for info in infos:
                 mail_notifier.add_message_line(info)
             for error in errors:
                 mail_notifier.add_message_line(error)
+            mail_notifier.add_message_table_end()
 
         mail_message = mail_notifier.build_mail(repository_name)
         mail_notifier.send_mail(mail_message)
