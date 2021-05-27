@@ -65,6 +65,7 @@ class TemplateUpdate(object):
         github_username = body.get("head_commit").get("committer").get("username", "None")
         commit_url = body.get("head_commit").get("url")
         commit_message = body.get("head_commit").get("message", "None")
+        commit_timestamp = body.get("head_commit").get("timestamp", "None")
 
         database = DatabaseConnector(db_host, db_user, db_password, db_name)
         # template_store = TemplateStore()
@@ -72,13 +73,10 @@ class TemplateUpdate(object):
         # TODO: combine added_files and modified_files parts
 
         if added_files:
-            print("added_files", added_files)
             template_collector = TemplateCollector(added_files)
 
             template_folders = template_collector.get_template_folders()
             file_lists = template_collector.get_files_list()
-
-            print("template_folders", template_folders)
 
             for template_folder in template_folders:
                 # create message for template
@@ -134,7 +132,8 @@ class TemplateUpdate(object):
 
                             except Exception as e:
 
-                                message = "ERROR: An error occurred while downloading the XSLX file " + file + " .\n "
+                                message = "ERROR: An error occurred while downloading the XSLX file <b>" + file + \
+                                          " </b>.\n "
                                 message_collector.add_template_error(template_folder, message)
                                 continue
 
@@ -144,8 +143,8 @@ class TemplateUpdate(object):
                                 template_collector.parse_xslx(xlsx_buffer, template_folder)
                             except Exception as e:
 
-                                message = "ERROR: An error occurred while downloading the XSLX file " \
-                                          + file + " .\n Please check the file for errors. "
+                                message = "ERROR: An error occurred while parsing the XSLX file <b>" \
+                                          + file + " </b>.\n Please check the file for errors. "
 
                                 message_collector.add_template_error(template_folder, message)
                                 continue
@@ -164,8 +163,13 @@ class TemplateUpdate(object):
 
             for temp in template_collection:
 
+                if temp.get_table_xml() == "" or temp.get_custom_xml() == "":
+                    message = "ERROR: Template file of template <b>" + temp.get_name() + "</b> is damaged and " \
+                              + "does not contain a valid table. Template was not added to the Swate database. \n"
+                    message_collector.add_template_error(temp.template_folder, message)
+                    continue
+
                 if database.protocol_entry_exists(temp.get_name()):
-                    print("Protocol Entry already exists, skipping...")
                     logging.info("Protocol Entry already exists, skipping...")
                     message = "ERROR: The template " + "<b>" + temp.get_name() + "</b>" + " already exists in " \
                                                                                           "database, skipping ... \n "
@@ -205,6 +209,7 @@ class TemplateUpdate(object):
                                                                   "database. \n "
                 message_collector.add_template_info(temp.template_folder, message)
 
+        # TODO: merge with add method
         if modified_files:
             template_collector = TemplateCollector(modified_files)
 
@@ -278,10 +283,9 @@ class TemplateUpdate(object):
                                 template_collector.parse_xslx(xlsx_buffer, template_folder)
                             except Exception as e:
 
-                                message = "ERROR: An error occurred while downloading the XSLX file " + file + " .\n " \
-                                                                                                               "Please check " \
-                                                                                                               "the file for " \
-                                                                                                               "errors. "
+                                message = "ERROR: An error occurred while parsing the XSLX file <b>" + file + \
+                                          "</b>.\n " \
+                                          "Please check the file for errors. "
                                 message_collector.add_template_error(template_folder, message)
                                 continue
 
@@ -297,6 +301,12 @@ class TemplateUpdate(object):
 
             for template in template_collection:
 
+                if template.get_table_xml() == "" or template.get_custom_xml() == "":
+                    message = "ERROR: Template file of template <b>" + template.get_name() + "</b> is damaged and " \
+                              + "does not contain a valid table. Template was not updated in the Swate database. \n"
+                    message_collector.add_template_error(template.template_folder, message)
+                    continue
+
                 try:
 
                     database.update_protocol(template.get_name(), template.get_version(), template.get_author(),
@@ -304,44 +314,41 @@ class TemplateUpdate(object):
                                              template.get_tags_as_string(), timestamp)
 
                 except Exception as e:
-                    message = "ERRROR: An error occurred while updating the template " + template.get_name() \
+                    message = "ERROR: An error occurred while updating the template " + template.get_name() \
                               + " to the Swate database. \n"
                     message_collector.add_template_error(template.template_folder, message)
+                    continue
 
                 try:
 
                     table_xml = template.get_table_xml()
 
                     # if entry exists in database, update it, else insert
-                    print("table XML")
                     if database.protocolxml_entry_exists(template.get_name(), "TableXml"):
-                        print("table update")
                         database.update_protocol_xml(template.get_name(), "TableXml", table_xml)
                     else:
-                        print("table xml insert")
                         database.insert_protocol_xml(template.get_name(), "TableXml", table_xml)
 
                 except Exception as e:
                     message = "ERROR: An error occurred while updating table XML of" + template.get_name() + "\n"
                     message_collector.add_template_error(template.template_folder, message)
+                    continue
 
                 try:
 
                     # create CustomXml
                     custom_xml = template.get_custom_xml()
 
-                    print("custom XML")
                     # if entry exists in database, update it, else insert
                     if database.protocolxml_entry_exists(template.get_name(), "CustomXml"):
-                        print("custom xml update")
                         database.update_protocol_xml(template.get_name(), "CustomXml", custom_xml)
                     else:
-                        print("custom xml insert")
                         database.insert_protocol_xml(template.get_name(), "CustomXml", custom_xml)
 
                 except Exception as e:
                     message = "ERROR: An error occurred while inserting the Custom XML of " + template.get_name() + "\n"
                     message_collector.add_template_error(template.template_folder, message)
+                    continue
 
                 message = "The template <b>" + template.get_name() + "</b> was successfully updated in Swate " \
                                                                      "database. \n "
@@ -363,8 +370,6 @@ class TemplateUpdate(object):
             template_folders = template_collector.get_template_folders()
             file_lists = template_collector.get_files_list()
 
-            print("removing")
-
             for template_folder in template_folders:
 
                 current_index = template_folders.index(template_folder)
@@ -376,19 +381,16 @@ class TemplateUpdate(object):
 
                 if json_available:
                     file = json_available[0]
-                    print("downloading...", file)
                     current_name = ""
                     try:
                         github_downloader = GithubDownloader(repository_name)
                         meta_json = json.loads(github_downloader.download_file(before_commit_hash, file))
-                        print("meta_json", meta_json)
                         current_name = meta_json.get("name", "None")
                     except Exception as e:
                         message = "An error occurred while parsing the JSON meta file.\n " \
                                   "Please check the file for errors."
                         message_collector.add_template_error(template_folder, message)
                     if current_name is None:
-                        print("no name found")
                         message = "The JSON file has defined no template name.\n "
                         message_collector.add_template_error(template_folder, message)
                         continue
@@ -399,16 +401,15 @@ class TemplateUpdate(object):
                                 message = "Template " + current_name \
                                           + " was successfully removed from Swate database. \n"
                                 message_collector.add_template_info(template_folder, message)
-                                print("success")
                         except Exception as e:
                             message = "An error occurred while deleting the template " + current_name + " .\n "
                             message_collector.add_template_error(template_folder, message)
-                            print("error")
 
         # send notifications as email
         mail_notifier = MailNotifier(mail_sender, commit_mail, mail_additional, mail_password, mail_server,
                                      github_username,
-                                     commit_user, commit_mail, commit_url, commit_message, commit_hash)
+                                     commit_user, commit_mail, commit_url, commit_message, commit_hash,
+                                     commit_timestamp)
 
         template_messages = message_collector.get_messages()
 

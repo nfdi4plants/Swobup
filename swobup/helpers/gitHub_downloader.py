@@ -22,16 +22,14 @@ class GithubDownloader:
 
     def download_file(self, commit_hash, file_name):
         location = "https://raw.githubusercontent.com/" + self.github_repository + "/" + commit_hash + "/" + file_name
-        print("location", location)
-
         response = requests.get(location, headers=self.headers)
 
         if response.status_code != 200:
-            print("file not found")
-            #logging.info("File not found: ", location)
+            logging.info("File not found: ", location)
             return {}
 
         modified_file = response.content
+
 
         return modified_file
 
@@ -40,13 +38,8 @@ class GithubDownloader:
         location = "https://api.github.com/repos/" + self.github_repository \
                    + "/git/trees/7c249acabf538c84c0a6e18013e465c8f2d5b42a"
 
-        print(location)
-
         location = "https://api.github.com/repos/" + self.github_repository + "/git/trees/" + tree_hash
 
-        print(location)
-
         response = requests.get(location, headers=self.headers)
-        print(response)
 
         print(response.content)

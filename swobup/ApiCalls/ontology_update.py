@@ -51,6 +51,7 @@ class OntologyUpdate(object):
         github_username = body.get("head_commit").get("committer").get("username", "None")
         commit_url = body.get("head_commit").get("url")
         commit_message = body.get("head_commit").get("message", "None")
+        commit_timestamp = body.get("head_commit").get("timestamp", "None")
 
         database = DatabaseConnector(db_host, db_user, db_password, db_name)
         message_collector = MessageCollector()
@@ -108,14 +109,14 @@ class OntologyUpdate(object):
                     version = obo_store.get_version()
                 except Exception as e:
                     message_collector.add_template_error(file,
-                                                         "ERROR : No valid valid 'version' field is defined."
+                                                         "ERROR : No valid valid 'version' field is defined "
                                                          "in the ontology file.")
                     continue
                 try:
                     author = obo_store.get_saved_by()
                 except Exception as e:
                     message_collector.add_template_error(file,
-                                                         "ERROR : No valid valid 'saved-by' field is defined"
+                                                         "ERROR : No valid valid 'saved-by' field is defined "
                                                          "in the ontology file.")
                     continue
 
@@ -246,7 +247,8 @@ class OntologyUpdate(object):
 
         mail_notifier = MailNotifier(mail_sender, commit_mail, mail_additional, mail_password, mail_server,
                                      github_username,
-                                     commit_user, commit_mail, commit_url, commit_message, commit_hash)
+                                     commit_user, commit_mail, commit_url, commit_message, commit_hash,
+                                     commit_timestamp)
 
         messages = message_collector.get_messages()
 

@@ -44,7 +44,6 @@ class TemplateCollector:
         return self.file_list
 
     def get_collection(self):
-        print("\n\ntemplate store", self.template_store)
         return self.template_store
 
     def create_template_object(self, meta_json):

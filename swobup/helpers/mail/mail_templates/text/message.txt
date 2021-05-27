@@ -7,6 +7,7 @@ Committer details:
 Github username: $GITHUB_USERNAME
 Commit username: $COMMIT_NAME
 Mail address: $COMMIT_MAIL
+Timestamp: $COMMIT_TIMESTAMP
 Commit message: $COMMIT_MESSAGE
 
 

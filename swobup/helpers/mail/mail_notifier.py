@@ -11,7 +11,7 @@ import os
 
 class MailNotifier:
     def __init__(self, str_from, str_to, str_cc, password, server, github_username, sender_name,
-                 sender_mail, commit_url, commit_message, commit_hash):
+                 sender_mail, commit_url, commit_message, commit_hash, commit_timestamp):
         # config = Configurator("swobup/config/config.conf")
 
         self.strFrom = str_from
@@ -26,6 +26,7 @@ class MailNotifier:
         self.commit_mail = sender_mail
         self.commit_message = commit_message
         self.commit_hash = commit_hash
+        self.commit_timestamp = commit_timestamp
 
         self.messages = ""
         self.text_messages = ""
@@ -89,6 +90,7 @@ class MailNotifier:
         msgText = msgText.replace('$COMMIT_MESSAGE', self.commit_message)
         msgText = msgText.replace('$COMMIT_URL', self.commit_url)
         msgText = msgText.replace('$COMMIT_HASH', self.commit_hash)
+        msgText = msgText.replace('$COMMIT_TIMESTAMP', self.commit_timestamp)
 
 
         msgText = msgText.replace('$REPO_NAME', repository_name)
@@ -110,6 +112,7 @@ class MailNotifier:
         html_file = html_file.replace('$COMMIT_MESSAGE', self.commit_message)
         html_file = html_file.replace('$COMMIT_URL', self.commit_url)
         html_file = html_file.replace('$COMMIT_HASH', self.commit_hash)
+        html_file = html_file.replace('$COMMIT_TIMESTAMP', self.commit_timestamp)
 
         html_file = html_file.replace('$MESSAGES', self.messages)
 
