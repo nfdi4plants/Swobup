@@ -102,21 +102,21 @@ class OntologyUpdate(object):
                     name = obo_store.get_name()
                 except Exception as e:
                     message_collector.add_template_error(file,
-                                                         "ERROR : No valid 'Name' field is defined "
+                                                         "ERROR : No valid 'Name' field was defined "
                                                          "in the ontology file.")
                     continue
                 try:
                     version = obo_store.get_version()
                 except Exception as e:
                     message_collector.add_template_error(file,
-                                                         "ERROR : No valid valid 'version' field is defined "
+                                                         "ERROR : No valid valid 'version' field was defined "
                                                          "in the ontology file.")
                     continue
                 try:
                     author = obo_store.get_saved_by()
                 except Exception as e:
                     message_collector.add_template_error(file,
-                                                         "ERROR : No valid valid 'saved-by' field is defined "
+                                                         "ERROR : No valid valid 'saved-by' field was defined "
                                                          "in the ontology file.")
                     continue
 
@@ -217,15 +217,12 @@ class OntologyUpdate(object):
                 message_collector.create_template_message(removed_file)
                 try:
                     github_downloader = GithubDownloader(repository_name)
-                    print("jfdsakfjal", repository_name)
                     obo_file = github_downloader.download_file(before_commit_hash, removed_file).decode()
-                    print("ont file", obo_file)
                     ontology_buffer = StringIO(obo_file)
-                    print("buffer", ontology_buffer)
 
                 except Exception as e:
                     message_collector.add_template_error(removed_file,
-                                                         "ERROR : Error in downloading ontology file: <b>"
+                                                         "ERROR : Error while downloading ontology file: <b>"
                                                          + removed_file + "</b>.")
                     continue
 
@@ -235,13 +232,13 @@ class OntologyUpdate(object):
                     print("no name found")
                     message_collector.add_template_error(removed_file,
                                                          "ERROR : The ontology file  <b>" + removed_file
-                                                         + "</b> dows not have a defined name.")
+                                                         + "</b> does not have a defined name.")
                     continue
                 else:
                     database.delete_ontology_row(ontology_name)
                     message_collector.add_template_info(removed_file,
                                                         "Ontology <b>" + ontology_name
-                                                        + "</b> successfully removed from database.")
+                                                        + "</b> was successfully removed from database.")
 
         # send notifications as email
 
