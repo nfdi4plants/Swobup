@@ -204,7 +204,7 @@ class OntologyUpdate(object):
                     message_collector.add_template_info(file,
                                                         "Term relationships of ontology <b> " + ontology_name
                                                         + " </b> have been successfully added "
-                                                          "to the database..")
+                                                          "to the database.")
                 except Exception as e:
                     message_collector.add_template_error(file,
                                                          "ERROR : Some term relationships could not be inserted "
