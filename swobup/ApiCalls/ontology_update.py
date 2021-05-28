@@ -94,7 +94,8 @@ class OntologyUpdate(object):
                         database.delete_ontology_row(ontology_name)
                     except Exception as e:
                         message_collector.add_template_error(file,
-                                                             "ERROR : An previous version of the ontology <b>" + file
+                                                             "ERROR : An previous version of the ontology <b>"
+                                                             + ontology_name
                                                              + "</b> could not be removed from database.")
                         continue
 
@@ -133,7 +134,7 @@ class OntologyUpdate(object):
                 except Exception as e:
                     message_collector.add_template_error(file,
                                                          "ERROR : Error reading the ontology "
-                                                         "file: <b>" + file + "</b>.")
+                                                         "file <b>" + file + "</b>.")
 
                 # we delete the ontology row with cascade option, because of that this isn't required anymore
                 # delete all terms with specific ontology_name
@@ -149,7 +150,7 @@ class OntologyUpdate(object):
                     # add new terms to ontology with specific ontology_name
                     database.insert_terms(stored_terms)
                     message_collector.add_template_info(file,
-                                                        "Terms of the ontology <b>" + file
+                                                        "Terms of the ontology <b>" + ontology_name
                                                         + "</b> successfully inserted into the database.")
                 except Exception as e:
                     message_collector.add_template_error(file,
