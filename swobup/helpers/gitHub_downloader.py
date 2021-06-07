@@ -30,7 +30,6 @@ class GithubDownloader:
 
         modified_file = response.content
 
-
         return modified_file
 
     # not used but good example

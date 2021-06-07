@@ -41,6 +41,6 @@ class HMACValidator:
                 return True
         except:
             # should be False
-            return True
+            return False
         # should be False
-        return True
+        return False

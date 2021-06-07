@@ -8,10 +8,13 @@ from email.mime.image import MIMEImage
 from email import charset
 import os
 
+from ...helpers.configurator import Configurator
+
 
 class MailNotifier:
     def __init__(self, str_from, str_to, str_cc, password, server, github_username, sender_name,
                  sender_mail, commit_url, commit_message, commit_hash, commit_timestamp):
+
         config = Configurator("swobup/config/config.conf")
 
         self.strFrom = str_from

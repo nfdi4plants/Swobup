@@ -309,9 +309,16 @@ class TemplateUpdate(object):
 
                 try:
 
-                    database.update_protocol(template.get_name(), template.get_version(), template.get_author(),
-                                             template.get_description(), template.get_docsLink(),
-                                             template.get_tags_as_string(), timestamp)
+                    if database.protocol_entry_exists(template.get_name()):
+
+                        database.update_protocol(template.get_name(), template.get_version(), template.get_author(),
+                                                 template.get_description(), template.get_docsLink(),
+                                                 template.get_tags_as_string(), timestamp)
+                    else:
+                        database.insert_protocol(template.get_name(), template.get_version(), template.get_author(),
+                                                 template.get_description(), template.get_docsLink(),
+                                                 template.get_tags_as_string(), timestamp, 0, 0)
+
 
                 except Exception as e:
                     message = "ERROR: An error occurred while updating the template " + template.get_name() \
@@ -328,9 +335,11 @@ class TemplateUpdate(object):
                         database.update_protocol_xml(template.get_name(), "TableXml", table_xml)
                     else:
                         database.insert_protocol_xml(template.get_name(), "TableXml", table_xml)
+                        logging.info("inserting TableXML ", template.get_name())
 
                 except Exception as e:
-                    message = "ERROR: An error occurred while updating table XML of" + template.get_name() + "\n"
+                    message = "ERROR: An error occurred while updating table XML of <b>" + template.get_name() \
+                              + "</b> \n"
                     message_collector.add_template_error(template.template_folder, message)
                     continue
 
