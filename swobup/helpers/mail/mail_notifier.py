@@ -12,13 +12,17 @@ import os
 class MailNotifier:
     def __init__(self, str_from, str_to, str_cc, password, server, github_username, sender_name,
                  sender_mail, commit_url, commit_message, commit_hash, commit_timestamp):
-        # config = Configurator("swobup/config/config.conf")
+        config = Configurator("swobup/config/config.conf")
 
         self.strFrom = str_from
         self.strTo = str_to
         self.strCc = str_cc
         self.password = password
         self.server = server
+
+        self.port = config.get_config("mail-notifier", "port")
+        self.password = config.get_config("mail-notifier", "password")
+        self.server = config.get_config("mail-notifier", "server")
 
         self.github_username = github_username
         self.sender_name = sender_name
@@ -36,7 +40,7 @@ class MailNotifier:
         addresses = self.strTo + ", " + self.strCc
         addresses = addresses.split()
 
-        with smtplib.SMTP_SSL(self.server, 465, context=context) as server:
+        with smtplib.SMTP_SSL(self.server, self.port, context=context) as server:
             server.login(self.strFrom, self.password)
             server.sendmail(
                 self.strFrom, addresses, message.as_string()
