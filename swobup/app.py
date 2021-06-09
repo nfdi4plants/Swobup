@@ -13,6 +13,8 @@ from .ApiCalls.create_tables import CreateTables
 
 from .ApiCalls.template_update import TemplateUpdate
 
+from .ApiCalls.mail_test import MailTest
+
 
 api = application = falcon.App(middleware=[
     HandleCORS(),
@@ -29,6 +31,7 @@ create_tables = CreateTables()
 
 ontology_update = OntologyUpdate()
 template_update = TemplateUpdate()
+mail_test = MailTest()
 
 api.add_route('/api/v1/ontology', ontology_update)
 api.add_route('/api/v1/template', template_update)
@@ -36,4 +39,5 @@ api.add_route('/api/v1/template', template_update)
 # testing routes
 # api.add_route('/api/v1/delete', delete_database)
 # api.add_route('/api/v1/createdb', create_tables)
+api.add_route('/api/v1/mailtest', mail_test)
 

@@ -33,6 +33,7 @@ class HMACValidator:
 
             if token[0] == "sha256":
                 calc_signature = self.calculate_signature_sha256(body)
+                # print("calc signature", calc_signature)
 
             elif token[0] == "sha1":
                 calc_signature = self.calculate_signature_sha1(body)
