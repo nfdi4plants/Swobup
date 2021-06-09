@@ -60,9 +60,15 @@ class TemplateUpdate(object):
         pusher_user = body.get("pusher").get("name")
         pusher_mail = body.get("pusher").get("email")
 
-        commit_user = body.get("head_commit").get("committer").get("name")
-        commit_mail = body.get("head_commit").get("committer").get("email")
-        github_username = body.get("head_commit").get("committer").get("username", "None")
+        #commit_user = body.get("head_commit").get("committer").get("name")
+        #commit_mail = body.get("head_commit").get("committer").get("email")
+        #github_username = body.get("head_commit").get("committer").get("username", "None")
+
+        commit_user = body.get("head_commit").get("author").get("name")
+        commit_mail = body.get("head_commit").get("author").get("email")
+        github_username = body.get("head_commit").get("author").get("username", "None")
+
+
         commit_url = body.get("head_commit").get("url")
         commit_message = body.get("head_commit").get("message", "None")
         commit_timestamp = body.get("head_commit").get("timestamp", "None")
@@ -434,7 +440,13 @@ class TemplateUpdate(object):
             mail_notifier.add_message_table_end()
 
         mail_message = mail_notifier.build_mail(repository_name)
-        mail_notifier.send_mail(mail_message)
+
+        if mail_method == "starttls":
+            mail_notifier.send_mail_starttls(mail_message)
+
+        if mail_method == "smtps":
+            mail_notifier.send_mail_smtps(mail_message)
+
 
         # return HTTP response
 

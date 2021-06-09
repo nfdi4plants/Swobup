@@ -1,11 +1,12 @@
 # Send an HTML email with an embedded image and a plain text message for
 # email clients that don't want to display the HTML.
 
-import smtplib, ssl
+import smtplib, ssl, email, time
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.image import MIMEImage
 from email import charset
+
 import os
 
 from ...helpers.configurator import Configurator
@@ -38,16 +39,36 @@ class MailNotifier:
         self.messages = ""
         self.text_messages = ""
 
-    def send_mail(self, message):
+    def send_mail_smtps(self, message):
         context = ssl.create_default_context()
-        addresses = self.strTo + ", " + self.strCc
-        addresses = addresses.split()
+        #addresses = self.strTo + ", " + self.strCc
+        #addresses = addresses.split()
+
+        rcpt_addresses = self.strCc.split(",") + self.strTo
 
         with smtplib.SMTP_SSL(self.server, self.port, context=context) as server:
             server.login(self.strFrom, self.password)
             server.sendmail(
-                self.strFrom, addresses, message.as_string()
+                self.strFrom, rcpt_addresses, message.as_string()
             )
+            server.quit()
+
+    def send_mail_starttls(self, message):
+        context = ssl.create_default_context()
+        #addresses = self.strTo + ", " + self.strCc
+        #addresses = addresses.split()
+
+        rcpt_addresses = self.strCc.split(",") + self.strTo
+
+        with smtplib.SMTP(self.server, self.port) as server:
+            server.starttls(context=context)
+            server.ehlo()
+            server.login(self.strFrom, self.password)
+            server.sendmail(
+                self.strFrom, rcpt_addresses, message.as_string()
+            )
+            server.quit()
+
 
     def add_headline(self, headline):
         html_file = open("swobup/helpers/mail/mail_templates/html/message_headline.html", "r").read()
@@ -81,6 +102,9 @@ class MailNotifier:
         msgRoot['From'] = self.strFrom
         msgRoot['To'] = self.strTo
         msgRoot['Cc'] = self.strCc
+        msgRoot['Date'] = time.ctime(time.time())
+        msgRoot['Message-ID'] = email.utils.make_msgid()
+
         msgRoot.preamble = 'This is a multi-part message in MIME format.'
 
         # Encapsulate the plain and HTML versions of the message body in an
