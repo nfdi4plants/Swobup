@@ -31,7 +31,7 @@ source .venv/bin/activate
 pip3 install falcon requests gunicorn sqlalchemy cryptography pymysql obonet
 ```
 
-#### Example konfiguration Systemd:
+#### Example configuration Systemd:
 
 ```
 [Unit]
@@ -117,8 +117,10 @@ password: <password>
 dbname: <database_name>
 
 [mail-notifier]
+method: <smtps | starttls>
 server:
 password:
+port: 
 sender:
 additional_receiver: 
 
