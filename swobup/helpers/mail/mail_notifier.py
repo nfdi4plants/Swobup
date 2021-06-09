@@ -24,8 +24,8 @@ class MailNotifier:
         self.server = server
 
         self.port = config.get_config("mail-notifier", "port")
-        self.password = config.get_config("mail-notifier", "password")
-        self.server = config.get_config("mail-notifier", "server")
+        #self.password = config.get_config("mail-notifier", "password")
+        #self.server = config.get_config("mail-notifier", "server")
 
         self.github_username = github_username
         self.sender_name = sender_name
@@ -57,7 +57,7 @@ class MailNotifier:
         # addresses = self.strTo + ", " + self.strCc
         # addresses = addresses.split()
 
-        rcpt_addresses = self.strCc.split(",") + self.strTo
+        rcpt_addresses = self.strCc.split(",") + [self.strTo]
 
         with smtplib.SMTP(self.server, self.port) as server:
             server.starttls(context=context)
