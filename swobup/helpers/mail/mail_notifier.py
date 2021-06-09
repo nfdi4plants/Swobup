@@ -15,7 +15,6 @@ from ...helpers.configurator import Configurator
 class MailNotifier:
     def __init__(self, str_from, str_to, str_cc, password, server, github_username, sender_name,
                  sender_mail, commit_url, commit_message, commit_hash, commit_timestamp):
-
         config = Configurator("swobup/config/config.conf")
 
         self.strFrom = str_from
@@ -41,10 +40,10 @@ class MailNotifier:
 
     def send_mail_smtps(self, message):
         context = ssl.create_default_context()
-        #addresses = self.strTo + ", " + self.strCc
-        #addresses = addresses.split()
+        # addresses = self.strTo + ", " + self.strCc
+        # addresses = addresses.split()
 
-        rcpt_addresses = self.strCc.split(",") + self.strTo
+        rcpt_addresses = self.strCc.split(",") + [self.strTo]
 
         with smtplib.SMTP_SSL(self.server, self.port, context=context) as server:
             server.login(self.strFrom, self.password)
@@ -55,8 +54,8 @@ class MailNotifier:
 
     def send_mail_starttls(self, message):
         context = ssl.create_default_context()
-        #addresses = self.strTo + ", " + self.strCc
-        #addresses = addresses.split()
+        # addresses = self.strTo + ", " + self.strCc
+        # addresses = addresses.split()
 
         rcpt_addresses = self.strCc.split(",") + self.strTo
 
@@ -68,7 +67,6 @@ class MailNotifier:
                 self.strFrom, rcpt_addresses, message.as_string()
             )
             server.quit()
-
 
     def add_headline(self, headline):
         html_file = open("swobup/helpers/mail/mail_templates/html/message_headline.html", "r").read()
@@ -93,7 +91,6 @@ class MailNotifier:
     def add_message_table_end(self):
         html_file = open("swobup/helpers/mail/mail_templates/html/message_table.html", "r").read()
         self.messages = self.messages + html_file
-
 
     def build_mail(self, repository_name):
         # Create the root message and fill in the from, to, and subject headers
@@ -122,7 +119,6 @@ class MailNotifier:
         msgText = msgText.replace('$COMMIT_URL', self.commit_url)
         msgText = msgText.replace('$COMMIT_HASH', self.commit_hash)
         msgText = msgText.replace('$COMMIT_TIMESTAMP', self.commit_timestamp)
-
 
         msgText = msgText.replace('$REPO_NAME', repository_name)
 

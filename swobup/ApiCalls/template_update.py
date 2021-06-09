@@ -46,6 +46,7 @@ class TemplateUpdate(object):
         mail_password = config.get_config("mail-notifier", "password")
         mail_sender = config.get_config("mail-notifier", "sender")
         mail_additional = config.get_config("mail-notifier", "additional_receiver")
+        mail_method = config.get_config("mail-notifier", "method")
 
         modified_files = body.get("head_commit").get("modified")
         added_files = body.get("head_commit").get("added")
