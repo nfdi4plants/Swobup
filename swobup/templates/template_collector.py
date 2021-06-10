@@ -49,6 +49,10 @@ class TemplateCollector:
     def create_template_object(self, meta_json):
         self.template_store.create_template_object(meta_json)
 
+    def get_template_worksheet(self, template_folder):
+        template_worksheet = self.template_store.get_template_worksheet(template_folder)
+        return template_worksheet
+
     def parse_xslx(self, xlsx_buffer, template_folder):
         with ZipFile(xlsx_buffer) as zip_archive:
             tables_xml = zip_archive.read('customXml/item1.xml').decode()

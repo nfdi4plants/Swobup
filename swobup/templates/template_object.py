@@ -74,3 +74,6 @@ class TemplateObject(object):
 
     def get_template_folder(self):
         return self.template_folder
+
+    def get_worksheet(self):
+        return self.worksheet

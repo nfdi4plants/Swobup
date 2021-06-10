@@ -39,3 +39,9 @@ class TemplateStore:
 
     def get_template_store(self):
         return self.template_store
+
+
+    def get_template_worksheet(self, template_folder):
+        for template in self.template_store:
+            if template.get_template_folder() == template_folder:
+                return template.get_worksheet()

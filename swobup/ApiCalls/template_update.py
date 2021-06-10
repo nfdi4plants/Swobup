@@ -296,6 +296,13 @@ class TemplateUpdate(object):
                                 message_collector.add_template_error(template_folder, message)
                                 continue
 
+                        # is this feature really needed ?
+                        #else:
+                            # try to find xslx file from workbook json
+                            #worksheet_name = template_collector.get_template_worksheet(template_folder)
+                            # check if worksheet is available/downloadable at Github
+
+
                 else:
                     message = "ERROR: There is no JSON in template folder, please add a meta JSON file " \
                               "and re-commit it. \n"
