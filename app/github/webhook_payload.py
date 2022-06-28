@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import Optional, List, Dict
 
 from pydantic import BaseModel
 
@@ -13,6 +13,7 @@ class PushWebhookPayload(BaseModel):
     before: Optional[str]
     after: Optional[str]
     commits: Optional[List[Commit]]
+    # commits: Optional[Dict(Commit)]
     pusher: Optional[Author]
     repository: Optional[Repository]
     sender: Optional[User]
