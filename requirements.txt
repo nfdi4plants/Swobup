@@ -4,3 +4,7 @@ pydantic~=1.9.1
 requests~=2.28.0
 starlette~=0.19.1
 obonet~=0.3.0
+pandas~=1.4.3
+celery~=5.2.7
+networkx~=2.8.4
+python-dotenv~=0.20.0

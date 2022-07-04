@@ -8,6 +8,6 @@ from app.helpers.oboparsing.models.ontology import Ontology
 
 
 class OboFile(BaseModel):
-    terms: Optional[List[Term]]
-    relationships: Optional[List[Relationships]]
-    ontologies: Optional[List[Ontology]]
+    terms: Optional[List[Term]] = []
+    relationships: Optional[List[Relationships]] = []
+    ontologies: Optional[List[Ontology]] = []

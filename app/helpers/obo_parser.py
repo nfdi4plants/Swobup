@@ -57,8 +57,6 @@ class OBO_Parser:
             current_dict["ontology_version"] = "None"
 
             ontology = Ontology(name=ontology_name, lastUpdated="None", author="None", version="None", generated=False)
-            print("ontology", ontology)
-            self.obo_file.ontologies = Ontology(name=ontology_name, lastUpdated="None", author="None", version="None", generated=False)
             self.obo_file.ontologies.append(ontology)
 
             self.ontolgies.append(current_dict)
@@ -84,20 +82,14 @@ class OBO_Parser:
             xref = graph.nodes[node].get("xref", None)
             xref_accession = ""
 
-            # print("name:", name)
-            #
-            #
-            # print("def", definition)
-            # print("is obsolete", is_obsolete)
-            # print("xref", xref)
-            # print("xref acc", xref_accession)
-            # print("Childs:")
-
             current_dict["accession"] = node
             current_dict["name"] = name
             current_dict["definition"] = definition
             current_dict["is_obsolete"] = is_obsolete
             current_dict["xref"] = xref
+
+            term = Term(name=name, accession=node, definition= definition, is_obsolete=is_obsolete)
+            self.obo_file.terms.append(term)
 
             print("### CREF", graph.nodes[node])
 
@@ -129,24 +121,11 @@ class OBO_Parser:
             for child, parent, rel_type in graph.out_edges(node, keys=True):
                 rel_types = []
                 relterm_dict = dict()
-                # print(f'• {child} ⟶ {key} ⟶ {parent}')
-                # print("child:", child)
-                # print("type is:", key)
-
-                if node == "GO:0000020":
-                    print("node found", node)
-
-                if node == "GO:0000022":
-                    print(child, parent, rel_type)
 
                 if rel_type not in current_dict:
-                    if node == "GO:0000022":
-                        print("creating rel_type")
                     current_dict[rel_type] = []
                     current_dict[rel_type].append(parent)
                 else:
-                    if node == "GO:0000022":
-                        print("adding to rel_type", parent)
                     current_dict[rel_type].append(parent)
 
                 current_rel = dict()
@@ -154,6 +133,9 @@ class OBO_Parser:
                 current_rel["node_to"] = child
                 current_rel["rel_type"] = rel_type
                 self.relationships.append(current_rel)
+
+                relationship = Relationships(node_from=parent, node_to=child, rel_type=rel_type)
+                self.obo_file.relationships.append(relationship)
 
                 # if rel_type not in rel_types:
                 #     rel_types.append(rel_type)
