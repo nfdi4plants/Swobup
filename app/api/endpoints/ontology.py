@@ -14,6 +14,12 @@ from app.tasks.process_ontology import ontology_task
 from app.github.downloader import GitHubDownloader
 from app.helpers.obo_parser import OBO_Parser
 
+
+from app.helpers.oboparsing.models.term import Term
+from app.helpers.oboparsing.models.ontology import Ontology
+from app.helpers.oboparsing.models.relationships import Relationships
+from app.helpers.oboparsing.models.obo_file import OboFile
+
 router = APIRouter()
 
 @router.post("")
@@ -35,7 +41,19 @@ async def update(payload: PushWebhookPayload):
 
     #print("result:", result.get())
 
-    result_df = pd.DataFrame(result.get())
+    obo_file = result.get()
+
+    obo_model = OboFile.parse_obj(obo_file)
+
+    print("modell:", obo_file)
+
+    data = obo_model.terms
+
+
+
+
+    print("results")
+    result_df = pd.DataFrame(data)
 
     result_df.to_csv("output.csv", sep=',')
 
