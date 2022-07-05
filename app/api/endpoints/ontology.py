@@ -1,6 +1,6 @@
 import obonet
 from io import StringIO
-
+import sys
 import pandas as pd
 
 from celery.result import AsyncResult
@@ -29,25 +29,28 @@ async def update(payload: PushWebhookPayload):
 
     # ret = chain(ontology_task.s(payload.commits), ontology_task.s(payload.commits)).apply_async()
 
-    bla = {"bla":"blu"}
+    # bla = {"bla":"blu"}
 
     bla = payload.dict()
 
-    print("bla", bla)
 
     result = ontology_task.delay(bla)
 
-    print("res")
 
     #print("result:", result.get())
 
     obo_file = result.get()
 
-    obo_model = OboFile.parse_obj(obo_file)
+    print("file", obo_file)
 
-    print("modell:", obo_file)
 
-    data = obo_model.terms
+    # obo_model = OboFile.parse_obj(obo_file)
+
+    # print("modell:", obo_file)
+    #
+    # print(obo_file)
+
+    data = obo_file.get("terms")
 
 
 
@@ -57,7 +60,13 @@ async def update(payload: PushWebhookPayload):
 
     result_df.to_csv("output.csv", sep=',')
 
-    print(result_df)
+    relations_df = pd.DataFrame(obo_file.get("relationships"))
+    ontologies_df = pd.DataFrame(obo_file.get("ontologies"))
+
+    relations_df.to_csv("output-rel.csv", sep=',')
+    ontologies_df.to_csv("output-ont.csv", sep=',')
+
+    # print(result_df)
 
 
 

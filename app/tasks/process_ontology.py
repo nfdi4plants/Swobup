@@ -41,11 +41,7 @@ def ontology_task(payload):
             github_downloader = GitHubDownloader(file, repository_full_name, commit_hash)
             current_file = github_downloader.download_file().decode()
 
-            # print(current_file)
-
             ontology_buffer = StringIO(current_file)
-
-            print(ontology_buffer)
 
             # graph = obonet.read_obo(ontology_buffer)
 
@@ -54,12 +50,12 @@ def ontology_task(payload):
 
             data = obo_parser.parse()
 
-            df = pd.DataFrame(data)
+            # df = pd.DataFrame(data.get("terms"))
 
-            print(df)
+            print(data)
 
             #df.to_csv("output.csv", sep=',')#
 
 
-    return df.to_dict()
+    return data
 
