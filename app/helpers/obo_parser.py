@@ -2,6 +2,7 @@ import obonet
 import sys
 import pandas
 import re
+import datetime
 
 from app.helpers.oboparsing.models.term import Term
 from app.helpers.oboparsing.models.ontology import Ontology
@@ -37,6 +38,12 @@ class OBO_Parser:
     def get_relations(self):
         return self.relationships
 
+    def ontology_available(self, node_prefix):
+        for ontology in self.obo_file.ontologies:
+            if node_prefix == ontology.name:
+                return True
+        return False
+
     def parse(self):
         # try to read ontology file
         try:
@@ -48,28 +55,23 @@ class OBO_Parser:
             sys.exit()
 
         try:
-            ontology_name = graph.graph.get("name")
+            ontology_name = graph.graph.get("name", None)
+            ontology_author = graph.graph.get("saved-by", None)
+            ontology_version = graph.graph.get("data-version", None)
+            ontology_lastUpdated = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
 
-            current_dict = dict()
-            current_dict["ontology_name"] = ontology_name
-            current_dict["ontology_lastUpdated"] = "None"
-            current_dict["ontology_author"] = "None"
-            current_dict["ontology_version"] = "None"
-
-            ontology = Ontology(name=ontology_name, lastUpdated="None", author="None", version="None", generated=False)
+            ontology = Ontology(name=ontology_name, lastUpdated=ontology_lastUpdated, author=ontology_author,
+                                version=ontology_version, generated=False)
             self.obo_file.ontologies.append(ontology)
-
-            self.ontolgies.append(current_dict)
         except:
             print("name not found")
 
         try:
-            # graph = obonet.read_obo(ontology_buffer)
             nodes = graph.nodes
         except Exception as e:
             nodes = []
 
-        print("nodes #", nodes)
+        # print("nodes #", nodes)
 
         # go through all nodes
         for node in nodes:
@@ -80,65 +82,88 @@ class OBO_Parser:
             definition = graph.nodes[node].get("def", None)
             is_obsolete = graph.nodes[node].get("is_obsolete", None)
             xref = graph.nodes[node].get("xref", None)
-            xref_accession = ""
+            # xref_accession = ""
 
-            current_dict["accession"] = node
-            current_dict["name"] = name
-            current_dict["definition"] = definition
-            current_dict["is_obsolete"] = is_obsolete
-            current_dict["xref"] = xref
+            # current_dict["accession"] = node
+            # current_dict["name"] = name
+            # current_dict["definition"] = definition
+            # current_dict["is_obsolete"] = is_obsolete
+            # current_dict["xref"] = xref
 
-            term = Term(name=name, accession=node, definition= definition, is_obsolete=is_obsolete)
+            term = Term(name=name, accession=node, definition=definition, is_obsolete=is_obsolete)
             self.obo_file.terms.append(term)
 
-            print("### CREF", graph.nodes[node])
+            # print("### CREF", graph.nodes[node])
 
-            current_dict["xref_accession"] = xref_accession
+
+            # add xrefs to relationships list
+            if xref:
+                for x_reference in xref:
+                    print("x_reference", x_reference)
+
+                    node_prefix = x_reference.split(":")[0].lower().rstrip()
+                    ontology_lastUpdated = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
+                    if not self.ontology_available(node_prefix):
+                        ontology = Ontology(name=node_prefix, lastUpdated=ontology_lastUpdated, author=None,
+                                            version=None, generated=True)
+                        self.obo_file.ontologies.append(ontology)
+
+                    rel_type = "xref"
+                    relationship = Relationships(node_from=node, node_to=x_reference, rel_type=rel_type)
+                    self.obo_file.relationships.append(relationship)
+
+            # current_dict["xref_accession"] = xref_accession
             # current_dict["ontology_name"] = ontology_name
 
-            current_accession = node
+            # current_accession = node
 
             node_prefix = node.split(":")[0].lower().rstrip()
             current_dict["ontology_name"] = node_prefix
             # print("current prefix: ", node_prefix)
 
-            list_of_bool = [True for elem in self.ontolgies
-                            if node_prefix in elem.values()]
+            if not self.ontology_available(node_prefix):
+                ontology = Ontology(name=node, lastUpdated=ontology_lastUpdated, author=ontology_author,
+                                    version=ontology_version, generated=True)
+                self.obo_file.ontologies.append(ontology)
 
-            print("ontologies current", self.obo_file.ontologies)
-
+            # list_of_bool = [True for elem in self.ontolgies
+            #                 if node_prefix in elem.values()]
 
             # list_of_bool = [True for elem in self.obo_file.ontologies
             #                 if node_prefix in elem.values()]
 
-            if not any(list_of_bool):
-                print("found new prefix")
-                print(self.ontolgies)
-                ontology_dict = dict()
-                ontology_dict["ontology_name"] = node_prefix
-                ontology_dict["ontology_lastUpdated"] = "None"
-                ontology_dict["ontology_author"] = "None"
-                ontology_dict["ontology_version"] = "None"
-                self.ontolgies.append(ontology_dict)
+            # if not any(list_of_bool):
+            #     print("found new prefix")
+            #     print(self.ontolgies)
+            #     ontology_dict = dict()
+            #     ontology_dict["ontology_name"] = node_prefix
+            #     ontology_dict["ontology_lastUpdated"] = "None"
+            #     ontology_dict["ontology_author"] = "None"
+            #     ontology_dict["ontology_version"] = "None"
+            #     self.ontolgies.append(ontology_dict)
+            #
+            #     ontology_name = node_prefix
+            #     ontology_author = None
+            #     ontology_version = None
+            #     ontology_lastUpdated = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
 
-            # self.metadata.append()
 
             # search all child nodes of current node and add to relation list
             for child, parent, rel_type in graph.out_edges(node, keys=True):
-                rel_types = []
-                relterm_dict = dict()
+                # rel_types = []
+                # relterm_dict = dict()
 
-                if rel_type not in current_dict:
-                    current_dict[rel_type] = []
-                    current_dict[rel_type].append(parent)
-                else:
-                    current_dict[rel_type].append(parent)
+                # if rel_type not in current_dict:
+                #     current_dict[rel_type] = []
+                #     current_dict[rel_type].append(parent)
+                # else:
+                #     current_dict[rel_type].append(parent)
 
-                current_rel = dict()
-                current_rel["node_from"] = parent
-                current_rel["node_to"] = child
-                current_rel["rel_type"] = rel_type
-                self.relationships.append(current_rel)
+                # current_rel = dict()
+                # current_rel["node_from"] = parent
+                # current_rel["node_to"] = child
+                # current_rel["rel_type"] = rel_type
+                # self.relationships.append(current_rel)
 
                 relationship = Relationships(node_from=parent, node_to=child, rel_type=rel_type)
                 self.obo_file.relationships.append(relationship)
@@ -146,19 +171,6 @@ class OBO_Parser:
                 # if rel_type not in rel_types:
                 #     rel_types.append(rel_type)
 
-            self.metadata.append(current_dict)
+            # self.metadata.append(current_dict)
 
-            # print("metadata", self.metadata)
-
-        print("end")
-
-        # print(nodes)
-
-        # print("length", len(self.nodes))
-
-        # print("metadata", self.metadata)
-
-        print("Ontos", self.obo_file)
-        print("Ontos", self.obo_file.dict())
-
-        return (self.metadata)
+        return self.obo_file.dict()
