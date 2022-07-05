@@ -105,6 +105,12 @@ class OBO_Parser:
             list_of_bool = [True for elem in self.ontolgies
                             if node_prefix in elem.values()]
 
+            print("ontologies current", self.obo_file.ontologies)
+
+
+            # list_of_bool = [True for elem in self.obo_file.ontologies
+            #                 if node_prefix in elem.values()]
+
             if not any(list_of_bool):
                 print("found new prefix")
                 print(self.ontolgies)
