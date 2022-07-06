@@ -4,7 +4,8 @@ from celery import Celery
 
 load_dotenv()
 
-imports = ['app.tasks.process_ontology']
+imports = ['app.tasks.process_ontology',
+           'app.tasks.add_external_ontologies']
 
 app = Celery('tasks',
              backend=os.environ.get("CELERY_BACKEND"),

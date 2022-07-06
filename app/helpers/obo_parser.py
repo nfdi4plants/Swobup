@@ -9,6 +9,7 @@ from app.helpers.oboparsing.models.ontology import Ontology
 from app.helpers.oboparsing.models.relationships import Relationships
 from app.helpers.oboparsing.models.obo_file import OboFile
 
+from resource import *
 
 class OBO_Parser:
     def __init__(self, ontology_file):
@@ -49,7 +50,9 @@ class OBO_Parser:
         try:
             graph = obonet.read_obo(self.ontology_file, ignore_obsolete=False)
 
-            print(graph)
+            # print(graph)
+
+            # print("start task", getrusage(RUSAGE_SELF).ru_maxrss * 4096 / 1024 / 1024)
 
         except Exception as e:
             sys.exit()
@@ -76,13 +79,23 @@ class OBO_Parser:
         # go through all nodes
         for node in nodes:
 
-            current_dict = dict()
-
+            # current_dict = dict()
             name = graph.nodes[node].get("name", None)
+            if name is not None:
+                name = name.strip()
+                name = name.replace('^M', '')
             definition = graph.nodes[node].get("def", None)
+            if definition is not None:
+                definition = definition.strip()
             is_obsolete = graph.nodes[node].get("is_obsolete", None)
             xref = graph.nodes[node].get("xref", None)
             # xref_accession = ""
+
+            if type(is_obsolete) is str:
+                if is_obsolete.lower() is "true":
+                    is_obsolete = True
+                else:
+                    is_obsolete = False
 
             # current_dict["accession"] = node
             # current_dict["name"] = name
@@ -95,11 +108,10 @@ class OBO_Parser:
 
             # print("### CREF", graph.nodes[node])
 
-
             # add xrefs to relationships list
             if xref:
                 for x_reference in xref:
-                    print("x_reference", x_reference)
+                    # print("x_reference", x_reference)
 
                     node_prefix = x_reference.split(":")[0].lower().rstrip()
                     ontology_lastUpdated = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
@@ -118,12 +130,12 @@ class OBO_Parser:
             # current_accession = node
 
             node_prefix = node.split(":")[0].lower().rstrip()
-            current_dict["ontology_name"] = node_prefix
+            # current_dict["ontology_name"] = node_prefix
             # print("current prefix: ", node_prefix)
 
             if not self.ontology_available(node_prefix):
-                ontology = Ontology(name=node, lastUpdated=ontology_lastUpdated, author=ontology_author,
-                                    version=ontology_version, generated=True)
+                ontology = Ontology(name=node_prefix, lastUpdated=ontology_lastUpdated, author=None,
+                                    version=None, generated=True)
                 self.obo_file.ontologies.append(ontology)
 
             # list_of_bool = [True for elem in self.ontolgies
@@ -146,7 +158,6 @@ class OBO_Parser:
             #     ontology_author = None
             #     ontology_version = None
             #     ontology_lastUpdated = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
-
 
             # search all child nodes of current node and add to relation list
             for child, parent, rel_type in graph.out_edges(node, keys=True):
@@ -172,5 +183,8 @@ class OBO_Parser:
                 #     rel_types.append(rel_type)
 
             # self.metadata.append(current_dict)
+        # print("task", getrusage(RUSAGE_SELF).ru_maxrss * 4096 / 1024 /1024)
+
+        print(self.obo_file.dict())
 
         return self.obo_file.dict()

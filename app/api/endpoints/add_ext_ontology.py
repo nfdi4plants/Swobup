@@ -21,6 +21,10 @@ from app.helpers.oboparsing.models.ontology import Ontology
 from app.helpers.oboparsing.models.relationships import Relationships
 from app.helpers.oboparsing.models.obo_file import OboFile
 
+from app.tasks.add_external_ontologies import add_extern_task
+
+from resource import *
+
 router = APIRouter()
 
 @router.post("")
@@ -30,11 +34,37 @@ async def add_extern(payload: CustomPayload):
 
     bli = payload.external_ontologies
 
+    # print("before download:", getrusage(RUSAGE_SELF).ru_maxrss * 4096 / 1024 / 1024)
+
     print(bli)
 
     bla = payload.dict()
 
+    # print("converted tro dict:", getrusage(RUSAGE_SELF).ru_maxrss * 4096 / 1024 / 1024)
+
     print("bla", bla)
+
+    result = add_extern_task.delay(bla)
+
+    # print("result returned:", getrusage(RUSAGE_SELF).ru_maxrss * 4096 / 1024 / 1024)
+
+    print("results:", result)
+
+    obo_file = result.get()
+    data = obo_file.get("terms")
+
+    print(obo_file.get("terms"))
+
+    result_df = pd.DataFrame(data)
+
+    result_df.to_csv("output.csv", sep=',',index=None)
+
+    relations_df = pd.DataFrame(obo_file.get("relationships"))
+    ontologies_df = pd.DataFrame(obo_file.get("ontologies"))
+
+    relations_df.to_csv("output-rel.csv", sep=',',index=None)
+    ontologies_df.to_csv("output-ont.csv", sep=',',index=None)
+
 
 
     # result = ontology_task.delay(bla)
