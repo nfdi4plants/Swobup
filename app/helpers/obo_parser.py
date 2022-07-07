@@ -45,14 +45,16 @@ class OBO_Parser:
                 return True
         return False
 
+    def term_available(self, term_accession):
+        for term in self.obo_file.terms:
+            if term_accession == term.accession:
+                return True
+        return False
+
     def parse(self):
         # try to read ontology file
         try:
             graph = obonet.read_obo(self.ontology_file, ignore_obsolete=False)
-
-            # print(graph)
-
-            # print("start task", getrusage(RUSAGE_SELF).ru_maxrss * 4096 / 1024 / 1024)
 
         except Exception as e:
             sys.exit()
@@ -62,6 +64,12 @@ class OBO_Parser:
             ontology_author = graph.graph.get("saved-by", None)
             ontology_version = graph.graph.get("data-version", None)
             ontology_lastUpdated = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
+
+            treat_equivalent = graph.graph.get("treat-xrefs-as-equivalent", None)
+            treat_relationship = graph.graph.get("treat-xrefs-as-relationship", None)
+            treat_isa = graph.graph.get("treat-xrefs-as-is_a", None)
+
+
 
             ontology = Ontology(name=ontology_name, lastUpdated=ontology_lastUpdated, author=ontology_author,
                                 version=ontology_version, generated=False)
@@ -74,45 +82,23 @@ class OBO_Parser:
         except Exception as e:
             nodes = []
 
-        # print("nodes #", nodes)
-
         # go through all nodes
         for node in nodes:
 
             # current_dict = dict()
             name = graph.nodes[node].get("name", None)
-            if name is not None:
-                name = name.strip()
-                name = name.replace('^M', '')
             definition = graph.nodes[node].get("def", None)
-            if definition is not None:
-                definition = definition.strip()
             is_obsolete = graph.nodes[node].get("is_obsolete", None)
             xref = graph.nodes[node].get("xref", None)
-            # xref_accession = ""
 
-            if type(is_obsolete) is str:
-                if is_obsolete.lower() is "true":
-                    is_obsolete = True
-                else:
-                    is_obsolete = False
-
-            # current_dict["accession"] = node
-            # current_dict["name"] = name
-            # current_dict["definition"] = definition
-            # current_dict["is_obsolete"] = is_obsolete
-            # current_dict["xref"] = xref
-
-            term = Term(name=name, accession=node, definition=definition, is_obsolete=is_obsolete)
+            node_prefix = node.split(":")[0].lower().rstrip()
+            term = Term(name=name, accession=node, definition=definition, is_obsolete=is_obsolete,
+                        ontology_origin=node_prefix)
             self.obo_file.terms.append(term)
-
-            # print("### CREF", graph.nodes[node])
 
             # add xrefs to relationships list
             if xref:
                 for x_reference in xref:
-                    # print("x_reference", x_reference)
-
                     node_prefix = x_reference.split(":")[0].lower().rstrip()
                     ontology_lastUpdated = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
                     if not self.ontology_available(node_prefix):
@@ -122,67 +108,32 @@ class OBO_Parser:
 
                     rel_type = "xref"
                     relationship = Relationships(node_from=node, node_to=x_reference, rel_type=rel_type)
-                    self.obo_file.relationships.append(relationship)
 
-            # current_dict["xref_accession"] = xref_accession
-            # current_dict["ontology_name"] = ontology_name
-
-            # current_accession = node
+                    if not self.term_available(x_reference):
+                        term = Term(name=None, accession=x_reference, definition=None, is_obsolete=None,
+                                    ontology_origin=node_prefix)
+                        self.obo_file.terms.append(term)
+                        self.obo_file.relationships.append(relationship)
 
             node_prefix = node.split(":")[0].lower().rstrip()
-            # current_dict["ontology_name"] = node_prefix
-            # print("current prefix: ", node_prefix)
-
             if not self.ontology_available(node_prefix):
                 ontology = Ontology(name=node_prefix, lastUpdated=ontology_lastUpdated, author=None,
                                     version=None, generated=True)
                 self.obo_file.ontologies.append(ontology)
 
-            # list_of_bool = [True for elem in self.ontolgies
-            #                 if node_prefix in elem.values()]
-
-            # list_of_bool = [True for elem in self.obo_file.ontologies
-            #                 if node_prefix in elem.values()]
-
-            # if not any(list_of_bool):
-            #     print("found new prefix")
-            #     print(self.ontolgies)
-            #     ontology_dict = dict()
-            #     ontology_dict["ontology_name"] = node_prefix
-            #     ontology_dict["ontology_lastUpdated"] = "None"
-            #     ontology_dict["ontology_author"] = "None"
-            #     ontology_dict["ontology_version"] = "None"
-            #     self.ontolgies.append(ontology_dict)
-            #
-            #     ontology_name = node_prefix
-            #     ontology_author = None
-            #     ontology_version = None
-            #     ontology_lastUpdated = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
-
             # search all child nodes of current node and add to relation list
             for child, parent, rel_type in graph.out_edges(node, keys=True):
-                # rel_types = []
-                # relterm_dict = dict()
-
-                # if rel_type not in current_dict:
-                #     current_dict[rel_type] = []
-                #     current_dict[rel_type].append(parent)
-                # else:
-                #     current_dict[rel_type].append(parent)
-
-                # current_rel = dict()
-                # current_rel["node_from"] = parent
-                # current_rel["node_to"] = child
-                # current_rel["rel_type"] = rel_type
-                # self.relationships.append(current_rel)
 
                 relationship = Relationships(node_from=parent, node_to=child, rel_type=rel_type)
                 self.obo_file.relationships.append(relationship)
 
-                # if rel_type not in rel_types:
-                #     rel_types.append(rel_type)
+                if not self.term_available(child):
+                    node_prefix = node.split(":")[0].lower().rstrip()
+                    term = Term(name=None, accession=child, definition=None, is_obsolete=None,
+                                ontology_origin=node_prefix)
+                    self.obo_file.terms.append(term)
+                    self.obo_file.relationships.append(relationship)
 
-            # self.metadata.append(current_dict)
         # print("task", getrusage(RUSAGE_SELF).ru_maxrss * 4096 / 1024 /1024)
 
         print(self.obo_file.dict())
