@@ -15,7 +15,6 @@ class Ontology(BaseModel):
 
     @validator("name", "author", "version", "lastUpdated", pre=True)
     def strip_strings(cls, value):
-        print("validating... ", value)
         if value is not None:
             return value.strip()
         return value

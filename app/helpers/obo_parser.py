@@ -65,9 +65,14 @@ class OBO_Parser:
             ontology_version = graph.graph.get("data-version", None)
             ontology_lastUpdated = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
 
-            treat_equivalent = graph.graph.get("treat-xrefs-as-equivalent", None)
-            treat_relationship = graph.graph.get("treat-xrefs-as-relationship", None)
-            treat_isa = graph.graph.get("treat-xrefs-as-is_a", None)
+            treat_equivalent = graph.graph.get("treat-xrefs-as-equivalent", [])
+            treat_as_relationship = graph.graph.get("treat-xrefs-as-relationship", [])
+            treat_isa = graph.graph.get("treat-xrefs-as-is_a", [])
+
+            relationships_dict = dict()
+            for treat in treat_as_relationship:
+                print("treat:", treat)
+                relationships_dict = dict(x.lower().split(" ") for x in treat_as_relationship)
 
 
 
@@ -97,23 +102,82 @@ class OBO_Parser:
             self.obo_file.terms.append(term)
 
             # add xrefs to relationships list
+            # if xref:
+            #     for x_reference in xref:
+            #         node_prefix = x_reference.split(":")[0].lower().rstrip()
+            #         ontology_lastUpdated = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
+            #         if not self.ontology_available(node_prefix):
+            #             ontology = Ontology(name=node_prefix, lastUpdated=ontology_lastUpdated, author=None,
+            #                                 version=None, generated=True)
+            #             self.obo_file.ontologies.append(ontology)
+            #
+            #         rel_type = "xref"
+            #         relationship = Relationships(node_from=node, node_to=x_reference, rel_type=rel_type)
+            #
+            #         if not self.term_available(x_reference):
+            #             term = Term(name=None, accession=x_reference, definition=None, is_obsolete=None,
+            #                         ontology_origin=node_prefix)
+            #             self.obo_file.terms.append(term)
+            #             self.obo_file.relationships.append(relationship)
+
             if xref:
                 for x_reference in xref:
                     node_prefix = x_reference.split(":")[0].lower().rstrip()
+
                     ontology_lastUpdated = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
-                    if not self.ontology_available(node_prefix):
-                        ontology = Ontology(name=node_prefix, lastUpdated=ontology_lastUpdated, author=None,
-                                            version=None, generated=True)
-                        self.obo_file.ontologies.append(ontology)
 
-                    rel_type = "xref"
-                    relationship = Relationships(node_from=node, node_to=x_reference, rel_type=rel_type)
-
-                    if not self.term_available(x_reference):
-                        term = Term(name=None, accession=x_reference, definition=None, is_obsolete=None,
-                                    ontology_origin=node_prefix)
-                        self.obo_file.terms.append(term)
+                    if node_prefix in treat_isa:
+                        print(node + " -is_a-> " + x_reference)
+                        if not self.term_available(x_reference):
+                            term = Term(name=None, accession=x_reference, definition=None, is_obsolete=None,
+                                        ontology_origin=node_prefix)
+                            self.obo_file.terms.append(term)
+                        if not self.ontology_available(node_prefix):
+                                ontology = Ontology(name=node_prefix, lastUpdated=ontology_lastUpdated, author=None,
+                                                    version=None, generated=True)
+                                self.obo_file.ontologies.append(ontology)
+                        relationship = Relationships(node_from=node, node_to=x_reference, rel_type="is_a")
                         self.obo_file.relationships.append(relationship)
+
+
+                    if node_prefix in relationships_dict:
+                        print(node + " " + relationships_dict.get(node_prefix) + " " + x_reference)
+
+                        if node_prefix in treat_isa:
+                            print(node + " -is_a-> " + x_reference)
+                            if not self.term_available(x_reference):
+                                term = Term(name=None, accession=x_reference, definition=None, is_obsolete=None,
+                                            ontology_origin=node_prefix)
+                                self.obo_file.terms.append(term)
+                            if not self.ontology_available(node_prefix):
+                                ontology = Ontology(name=node_prefix, lastUpdated=ontology_lastUpdated, author=None,
+                                                    version=None, generated=True)
+                                self.obo_file.ontologies.append(ontology)
+                            relationship = Relationships(node_from=node, node_to=x_reference,
+                                                         rel_type=relationships_dict.get(node_prefix))
+                            self.obo_file.relationships.append(relationship)
+
+                    if node_prefix in treat_equivalent:
+                        print(node + " -equivalent-> " + x_reference)
+                        print(x_reference + " -equivalent-> " + node)
+
+                        if node_prefix in treat_isa:
+                            print(node + " -is_a-> " + x_reference)
+                            if not self.term_available(x_reference):
+                                term = Term(name=None, accession=x_reference, definition=None, is_obsolete=None,
+                                            ontology_origin=node_prefix)
+                                self.obo_file.terms.append(term)
+                            if not self.ontology_available(node_prefix):
+                                ontology = Ontology(name=node_prefix, lastUpdated=ontology_lastUpdated, author=None,
+                                                    version=None, generated=True)
+                                self.obo_file.ontologies.append(ontology)
+                            relationship = Relationships(node_from=node, node_to=x_reference,
+                                                         rel_type="equivalent")
+                            relationship = Relationships(node_from=x_reference, node_to=node,
+                                                         rel_type="equivalent")
+                            self.obo_file.relationships.append(relationship)
+
+
 
             node_prefix = node.split(":")[0].lower().rstrip()
             if not self.ontology_available(node_prefix):

@@ -12,7 +12,6 @@ class Term(BaseModel):
 
     @validator("accession", "name", "definition", "ontology_origin", pre=True)
     def strip_accession(cls, value):
-        print("validating.... ", value)
         if value is not None:
             return value.strip()
         return value
