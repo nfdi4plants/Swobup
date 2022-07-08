@@ -3,7 +3,7 @@ import networkx
 import datetime
 import sys
 import pandas as pd
-from io import StringIO
+from io import StringIO, TextIOWrapper
 
 from tasks import app
 from app.github.webhook_payload import PushWebhookPayload
@@ -39,9 +39,9 @@ def ontology_task(payload):
         # print(commit.modified)
         for file in commit.get("modified"):
             github_downloader = GitHubDownloader(file, repository_full_name, commit_hash)
-            current_file = github_downloader.download_file().decode()
+            current_file = github_downloader.download_file()
 
-            ontology_buffer = StringIO(current_file)
+            ontology_buffer = TextIOWrapper(current_file, newline=None)
 
             # graph = obonet.read_obo(ontology_buffer)
 

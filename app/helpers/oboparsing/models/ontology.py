@@ -13,8 +13,8 @@ class Ontology(BaseModel):
     version: Optional[str]
     generated: Optional[bool]
 
-    @validator("name", "author", "version", "lastUpdated", pre=True)
-    def strip_strings(cls, value):
-        if value is not None:
-            return value.strip()
-        return value
+    # @validator("name", "author", "version", "lastUpdated", pre=True)
+    # def strip_strings(cls, value):
+    #     if value is not None:
+    #         return value.strip()
+    #     return value

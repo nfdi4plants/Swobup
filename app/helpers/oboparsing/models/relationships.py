@@ -12,8 +12,8 @@ class Relationships(BaseModel):
     rel_type: Optional[str]
 
 
-    @validator("*", pre=True)
-    def strip_strings(cls, value):
-        if value is not None:
-            return value.strip()
-        return value
+    # @validator("*", pre=True)
+    # def strip_strings(cls, value):
+    #     if value is not None:
+    #         return value.strip()
+    #     return value
