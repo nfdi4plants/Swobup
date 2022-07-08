@@ -10,11 +10,11 @@ class Term(BaseModel):
     is_obsolete: Optional[bool]
     ontology_origin: Optional[str]
 
-    @validator("accession", "name", "definition", "ontology_origin", pre=True)
-    def strip_accession(cls, value):
-        if value is not None:
-            return value.strip()
-        return value
+    # @validator("accession", "name", "definition", "ontology_origin", pre=True)
+    # def strip_accession(cls, value):
+    #     if value is not None:
+    #         return value.strip()
+    #     return value
 
     @validator("is_obsolete", pre=True)
     def check_bool(cls, value):
