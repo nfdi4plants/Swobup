@@ -22,6 +22,7 @@ from app.helpers.oboparsing.models.relationships import Relationships
 from app.helpers.oboparsing.models.obo_file import OboFile
 
 from app.tasks.add_external_ontologies import add_extern_task
+from app.tasks.add_to_database import write_to_db
 
 from resource import *
 
@@ -44,7 +45,9 @@ async def add_extern(payload: CustomPayload):
 
     print("bla", bla)
 
-    result = add_extern_task.delay(bla)
+    # result = add_extern_task.delay(bla)
+
+    result = chain(add_extern_task.s(bla), write_to_db.s()).apply_async()
 
     # print("result returned:", getrusage(RUSAGE_SELF).ru_maxrss * 4096 / 1024 / 1024)
 

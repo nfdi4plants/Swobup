@@ -13,12 +13,12 @@ class GitHubDownloader:
 
         print("downloading : ", location)
 
-        response = requests.get(location, stream=True)
-        file = None
+        response = requests.get(location)
+        file = response.content
 
         if response.status_code != 200:
             print("file could not be downloaded")
         else:
-            file = response.raw
+            file = response.content
 
         return file
