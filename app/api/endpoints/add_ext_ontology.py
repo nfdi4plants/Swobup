@@ -47,7 +47,9 @@ async def add_extern(payload: CustomPayload):
 
     # result = add_extern_task.delay(bla)
 
-    result = chain(add_extern_task.s(bla), write_to_db.s()).apply_async()
+    for url in payload.external_ontologies:
+
+        result = chain(add_extern_task.s(url), write_to_db.s()).apply_async()
 
     # print("result returned:", getrusage(RUSAGE_SELF).ru_maxrss * 4096 / 1024 / 1024)
 

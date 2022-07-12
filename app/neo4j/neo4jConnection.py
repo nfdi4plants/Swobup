@@ -116,10 +116,10 @@ class Neo4jConnection:
     def connect_term_relationships(self, rows, rel_type, batch_size=100000):
         # rel_type = "is_a"
         # rel_type = rel_type
-        # if ":" in rel_type:
-        #     rel_type = rel_type.replace(":", "_")
-        # if "-" in rel_type:
-        #     rel_type = "connection"
+        if ":" in rel_type:
+            rel_type = rel_type.replace(":", "_")
+        if "-" in rel_type:
+            rel_type = "connection"
 
         statement_string = "UNWIND $rows AS row MATCH (t:Term {accession: row.node_from}), (s:Term {accession: row.node_to}) MERGE (s)-[:" + str(
             rel_type) + "]->(t) RETURN count(*) as total"
