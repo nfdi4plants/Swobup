@@ -1,3 +1,5 @@
+import io
+
 import obonet
 import networkx
 import datetime
@@ -38,12 +40,15 @@ def add_extern_task(payload):
         print("commit", url)
         # print(commit.modified)
         general_downloader = GeneralDownloader(url)
-        current_file = general_downloader.download_file().decode()
+        current_file = general_downloader.download_file()
 
         # print("after download:", getrusage(RUSAGE_SELF).ru_maxrss * 4096 / 1024 / 1024)
 
 
-        ontology_buffer = StringIO(current_file)
+        # ontology_buffer = StringIO(current_file)
+
+        ontology_buffer = io.TextIOWrapper(current_file, newline=None)
+
         obo_parser = OBO_Parser(ontology_buffer)
         data = obo_parser.parse()
         print("parsing finished")
