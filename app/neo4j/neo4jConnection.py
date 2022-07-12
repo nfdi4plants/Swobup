@@ -43,7 +43,7 @@ class Neo4jConnection:
                 session.close()
         return response
 
-    def insert_data(query, rows, batch_size):
+    def insert_data(self, query, rows, batch_size):
         # Function to handle the updating the Neo4j database in batch mode.
 
         print("rows", rows)
@@ -59,10 +59,12 @@ class Neo4jConnection:
 
             # print(rows[batch * batch_size:(batch + 1) * batch_size].to_dict('records'))
 
-            res = conn.query(query,
+            res = self.query(query,
                              parameters={'rows': rows[batch * batch_size:(batch + 1) * batch_size].to_dict('records')})
 
             # print(rows[batch*batch_size:(batch+1)*batch_size].to_dict('records'))
+
+            print("toal", total)
 
             total += res[0]['total']
             batch += 1
@@ -73,7 +75,7 @@ class Neo4jConnection:
 
         return result
 
-    def add_terms(rows, batch_size=40000):
+    def add_terms(self, rows, batch_size=40000):
         # Adds author nodes to the Neo4j graph as a batch job.
         query = '''
                 UNWIND $rows AS row
@@ -87,28 +89,50 @@ class Neo4jConnection:
         print("out of add_terms")
         print("q", query)
 
-        return rows.insert_data(query, rows, batch_size)
+        return self.insert_data(query, rows, batch_size)
 
-    def add_ontologies(rows, batch_size=40000):
+    def add_ontologies(self, rows, batch_size=40000):
         # Adds author nodes to the Neo4j graph as a batch job.
         query = '''
                 UNWIND $rows AS row
-                MERGE (:Ontology {name: row.ontology_name, lastUpdated: row.ontology_lastUpdated, 
-                author: row.ontology_author, version: row.ontology_version})
+                MERGE (o:Ontology {name: row.name})
+                SET o.lastUpdated = COALESCE(o.lastUpdated,row.lastUpdated)
+                SET o.author = COALESCE(o.author,row.author)
+                SET o.version = COALESCE(o.version,row.version)
+                SET o.generated = COALESCE(o.generated,row.generated)
                 RETURN count(*) as total
                 '''
-        return rows.insert_data(query, rows, batch_size)
+        return self.insert_data(query, rows, batch_size)
 
-    def connect_ontology(rows, batch_size=100000):
+    def connect_ontology(self, rows, batch_size=100000):
         query = '''
                 UNWIND $rows AS row
-                MATCH (o:Ontology {name: row.ontology_name}), (t:Term {accession: row.accession})
+                MATCH (o:Ontology {name: row.ontology_origin}), (t:Term {accession: row.accession})
                 MERGE (t)-[:CONTAINED_IN]->(o)
                 RETURN count(*) as total
                 '''
-        return insert_data(query, rows, batch_size)
+        return self.insert_data(query, rows, batch_size)
+
+    def connect_term_relationships(self, rows, rel_type, batch_size=100000):
+        # rel_type = "is_a"
+        # rel_type = rel_type
+        # if ":" in rel_type:
+        #     rel_type = rel_type.replace(":", "_")
+        # if "-" in rel_type:
+        #     rel_type = "connection"
+
+        statement_string = "UNWIND $rows AS row MATCH (t:Term {accession: row.node_from}), (s:Term {accession: row.node_to}) MERGE (s)-[:" + str(
+            rel_type) + "]->(t) RETURN count(*) as total"
+
+        query = '''
+                UNWIND $rows AS row
+                MATCH (t:Term {accession: row.node_from}), (s:Term {accession: row.node_to})
+                MERGE (s)-[:`+rel_type`]->(t)
+                RETURN count(*) as total
+                '''
+        return self.insert_data(statement_string, rows, batch_size)
 
 
-conn = Neo4jConnection(uri="bolt://localhost:7687",
-                       user="neo4j",
-                       pwd="test")
+# conn = Neo4jConnection(uri="bolt://localhost:7687",
+#                        user="neo4j",
+#                        pwd="test")

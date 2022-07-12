@@ -7,13 +7,19 @@ class GeneralDownloader:
 
     def download_file(self):
 
-        response = requests.get(self.url)
-        file = response.content
+        response = requests.get(self.url, stream=True)
+
+        response.raw.decode_content = True
+        response.raw.auto_close = False
+
+        # file = response.content
+
+        file = response.raw
 
         if response.status_code != 200:
             print("file could not be downloaded")
         else:
-            file = response.content
+            file = response.raw
 
 
 

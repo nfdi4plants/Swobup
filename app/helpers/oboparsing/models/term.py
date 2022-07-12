@@ -16,14 +16,14 @@ class Term(BaseModel):
     #         return value.strip()
     #     return value
 
-    @validator("is_obsolete", pre=True)
-    def check_bool(cls, value):
-        if value is None:
-            return
-        if isinstance(value, str):
-            value = value.strip()
-            if value.lower() == "true":
-                return True
-            elif value.lower() is "false":
-                return False
-        return value
+    # @validator("is_obsolete", pre=True)
+    # def check_bool(cls, value):
+    #     # if value is None:
+    #     #     return
+    #     if isinstance(value, str):
+    #         # value = value.strip()
+    #         if value == "true" or value == "True":
+    #             return True
+    #         elif value == "false" or value == "true":
+    #             return False
+    #     return value
