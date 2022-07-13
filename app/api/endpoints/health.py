@@ -1,11 +1,11 @@
-from fastapi import APIRouter, Body, Depends, HTTPException
+from fastapi import APIRouter, Body, Depends, HTTPException, status, FastAPI
 from fastapi.responses import PlainTextResponse, JSONResponse, HTMLResponse
 from app.neo4j.neo4jConnection import Neo4jConnection
 
 router = APIRouter()
 
 
-@router.get("")
+@router.get("", status_code=status.HTTP_200_OK)
 async def status():
     conn = Neo4jConnection(uri="bolt://localhost:7687",
                            user="neo4j",

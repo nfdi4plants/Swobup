@@ -149,9 +149,14 @@ class Neo4jConnection:
         query = '''
                 MATCH (n)
                 DETACH DELETE n
+                RETURN count(*) as total
                 '''
 
-        self.query(query)
+        result = self.query(query)
+
+        record = result[0]["total"]
+
+        return record
 
 
 # conn = Neo4jConnection(uri="bolt://localhost:7687",
