@@ -133,6 +133,27 @@ class Neo4jConnection:
         return self.insert_data(statement_string, rows, batch_size)
 
 
+    def delete_ontology(self, ontology_name):
+
+        query = "MATCH (n:Ontology) where n.name='"+str(ontology_name)+"' CALL { WITH n DETACH DELETE n} " \
+                                                                       "IN TRANSACTIONS OF 10000 ROWS;"
+
+        print("query", query)
+
+        self.query(query)
+        # return self.insert_data()
+
+
+    def delete_database(self):
+
+        query = '''
+                MATCH (n)
+                DETACH DELETE n
+                '''
+
+        self.query(query)
+
+
 # conn = Neo4jConnection(uri="bolt://localhost:7687",
 #                        user="neo4j",
 #                        pwd="test")

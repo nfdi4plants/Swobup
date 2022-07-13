@@ -4,4 +4,6 @@ from pydantic import BaseModel
 
 
 class CustomPayload(BaseModel):
-    external_ontologies: Optional[List[str]]
+    url: Optional[List[str]]
+    ontology: Optional[List[str]]
+

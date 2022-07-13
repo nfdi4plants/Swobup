@@ -76,4 +76,5 @@ def write_to_db(data):
         print("type:", relation_type)
         print("df:", relations_df.loc[relations_df["rel_type"] == relation_type])
         current_rel_df = relations_df.loc[relations_df["rel_type"] == relation_type]
+        print("adding relations of ", )
         conn.connect_term_relationships(current_rel_df, relation_type, batch_size=40000)
