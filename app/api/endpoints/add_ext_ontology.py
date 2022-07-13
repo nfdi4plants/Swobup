@@ -22,6 +22,7 @@ from app.helpers.oboparsing.models.relationships import Relationships
 from app.helpers.oboparsing.models.obo_file import OboFile
 
 from app.tasks.add_external_ontologies import add_extern_task
+from app.tasks.delete_ontologies import delete_ontology_task
 from app.tasks.add_to_database import write_to_db
 
 from resource import *
@@ -29,11 +30,11 @@ from resource import *
 router = APIRouter()
 
 @router.post("")
-async def add_extern(payload: CustomPayload):
+async def extern(payload: CustomPayload):
 
     print("sending to celery...")
 
-    bli = payload.external_ontologies
+    bli = payload.ontology
 
     # print("before download:", getrusage(RUSAGE_SELF).ru_maxrss * 4096 / 1024 / 1024)
 
@@ -47,7 +48,7 @@ async def add_extern(payload: CustomPayload):
 
     # result = add_extern_task.delay(bla)
 
-    for url in payload.external_ontologies:
+    for url in payload.ontology:
 
         result = chain(add_extern_task.s(url), write_to_db.s()).apply_async()
 
@@ -87,4 +88,25 @@ async def add_extern(payload: CustomPayload):
     # ontologies_df.to_csv("output-ont.csv", sep=',')
 
 
+@router.delete("")
+async def extern(payload: CustomPayload):
+    urls = payload.url
+    ontologies = payload.ontology
 
+    payload = payload.dict()
+
+    print("url", urls)
+    print("ontologies", ontologies)
+
+    if urls:
+        print("TODO")
+
+    if ontologies:
+        print("yes")
+
+    print("payload", payload)
+
+    result = delete_ontology_task.delay(payload)
+
+
+    return payload

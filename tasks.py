@@ -6,7 +6,8 @@ load_dotenv()
 
 imports = ['app.tasks.process_ontology',
            'app.tasks.add_external_ontologies',
-           'app.tasks.add_to_database']
+           'app.tasks.add_to_database',
+           'app.tasks.delete_ontologies']
 
 app = Celery('tasks',
              backend=os.environ.get("CELERY_BACKEND"),

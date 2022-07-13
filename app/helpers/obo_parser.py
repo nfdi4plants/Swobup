@@ -52,6 +52,21 @@ class OBO_Parser:
                 return True
         return False
 
+    def get_ontology_name(self):
+        ontology_name = None
+        try:
+            graph = obonet.read_obo(self.ontology_file, ignore_obsolete=False)
+            ontology_name = graph.graph.get("name", None)
+            ontology_author = graph.graph.get("saved-by", None)
+            ontology_version = graph.graph.get("data-version", None)
+            ontology_lastUpdated = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
+            ontology = Ontology(name=ontology_name, lastUpdated=ontology_lastUpdated, author=ontology_author,
+                                version=ontology_version, generated=False)
+        except Exception as e:
+            print("error", e)
+
+        return ontology.name
+
     def parse(self):
         # try to read ontology file
         try:
@@ -80,6 +95,8 @@ class OBO_Parser:
 
             if treat_isa != []:
                 treat_isa = treat_isa[-1]
+
+            print("adding: ", ontology_name)
 
             print("b")
             print("treat equi", treat_equivalent)
