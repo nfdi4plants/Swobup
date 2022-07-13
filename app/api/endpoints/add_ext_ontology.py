@@ -11,6 +11,8 @@ from app.github.webhook_payload import PushWebhookPayload
 
 from app.tasks.process_ontology import ontology_task
 from app.custom.custom_payload import CustomPayload
+from app.custom.models.add_ontology import AddOntologyPayload
+from app.custom.models.delete_ontology import DeleteOntologyPayload
 
 from app.github.downloader import GitHubDownloader
 from app.helpers.obo_parser import OBO_Parser
@@ -30,11 +32,11 @@ from resource import *
 router = APIRouter()
 
 @router.post("")
-async def extern(payload: CustomPayload):
+async def extern(payload: AddOntologyPayload):
 
     print("sending to celery...")
 
-    bli = payload.ontology
+    bli = payload.url
 
     # print("before download:", getrusage(RUSAGE_SELF).ru_maxrss * 4096 / 1024 / 1024)
 
@@ -48,7 +50,7 @@ async def extern(payload: CustomPayload):
 
     # result = add_extern_task.delay(bla)
 
-    for url in payload.ontology:
+    for url in payload.url:
 
         result = chain(add_extern_task.s(url), write_to_db.s()).apply_async()
 
@@ -89,7 +91,7 @@ async def extern(payload: CustomPayload):
 
 
 @router.delete("")
-async def extern(payload: CustomPayload):
+async def extern(payload: DeleteOntologyPayload):
     urls = payload.url
     ontologies = payload.ontology
 

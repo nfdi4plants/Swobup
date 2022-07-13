@@ -200,10 +200,10 @@ class OBO_Parser:
                                                 version=None, generated=True)
                             self.obo_file.ontologies.append(ontology)
                         relationship = Relationships(node_from=node, node_to=x_reference,
-                                                     rel_type="equivalent")
+                                                     rel_type="is_equivalent")
                         self.obo_file.relationships.append(relationship)
                         relationship = Relationships(node_from=x_reference, node_to=node,
-                                                     rel_type="equivalent")
+                                                     rel_type="is_equivalent")
                         self.obo_file.relationships.append(relationship)
 
             node_prefix = node.split(":")[0].lower().rstrip()
