@@ -46,7 +46,7 @@ class Neo4jConnection:
     def insert_data(self, query, rows, batch_size):
         # Function to handle the updating the Neo4j database in batch mode.
 
-        print("rows", rows)
+        # print("rows", rows)
 
         total = 0
         batch = 0
@@ -54,8 +54,8 @@ class Neo4jConnection:
         result = None
 
         while batch * batch_size < len(rows):
-            print("batch", batch)
-            print("batch_size", batch_size)
+            # print("batch", batch)
+            # print("batch_size", batch_size)
 
             # print(rows[batch * batch_size:(batch + 1) * batch_size].to_dict('records'))
 
@@ -64,14 +64,14 @@ class Neo4jConnection:
 
             # print(rows[batch*batch_size:(batch+1)*batch_size].to_dict('records'))
 
-            print("toal", total)
+            # print("toal", total)
 
             total += res[0]['total']
             batch += 1
             result = {"total": total,
                       "batches": batch,
                       "time": time.time() - start}
-            print(result)
+            # print(result)
 
         return result
 
@@ -87,12 +87,12 @@ class Neo4jConnection:
                 '''
 
         print("out of add_terms")
-        print("q", query)
 
         return self.insert_data(query, rows, batch_size)
 
     def add_ontologies(self, rows, batch_size=40000):
         # Adds author nodes to the Neo4j graph as a batch job.
+
         query = '''
                 UNWIND $rows AS row
                 MERGE (o:Ontology {name: row.name})
