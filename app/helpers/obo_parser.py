@@ -84,31 +84,31 @@ class OBO_Parser:
             ontology_lastUpdated = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
 
             treat_equivalent = graph.graph.get("treat-xrefs-as-equivalent", [])
-            print("equi", treat_equivalent)
+            # print("equi", treat_equivalent)
             treat_as_relationship = graph.graph.get("treat-xrefs-as-relationship", [])
-            print("rela")
+            # print("rela")
             treat_isa = graph.graph.get("treat-xrefs-as-is_a", [])
 
             treat_isa = [x.lower().split(" ") for x in treat_isa]
-            print("isa", treat_isa)
+            # print("isa", treat_isa)
             treat_equivalent = [x.lower() for x in treat_equivalent]
 
             if treat_isa != []:
                 treat_isa = treat_isa[-1]
 
-            print("adding: ", ontology_name)
-
-            print("b")
-            print("treat equi", treat_equivalent)
+            # print("adding: ", ontology_name)
+            #
+            # print("b")
+            # print("treat equi", treat_equivalent)
 
             # if treat_equivalent != []:
             #     treat_equivalent = treat_equivalent[-1]
 
-            print("c")
+            # print("c")
 
             relationships_dict = dict()
             for treat in treat_as_relationship:
-                print("treat:", treat)
+                # print("treat:", treat)
                 relationships_dict = dict(x.lower().split(" ") for x in treat_as_relationship)
 
             ontology = Ontology(name=ontology_name, lastUpdated=ontology_lastUpdated, author=ontology_author,
@@ -132,6 +132,7 @@ class OBO_Parser:
             xref = graph.nodes[node].get("xref", None)
 
             # print("name", name)
+            # print("current node is ", node)
 
             node_prefix = node.split(":")[0].lower().rstrip()
             term = Term(name=name, accession=node, definition=definition, is_obsolete=is_obsolete,
@@ -231,5 +232,5 @@ class OBO_Parser:
 
         # print(self.obo_file.dict())
 
-        print("parsing finished")
+        print("parsing finished: " +ontology_name)
         return self.obo_file.dict()

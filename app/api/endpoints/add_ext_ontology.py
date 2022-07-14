@@ -51,27 +51,28 @@ async def extern(payload: AddOntologyPayload):
     # result = add_extern_task.delay(bla)
 
     for url in payload.url:
+        print("current_url", url)
 
         result = chain(add_extern_task.s(url), write_to_db.s()).apply_async()
 
     # print("result returned:", getrusage(RUSAGE_SELF).ru_maxrss * 4096 / 1024 / 1024)
 
-    print("results:", result)
-
-    obo_file = result.get()
-    data = obo_file.get("terms")
-
-    print(obo_file.get("terms"))
-
-    result_df = pd.DataFrame(data)
-
-    result_df.to_csv("output.csv", sep=',',index=None)
-
-    relations_df = pd.DataFrame(obo_file.get("relationships"))
-    ontologies_df = pd.DataFrame(obo_file.get("ontologies"))
-
-    relations_df.to_csv("output-rel.csv", sep=',',index=None)
-    ontologies_df.to_csv("output-ont.csv", sep=',',index=None)
+    # print("results:", result)
+    #
+    # obo_file = result.get()
+    # data = obo_file.get("terms")
+    #
+    # print(obo_file.get("terms"))
+    #
+    # result_df = pd.DataFrame(data)
+    #
+    # result_df.to_csv("output.csv", sep=',',index=None)
+    #
+    # relations_df = pd.DataFrame(obo_file.get("relationships"))
+    # ontologies_df = pd.DataFrame(obo_file.get("ontologies"))
+    #
+    # relations_df.to_csv("output-rel.csv", sep=',',index=None)
+    # ontologies_df.to_csv("output-ont.csv", sep=',',index=None)
 
 
 
@@ -88,6 +89,8 @@ async def extern(payload: AddOntologyPayload):
     #
     # relations_df.to_csv("output-rel.csv", sep=',')
     # ontologies_df.to_csv("output-ont.csv", sep=',')
+
+    # print("result", result)
 
 
 @router.delete("")
