@@ -158,6 +158,13 @@ class Neo4jConnection:
 
         return record
 
+    def set_constraints(self):
+        self.query('CREATE CONSTRAINT IF NOT EXISTS ON (o:Ontology) ASSERT o.name IS UNIQUE')
+        self.query('CREATE CONSTRAINT IF NOT EXISTS ON (t:Term) ASSERT t.accession IS UNIQUE')
+        self.query('CREATE CONSTRAINT IF NOT EXISTS ON (t:Template) ASSERT t.id IS UNIQUE')
+        self.query('CREATE FULLTEXT INDEX TermName IF NOT EXISTS FOR (n:Term) ON EACH [ n.name ]')
+        self.query('CREATE FULLTEXT INDEX TermDescription IF NOT EXISTS FOR (n:Term) ON EACH [ n.description ]')
+
 
 # conn = Neo4jConnection(uri="bolt://localhost:7687",
 #                        user="neo4j",
