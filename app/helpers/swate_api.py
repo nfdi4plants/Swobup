@@ -11,6 +11,9 @@ class SwateAPI:
 
         response = requests.post(url, data= file, headers=self.headers)
 
+        print("url", url)
+        print("response", response)
+
         response_json = response.json()
 
         return response_json

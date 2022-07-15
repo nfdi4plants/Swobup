@@ -18,3 +18,9 @@ class Ontology(BaseModel):
     #     if value is not None:
     #         return value.strip()
     #     return value
+
+    @validator("name")
+    def rewrite_name(cls, value):
+        if value == "obi.obo":
+            value = "obi"
+        return value

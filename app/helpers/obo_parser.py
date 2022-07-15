@@ -70,7 +70,7 @@ class OBO_Parser:
 
     def term_available(self, term_accession):
         if term_accession in self.collected_terms:
-            return False
+            return True
         return False
 
     # def term_available(self, term_accession):
@@ -97,7 +97,7 @@ class OBO_Parser:
         # try to read ontology file
         try:
             graph = obonet.read_obo(self.ontology_file, ignore_obsolete=False)
-            print("ble")
+            print("rerading ontology into graph")
 
         except Exception as e:
             print(e)
@@ -271,7 +271,7 @@ class OBO_Parser:
         # print(self.obo_file.dict())
 
         # print("parsing finished: " +ontology_name)
-        print("hashset", self.collected_ontologies)
-        print("hashset", self.collected_terms)
+        # print("hashset", self.collected_ontologies)
+        # print("hashset", self.collected_terms)
         # json.dump(self.obo_file.dict(), open( "obo.json", 'w' ) )
         return self.obo_file.dict()

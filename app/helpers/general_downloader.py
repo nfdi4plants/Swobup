@@ -21,6 +21,20 @@ class GeneralDownloader:
         else:
             file = response.raw
 
+        print("resp", response.content)
+
 
 
         return file
+
+    def retrieve_xslx(self):
+        response = requests.get(self.url)
+        if response.status_code != 200:
+            print("file could not be downloaded")
+        else:
+            file = response.content
+
+        # print("resp", response.content)
+
+        return file
+
