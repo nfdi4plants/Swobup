@@ -30,7 +30,7 @@ def write_to_db(data):
     #
     # print("terms", terms)
 
-    print("ontologies:", data.get("ontologies"))
+    # print("ontologies:", data.get("ontologies"))
 
     terms_df = pd.DataFrame(data.get("terms"), index=None)
 
