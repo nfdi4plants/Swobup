@@ -1,3 +1,5 @@
+import json
+
 import obonet
 import sys
 import pandas
@@ -26,6 +28,10 @@ class OBO_Parser:
 
         self.obo_file = OboFile()
 
+        self.collected_terms = set()
+        self.collected_ontologies = set()
+
+
     def get_author_list(line):
         # Cleans author dataframe column, creating a list of authors in the row.
         return [e[1] + ' ' + e[0] for e in line]
@@ -40,17 +46,37 @@ class OBO_Parser:
     def get_relations(self):
         return self.relationships
 
+    # def ontology_available(self, node_prefix):
+    #     for ontology in self.obo_file.ontologies:
+    #         if node_prefix == ontology.name:
+    #             return True
+    #     return False
+
     def ontology_available(self, node_prefix):
-        for ontology in self.obo_file.ontologies:
-            if node_prefix == ontology.name:
-                return True
+        if node_prefix in self.collected_ontologies:
+            return True
         return False
 
+    # def term_available(self, term_accession):
+    #     for term in self.obo_file.terms:
+    #         if term_accession == term.accession:
+    #             return True
+    #     return False
+
+    # def term_available(self, term_accession):
+    #     if term_accession in self.collected_terms:
+    #         return True
+    #     return False
+
     def term_available(self, term_accession):
-        for term in self.obo_file.terms:
-            if term_accession == term.accession:
-                return True
+        if term_accession in self.collected_terms:
+            return False
         return False
+
+    # def term_available(self, term_accession):
+    #     if term_accession in self.obo_file.terms:
+    #         return True
+    #     return False
 
     def get_ontology_name(self):
         ontology_name = None
@@ -114,6 +140,7 @@ class OBO_Parser:
             ontology = Ontology(name=ontology_name, lastUpdated=ontology_lastUpdated, author=ontology_author,
                                 version=ontology_version, generated=False)
             self.obo_file.ontologies.append(ontology)
+            self.collected_ontologies.add(ontology_name)
         except:
             print("name not found")
 
@@ -138,6 +165,7 @@ class OBO_Parser:
             term = Term(name=name, accession=node, definition=definition, is_obsolete=is_obsolete,
                         ontology_origin=node_prefix)
             self.obo_file.terms.append(term)
+            self.collected_terms.add(node)
 
             # add xrefs to relationships list
             # if xref:
@@ -158,6 +186,14 @@ class OBO_Parser:
             #             self.obo_file.terms.append(term)
             #             self.obo_file.relationships.append(relationship)
 
+            # node_prefix = node.split(":")[0].lower().rstrip()
+            if not self.ontology_available(node_prefix):
+                print("prefix", node_prefix)
+                ontology = Ontology(name=node_prefix, lastUpdated=ontology_lastUpdated, author=None,
+                                    version=None, generated=True)
+                self.obo_file.ontologies.append(ontology)
+                self.collected_ontologies.add(node_prefix)
+
             # ignore xrefs if no treat-header exists
             if xref and (treat_isa + treat_equivalent != [] or relationships_dict):
                 # print("executing xref")
@@ -175,6 +211,8 @@ class OBO_Parser:
                             ontology = Ontology(name=node_prefix, lastUpdated=ontology_lastUpdated, author=None,
                                                 version=None, generated=True)
                             self.obo_file.ontologies.append(ontology)
+                            self.collected_ontologies.add(node_prefix)
+
                         relationship = Relationships(node_from=node, node_to=x_reference, rel_type="is_a")
                         self.obo_file.relationships.append(relationship)
 
@@ -187,6 +225,8 @@ class OBO_Parser:
                             ontology = Ontology(name=node_prefix, lastUpdated=ontology_lastUpdated, author=None,
                                                 version=None, generated=True)
                             self.obo_file.ontologies.append(ontology)
+                            self.collected_ontologies.add(node_prefix)
+
                         relationship = Relationships(node_from=node, node_to=x_reference,
                                                      rel_type=relationships_dict.get(node_prefix))
                         self.obo_file.relationships.append(relationship)
@@ -200,6 +240,8 @@ class OBO_Parser:
                             ontology = Ontology(name=node_prefix, lastUpdated=ontology_lastUpdated, author=None,
                                                 version=None, generated=True)
                             self.obo_file.ontologies.append(ontology)
+                            self.collected_ontologies.add(node_prefix)
+
                         relationship = Relationships(node_from=node, node_to=x_reference,
                                                      rel_type="is_equivalent")
                         self.obo_file.relationships.append(relationship)
@@ -207,11 +249,6 @@ class OBO_Parser:
                                                      rel_type="is_equivalent")
                         self.obo_file.relationships.append(relationship)
 
-            node_prefix = node.split(":")[0].lower().rstrip()
-            if not self.ontology_available(node_prefix):
-                ontology = Ontology(name=node_prefix, lastUpdated=ontology_lastUpdated, author=None,
-                                    version=None, generated=True)
-                self.obo_file.ontologies.append(ontology)
 
             # search all child nodes of current node and add to relation list
             for child, parent, rel_type in graph.out_edges(node, keys=True):
@@ -225,6 +262,7 @@ class OBO_Parser:
                                 ontology_origin=node_prefix)
                     self.obo_file.terms.append(term)
                     self.obo_file.relationships.append(relationship)
+                    self.collected_terms.add(child)
 
             # print("processing node ", node)
 
@@ -232,5 +270,8 @@ class OBO_Parser:
 
         # print(self.obo_file.dict())
 
-        print("parsing finished: " +ontology_name)
+        # print("parsing finished: " +ontology_name)
+        print("hashset", self.collected_ontologies)
+        print("hashset", self.collected_terms)
+        # json.dump(self.obo_file.dict(), open( "obo.json", 'w' ) )
         return self.obo_file.dict()
