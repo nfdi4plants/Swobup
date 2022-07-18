@@ -274,4 +274,6 @@ class OBO_Parser:
         # print("hashset", self.collected_ontologies)
         # print("hashset", self.collected_terms)
         # json.dump(self.obo_file.dict(), open( "obo.json", 'w' ) )
+        print("parsing finished successfully")
+
         return self.obo_file.dict()

@@ -21,7 +21,7 @@ class GeneralDownloader:
         else:
             file = response.raw
 
-        print("resp", response.content)
+        # print("resp", response.content)
 
 
 
