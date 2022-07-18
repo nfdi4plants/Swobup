@@ -30,6 +30,6 @@ async def delete_template(payload: DeleteTemplatePayload):
         print("result", result)
 
 @router.delete("/clear")
-async def delete_template_all():
+async def delete_all_templates():
     result = delete_template_all_custom.delay()
     print("result", result)
