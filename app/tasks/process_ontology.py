@@ -11,11 +11,6 @@ from app.github.downloader import GitHubDownloader
 from app.helpers.obo_parser import OBO_Parser
 
 
-from app.helpers.oboparsing.models.term import Term
-from app.helpers.oboparsing.models.ontology import Ontology
-from app.helpers.oboparsing.models.relationships import Relationships
-from app.helpers.oboparsing.models.obo_file import OboFile
-
 @app.task
 def ontology_task(payload):
 

@@ -13,7 +13,7 @@ class Template(BaseModel):
     # Organisation: str
     Version: str
     TemplateJson: str
-    Authors: List[str]
+    Authors: List[Dict]
     Tags: List[Dict]
     ER: List[Dict]
     # LastUpdated: str
