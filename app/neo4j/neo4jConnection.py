@@ -3,6 +3,8 @@ import neo4j
 from neo4j import GraphDatabase
 import time
 
+from app.helpers.models.templates.template import Template
+
 
 class Neo4jConnection:
 
@@ -132,17 +134,15 @@ class Neo4jConnection:
                 '''
         return self.insert_data(statement_string, rows, batch_size)
 
-
     def delete_ontology(self, ontology_name):
 
-        query = "MATCH (n:Ontology) where n.name='"+str(ontology_name)+"' CALL { WITH n DETACH DELETE n} " \
-                                                                       "IN TRANSACTIONS OF 10000 ROWS;"
+        query = "MATCH (n:Ontology) where n.name='" + str(ontology_name) + "' CALL { WITH n DETACH DELETE n} " \
+                                                                           "IN TRANSACTIONS OF 10000 ROWS;"
 
         print("query", query)
 
         self.query(query)
         # return self.insert_data()
-
 
     def delete_database(self):
 
@@ -164,6 +164,53 @@ class Neo4jConnection:
         self.query('CREATE CONSTRAINT IF NOT EXISTS ON (t:Template) ASSERT t.id IS UNIQUE')
         self.query('CREATE FULLTEXT INDEX TermName IF NOT EXISTS FOR (n:Term) ON EACH [ n.name ]')
         self.query('CREATE FULLTEXT INDEX TermDescription IF NOT EXISTS FOR (n:Term) ON EACH [ n.description ]')
+
+    def update_template(self, data: Template):
+
+        print("data", data)
+
+        query = '''
+                MERGE (t:Template {id:$id})
+                SET t.name = $name
+                SET t.description = $description
+                SET t.version = $version
+                SET t.authors = $authors
+                SET t.templateJson = $templateJson
+                RETURN t
+                '''
+
+        session = self.__driver.session()
+        # response = list(session.run(query, parameters))
+
+        result = session.run(query, name=data.Name, id=data.Id, description=data.Description, version=data.Version,
+                             authors=str(data.Authors), templateJson=str(data.TemplateJson))
+
+        # result = self.query(query)
+        # record = result[0]["total"]
+        # return record
+
+        print("result", result)
+
+
+    def delete_template(self, template_id):
+        query = '''
+                MATCH (t:Template {id: $template_id}) DELETE t
+                '''
+
+        session = self.__driver.session()
+        result = session.run(query, template_id=template_id)
+
+        print("result", result)
+
+    def delete_template_all(self):
+        query = '''
+                MATCH (t:Template) DELETE t
+                '''
+
+        session = self.__driver.session()
+        result = session.run(query)
+
+        print("result", result)
 
 
 # conn = Neo4jConnection(uri="bolt://localhost:7687",

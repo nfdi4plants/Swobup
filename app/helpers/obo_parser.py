@@ -6,10 +6,10 @@ import pandas
 import re
 import datetime
 
-from app.helpers.oboparsing.models.term import Term
-from app.helpers.oboparsing.models.ontology import Ontology
-from app.helpers.oboparsing.models.relationships import Relationships
-from app.helpers.oboparsing.models.obo_file import OboFile
+from app.helpers.models.ontology.term import Term
+from app.helpers.models.ontology.ontology import Ontology
+from app.helpers.models.ontology.relationships import Relationships
+from app.helpers.models.ontology.obo_file import OboFile
 
 from resource import *
 

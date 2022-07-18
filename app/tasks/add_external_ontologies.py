@@ -17,11 +17,6 @@ from app.helpers.general_downloader import GeneralDownloader
 from resource import *
 
 
-from app.helpers.oboparsing.models.term import Term
-from app.helpers.oboparsing.models.ontology import Ontology
-from app.helpers.oboparsing.models.relationships import Relationships
-from app.helpers.oboparsing.models.obo_file import OboFile
-
 from app.custom.custom_payload import CustomPayload
 
 @app.task

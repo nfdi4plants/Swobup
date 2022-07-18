@@ -2,9 +2,9 @@ from typing import Optional, List, Dict
 
 from pydantic import BaseModel
 
-from app.helpers.oboparsing.models.term import Term
-from app.helpers.oboparsing.models.relationships import Relationships
-from app.helpers.oboparsing.models.ontology import Ontology
+from app.helpers.models.ontology.term import Term
+from app.helpers.models.ontology.relationships import Relationships
+from app.helpers.models.ontology.ontology import Ontology
 
 
 class OboFile(BaseModel):

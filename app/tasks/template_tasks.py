@@ -17,6 +17,8 @@ from app.helpers.swate_api import SwateAPI
 
 from app.helpers.models.templates.template import Template
 
+from app.neo4j.neo4jConnection import Neo4jConnection
+
 from resource import *
 
 @app.task
@@ -37,6 +39,33 @@ def add_template_custom(url):
 
     template = Template.parse_obj(converted_json)
 
-    print("t", template)
+    conn = Neo4jConnection(uri="bolt://127.0.0.1:7687",
+                           user="neo4j",
+                           pwd="test")
+    #conn.update_template2(template.dict())
+    conn.update_template(template)
+
+
+@app.task
+def delete_template_custom(template_id):
+    swate_url = "https://swate.nfdi4plants.de"
+
+    conn = Neo4jConnection(uri="bolt://127.0.0.1:7687",
+                           user="neo4j",
+                           pwd="test")
+
+    conn.delete_template(template_id)
+
+@app.task
+def delete_template_all_custom():
+    swate_url = "https://swate.nfdi4plants.de"
+
+    conn = Neo4jConnection(uri="bolt://127.0.0.1:7687",
+                           user="neo4j",
+                           pwd="test")
+
+    conn.delete_template_all()
+
+
 
 
