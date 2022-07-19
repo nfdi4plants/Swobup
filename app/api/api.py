@@ -9,6 +9,7 @@ from app.api.endpoints import clean_database
 from app.api.endpoints import initiate_database
 from app.api.endpoints import templates
 from app.api.endpoints import database
+from app.api.endpoints import ontology
 
 #from endpoints import ping
 
@@ -25,3 +26,5 @@ api_router.include_router(initiate_database.router, prefix="/setup", tags=["Data
 
 api_router.include_router(templates.router, prefix="/template", tags=["Templates"])
 api_router.include_router(database.router, prefix="/database", tags=["Database"])
+
+api_router.include_router(ontology.router, prefix="/ontology2", tags=["Ontologies-new"])

@@ -9,7 +9,8 @@ imports = ['app.tasks.process_ontology',
            'app.tasks.add_to_database',
            'app.tasks.delete_ontologies',
            'app.tasks.clear_database_task',
-           'app.tasks.template_tasks']
+           'app.tasks.template_tasks',
+           'app.tasks.ontology_tasks']
 
 app = Celery('tasks',
              backend=os.environ.get("CELERY_BACKEND"),
