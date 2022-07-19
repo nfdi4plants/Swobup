@@ -17,7 +17,6 @@ from app.custom.models.delete_ontology import DeleteOntologyPayload
 from app.github.downloader import GitHubDownloader
 from app.helpers.obo_parser import OBO_Parser
 
-
 from app.tasks.add_external_ontologies import add_extern_task
 from app.tasks.delete_ontologies import delete_ontology_task
 from app.tasks.add_to_database import write_to_db
@@ -26,9 +25,9 @@ from resource import *
 
 router = APIRouter()
 
+
 @router.post("")
 async def extern(payload: AddOntologyPayload):
-
     print("sending to celery...")
 
     bli = payload.url
@@ -69,8 +68,6 @@ async def extern(payload: AddOntologyPayload):
     # relations_df.to_csv("output-rel.csv", sep=',',index=None)
     # ontologies_df.to_csv("output-ont.csv", sep=',',index=None)
 
-
-
     # result = ontology_task.delay(bla)
     #
     # obo_file = result.get()
@@ -107,6 +104,5 @@ async def extern(payload: DeleteOntologyPayload):
     print("payload", payload)
 
     result = delete_ontology_task.delay(payload)
-
 
     return payload
