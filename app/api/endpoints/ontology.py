@@ -10,6 +10,7 @@ from fastapi import APIRouter, Body, Depends, HTTPException
 from app.github.webhook_payload import PushWebhookPayload
 
 from app.tasks.process_ontology import ontology_task
+from app.tasks.ontology_tasks import ontology_build_from_scratch
 
 from app.github.downloader import GitHubDownloader
 from app.helpers.obo_parser import OBO_Parser
@@ -21,6 +22,12 @@ from app.helpers.models.ontology.relationships import Relationships
 from app.helpers.models.ontology.obo_file import OboFile
 
 router = APIRouter()
+
+
+@router.put("/build", summary="Build and add ontologies from scratch")
+async def build_from_scratch():
+    result = ontology_build_from_scratch.delay()
+    print("result", result)
 
 @router.post("")
 async def update(payload: PushWebhookPayload):
