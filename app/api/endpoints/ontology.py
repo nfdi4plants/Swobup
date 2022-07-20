@@ -6,7 +6,7 @@ import pandas as pd
 from celery.result import AsyncResult
 from celery import chain
 
-from fastapi import APIRouter, Body, Depends, HTTPException
+from fastapi import APIRouter, Body, Depends, HTTPException, status
 from app.github.webhook_payload import PushWebhookPayload
 
 from app.tasks.process_ontology import ontology_task
@@ -28,6 +28,8 @@ router = APIRouter()
 async def build_from_scratch():
     result = ontology_build_from_scratch.delay()
     print("result", result)
+    res = result.get()
+    print("res", res)
 
 @router.post("")
 async def update(payload: PushWebhookPayload):
