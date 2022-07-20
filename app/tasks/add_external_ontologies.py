@@ -16,17 +16,21 @@ from app.helpers.general_downloader import GeneralDownloader
 
 from resource import *
 
-
 from app.custom.custom_payload import CustomPayload
 
-@app.task
-def add_extern_task(url):
 
+# class BaseTaskWithRetry(app.Task):
+#     autoretry_for = (Exception, KeyError)
+#     retry_kwargs = {'max_retries': 3}
+#     retry_backoff = True
+
+
+@app.task()
+def add_extern_task(url):
     general_downloader = GeneralDownloader(url)
     current_file = general_downloader.download_file()
 
     # print("after download:", getrusage(RUSAGE_SELF).ru_maxrss * 4096 / 1024 / 1024)
-
 
     # ontology_buffer = StringIO(current_file)
 
@@ -36,7 +40,7 @@ def add_extern_task(url):
     data = obo_parser.parse()
     print("parsing finished")
 
+
     # print("end of", getrusage(RUSAGE_SELF).ru_maxrss * 4096 / 1024 /1024)
 
     return data
-

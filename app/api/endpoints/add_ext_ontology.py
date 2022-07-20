@@ -21,10 +21,10 @@ from app.tasks.add_external_ontologies import add_extern_task
 from app.tasks.delete_ontologies import delete_ontology_task
 from app.tasks.add_to_database import write_to_db
 
+
 from resource import *
 
 router = APIRouter()
-
 
 @router.post("")
 async def extern(payload: AddOntologyPayload):
@@ -46,8 +46,8 @@ async def extern(payload: AddOntologyPayload):
 
     for url in payload.url:
         print("current_url", url)
+        chain(add_extern_task.s(url), write_to_db.s()).apply_async()
 
-        result = chain(add_extern_task.s(url), write_to_db.s()).apply_async()
 
     # print("result returned:", getrusage(RUSAGE_SELF).ru_maxrss * 4096 / 1024 / 1024)
 

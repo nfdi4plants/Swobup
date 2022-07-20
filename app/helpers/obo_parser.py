@@ -152,6 +152,8 @@ class OBO_Parser:
         # go through all nodes
         for node in nodes:
 
+            # print("current node", node)
+
             # current_dict = dict()
             name = graph.nodes[node].get("name", None)
             definition = graph.nodes[node].get("def", None)
