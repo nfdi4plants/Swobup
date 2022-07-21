@@ -1,7 +1,10 @@
 import obonet
 from io import StringIO
 import sys
+import requests
 import pandas as pd
+import json
+import base64
 
 from celery.result import AsyncResult
 from celery import chain
@@ -20,16 +23,59 @@ from app.helpers.models.ontology.term import Term
 from app.helpers.models.ontology.ontology import Ontology
 from app.helpers.models.ontology.relationships import Relationships
 from app.helpers.models.ontology.obo_file import OboFile
+from app.github.github_api import GithubAPI
+from app.helpers.general_downloader import GeneralDownloader
+
+from app.tasks.add_external_ontologies import add_extern_task
+from app.tasks.add_to_database import write_to_db
 
 router = APIRouter()
 
 
+# @router.put("/build", summary="Build and add ontologies from scratch")
+# async def build_from_scratch():
+#     result = ontology_build_from_scratch.delay()
+#     print("result", result)
+#     res = result.get()
+#     print("res", res)
+
 @router.put("/build", summary="Build and add ontologies from scratch")
 async def build_from_scratch():
-    result = ontology_build_from_scratch.delay()
-    print("result", result)
-    res = result.get()
-    print("res", res)
+
+    urls = []
+
+    repository_name = "nfdi4plants/nfdi4plants_ontology"
+    branch = "main"
+    github_api = GithubAPI(repository_name=repository_name, branch=branch)
+
+    tree = github_api.get_master_tree().get("tree")
+
+    print("tree", tree)
+
+    for file in tree:
+        current_path = github_api.convert_to_raw_url(file.get("path"))
+        if ".obo" in current_path:
+            urls.append(current_path)
+        if ".testobo" in current_path:
+            urls.append(current_path)
+        if ".include" in current_path:
+            # include_file = requests.get(current_path)
+            # data = json.loads(include_file.content)
+            # decoded_content = base64.b64decode(data["content"])
+            # url_list = decoded_content.decode().splitlines()
+            general_downlaoder = GeneralDownloader(current_path)
+            url_list = general_downlaoder.download_file()
+            for url in url_list:
+                if "ncbitaxon" in url.decode():
+                    continue
+                urls.append(url.decode().strip())
+
+    for url in urls:
+        print("url", urls)
+        chain(add_extern_task.s(url), write_to_db.s()).apply_async()
+
+
+
 
 @router.post("")
 async def update(payload: PushWebhookPayload):
