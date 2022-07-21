@@ -2,6 +2,13 @@ import os
 from dotenv import load_dotenv
 from celery import Celery
 
+s3_access_key_id = 'acces_key_id'
+s3_secret_access_key = 'acces_secret_access_key'
+s3_bucket = 'bucket_name'
+s3_base_path = '/prefix'
+s3_endpoint_url = 'https://.s3.custom.url'
+s3_region = 'us-east-1'
+
 load_dotenv()
 
 imports = ['app.tasks.process_ontology',
