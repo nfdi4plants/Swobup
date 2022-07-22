@@ -1,13 +1,7 @@
 import os
 from dotenv import load_dotenv
 from celery import Celery
-
-s3_access_key_id = 'acces_key_id'
-s3_secret_access_key = 'acces_secret_access_key'
-s3_bucket = 'bucket_name'
-s3_base_path = '/prefix'
-s3_endpoint_url = 'https://.s3.custom.url'
-s3_region = 'us-east-1'
+from celery.backends.s3 import S3Backend
 
 load_dotenv()
 
@@ -20,11 +14,20 @@ imports = ['app.tasks.process_ontology',
            'app.tasks.ontology_tasks']
 
 app = Celery('tasks',
-             backend=os.environ.get("CELERY_BACKEND"),
-             broker=os.environ.get("CELERY_BROKER"),
-             
+             # backend=os.environ.get("CELERY_BACKEND"),
+             backend='s3',
+             broker=os.environ.get("CELERY_BROKER")
              )
 
 print("celery started...")
 
 app.autodiscover_tasks(imports, force=True)
+
+app.conf["s3_bucket"] = 'frct-public'
+app.conf["s3_access_key_id"] = '2J1XRFN08O5Q8FPU66TY'
+app.conf["s3_secret_access_key"] = 'ZsbHYfXQvwVpKuuF+r1oldOitQGonL7Lv4T0/my+'
+app.conf["s3_base_path"] = '/swobup'
+app.conf["s3_endpoint_url"] = 'https://s3.bwsfs.de'
+app.conf["s3_region"] = 'us-east-1'
+
+print("sel", app.conf)
