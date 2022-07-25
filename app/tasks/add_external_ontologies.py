@@ -1,5 +1,6 @@
 import io
 
+import celery.result
 import obonet
 import networkx
 import datetime
@@ -13,6 +14,9 @@ from app.github.downloader import GitHubDownloader
 from app.helpers.obo_parser import OBO_Parser
 
 from app.helpers.general_downloader import GeneralDownloader
+from app.helpers.s3_storage import S3Storage
+
+from celery.result import AsyncResult
 
 from resource import *
 
@@ -25,8 +29,8 @@ from app.custom.custom_payload import CustomPayload
 #     retry_backoff = True
 
 
-@app.task()
-def add_extern_task(url):
+@app.task(bind=True)
+def add_extern_task(self, url):
     general_downloader = GeneralDownloader(url)
     current_file = general_downloader.download_file()
 
@@ -43,4 +47,13 @@ def add_extern_task(url):
 
     # print("end of", getrusage(RUSAGE_SELF).ru_maxrss * 4096 / 1024 /1024)
 
-    return data
+    # print("ID", celery.result.AsyncResult.result)
+    # print("task_id", self.request.id)
+    #
+    # s3_storage = S3Storage()
+    #
+    # s3_storage.download_one_file(self.request.id)
+
+    # return data
+
+    return  self.request.id
