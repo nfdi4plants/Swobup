@@ -12,21 +12,56 @@ from app.github.webhook_payload import PushWebhookPayload
 from app.github.downloader import GitHubDownloader
 from app.helpers.obo_parser import OBO_Parser
 
+from celery.result import AsyncResult
 
 from app.neo4j.neo4jConnection import Neo4jConnection
+import rabbitmq
 
 from app.helpers.s3_storage import S3Storage
 
+from celery.backends.s3 import S3Backend
+import json
 
-@app.task(bind=True)
-def write_to_db(self, data):
+
+@app.task
+def write_to_db(data):
     print("in write db")
-    print("id is now", data)
+    # print("id is now", data)
 
     # getting results from s3 storage
-    s3_storage = S3Storage()
+    #s3_storage = S3Storage()
 
-    data = s3_storage.download_one_file(data)
+    #data = s3_storage.download_one_file(data)
+    # data = AsyncResult(data, app=app)
+
+    backend = S3Backend(app=app)
+
+    # print(backend.bucket_name)
+    # print(backend.aws_access_key_id)
+    # print(backend.aws_secret_access_key)
+    # print(backend.get_status)
+    # print(backend.bucket_name)
+
+    # s3_key = str(app.conf.s3_base_path + "celery-task-meta-" + data)
+
+    # print("s3key", s3_key)
+
+    task_id = data.get("task_id")
+
+    print("task_id", task_id)
+
+    # res = backend.get(s3_key)
+    # bla = backend.get_key_for_task(task_id).decode()
+    bla = task_id
+    print("bla", bla)
+
+    data = backend.get(bla)
+
+    print("t", type(data))
+    data = json.loads(data)
+    print("d", type(data))
+
+    # print("res", res)
 
     # print("data", data)
     #
@@ -47,9 +82,13 @@ def write_to_db(self, data):
 
     # neo4j_connector = Neo4jConnection()
 
+    print("##", data.get("ontologies"))
+
     conn = Neo4jConnection(uri="bolt://127.0.0.1:7687",
                            user="neo4j",
                            pwd="test")
+
+
 
     status = conn.check()
 
@@ -69,6 +108,9 @@ def write_to_db(self, data):
         current_rel_df = relations_df.loc[relations_df["rel_type"] == relation_type]
         # print("adding relations of ", )
         conn.connect_term_relationships(current_rel_df, relation_type, batch_size=40000)
+
+    #
+    # return True
 
 
 @app.task

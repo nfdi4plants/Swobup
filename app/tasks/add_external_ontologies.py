@@ -22,6 +22,10 @@ from resource import *
 
 from app.custom.custom_payload import CustomPayload
 
+from celery.backends.s3 import S3Backend
+from tasks import app
+import json
+
 
 # class BaseTaskWithRetry(app.Task):
 #     autoretry_for = (Exception, KeyError)
@@ -44,7 +48,6 @@ def add_extern_task(self, url):
     data = obo_parser.parse()
     print("parsing finished")
 
-
     # print("end of", getrusage(RUSAGE_SELF).ru_maxrss * 4096 / 1024 /1024)
 
     # print("ID", celery.result.AsyncResult.result)
@@ -54,6 +57,16 @@ def add_extern_task(self, url):
     #
     # s3_storage.download_one_file(self.request.id)
 
-    # return data
+    backend = S3Backend(app=app)
 
-    return  self.request.id
+    s3_key = backend.get_key_for_task(self.request.id).decode()
+    s3_key = str(s3_key)+"-results"
+    print("s3_key", s3_key)
+    backend.set(key=s3_key, value=json.dumps(data))
+
+
+    res = {"task_id": str(s3_key)}
+
+    print("s3 uploaded...")
+
+    return res

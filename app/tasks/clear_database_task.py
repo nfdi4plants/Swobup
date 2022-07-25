@@ -11,6 +11,7 @@ def clear_database_task():
                            user="neo4j",
                            pwd="test")
 
-    result = conn.delete_database()
+    # result = conn.delete_database()
+    result = conn.delete_database_batch()
 
     return result
