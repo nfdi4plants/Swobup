@@ -113,6 +113,8 @@ class Neo4jConnection:
                 MERGE (t)-[:CONTAINED_IN]->(o)
                 RETURN count(*) as total
                 '''
+
+        print("adding ontos")
         return self.insert_data(query, rows, batch_size)
 
     def connect_term_relationships(self, rows, rel_type, batch_size=100000):
@@ -132,12 +134,23 @@ class Neo4jConnection:
                 MERGE (s)-[:`+rel_type`]->(t)
                 RETURN count(*) as total
                 '''
+
+        print("connecting rels")
         return self.insert_data(statement_string, rows, batch_size)
 
     def delete_ontology(self, ontology_name):
 
         query = "MATCH (n:Ontology) where n.name='" + str(ontology_name) + "' CALL { WITH n DETACH DELETE n} " \
                                                                            "IN TRANSACTIONS OF 10000 ROWS;"
+
+        print("query", query)
+
+        self.query(query)
+        # return self.insert_data()
+
+    def delete_database_batch(self):
+
+        query = "MATCH (n) CALL { WITH n DETACH DELETE n} IN TRANSACTIONS OF 100000 ROWS;"
 
         print("query", query)
 
