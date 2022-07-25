@@ -15,10 +15,19 @@ from app.helpers.obo_parser import OBO_Parser
 
 from app.neo4j.neo4jConnection import Neo4jConnection
 
+from app.helpers.s3_storage import S3Storage
 
-@app.task
-def write_to_db(data):
+
+@app.task(bind=True)
+def write_to_db(self, data):
     print("in write db")
+    print("id is now", data)
+
+    # getting results from s3 storage
+    s3_storage = S3Storage()
+
+    data = s3_storage.download_one_file(data)
+
     # print("data", data)
     #
     # terms = data.get("terms")
