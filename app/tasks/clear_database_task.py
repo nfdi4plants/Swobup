@@ -12,6 +12,6 @@ def clear_database_task():
                            pwd="test")
 
     # result = conn.delete_database()
-    result = conn.delete_database_batch()
+    result = conn.delete_database()
 
     return result
