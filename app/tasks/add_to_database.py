@@ -15,7 +15,6 @@ from app.helpers.obo_parser import OBO_Parser
 from celery.result import AsyncResult
 
 from app.neo4j.neo4jConnection import Neo4jConnection
-import rabbitmq
 
 from app.helpers.s3_storage import S3Storage
 
