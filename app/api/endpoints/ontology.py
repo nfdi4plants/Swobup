@@ -29,6 +29,10 @@ from app.helpers.general_downloader import GeneralDownloader
 from app.tasks.add_external_ontologies import add_extern_task
 from app.tasks.add_to_database import write_to_db
 
+from app.custom.models.add_ontology import AddOntologyPayload
+from app.custom.models.delete_ontology import DeleteOntologyPayload
+from app.tasks.delete_ontologies import delete_ontology_task
+
 router = APIRouter()
 
 
@@ -75,6 +79,27 @@ async def build_from_scratch():
         chain(add_extern_task.s(url), write_to_db.s()).apply_async()
 
 
+@router.delete("")
+async def extern(payload: DeleteOntologyPayload):
+    urls = payload.url
+    ontologies = payload.ontology
+
+    payload = payload.dict()
+
+    print("url", urls)
+    print("ontologies", ontologies)
+
+    if urls:
+        print("TODO")
+
+    if ontologies:
+        print("yes")
+
+    print("payload", payload)
+
+    result = delete_ontology_task.delay(payload)
+
+    return payload
 
 
 @router.post("")
