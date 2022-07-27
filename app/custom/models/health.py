@@ -10,5 +10,5 @@ class Services(BaseModel):
 
 
 class Health(BaseModel):
-    services:Services
+    services: Services
     status: str

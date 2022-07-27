@@ -78,7 +78,8 @@ async def build_from_scratch():
         chain(add_ontology_task.s(url), add_ontologies.s()).apply_async()
 
 
-@router.post("", summary="Add ontology by URL")
+@router.post("", summary="Add ontology by URL",
+             status_code=status.HTTP_201_CREATED)
 async def add_ontology(payload: AddOntologyPayload):
     print("sending to celery...")
 
