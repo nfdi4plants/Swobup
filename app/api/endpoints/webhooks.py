@@ -12,7 +12,7 @@ from celery import chain
 from fastapi import APIRouter, Body, Depends, HTTPException, status
 from app.github.webhook_payload import PushWebhookPayload
 
-from app.tasks.process_ontology import ontology_task
+from app.tasks.ontology_tasks import ontology_task_temp
 from app.tasks.ontology_tasks import ontology_build_from_scratch
 
 from app.github.downloader import GitHubDownloader
@@ -26,12 +26,10 @@ from app.helpers.models.ontology.obo_file import OboFile
 from app.github.github_api import GithubAPI
 from app.helpers.general_downloader import GeneralDownloader
 
-from app.tasks.add_external_ontologies import add_extern_task
-from app.tasks.add_to_database import write_to_db
+from app.tasks.database_tasks import add_ontologies
 
 from app.custom.models.add_ontology import AddOntologyPayload
 from app.custom.models.delete_ontology import DeleteOntologyPayload
-from app.tasks.delete_ontologies import delete_ontology_task
 
 router = APIRouter()
 
