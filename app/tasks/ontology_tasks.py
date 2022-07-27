@@ -31,7 +31,9 @@ from app.neo4j.neo4jConnection import Neo4jConnection
 
 from resource import *
 
-from app.tasks.add_to_database import write_to_db
+from app.tasks.database_tasks import add_ontologies
+
+from celery.backends.s3 import S3Backend
 
 @app.task
 def add_ontology(url):
@@ -54,6 +56,7 @@ def add_ontology(url):
 
     return data
 
+# old task
 @app.task
 def add_ontology_from_scratch(file_object:dict):
 
@@ -74,7 +77,7 @@ def add_ontology_from_scratch(file_object:dict):
         for url in url_list:
             if "ncbitaxon" in url:
                 continue
-            result = chain(add_ontology.s(url), write_to_db.s()).apply_async()
+            result = chain(add_ontology.s(url), add_ontologies.s()).apply_async()
             print("resutl", result)
 
 
@@ -83,6 +86,7 @@ def add_ontology_from_scratch(file_object:dict):
 
         # return data
 
+# old task
 @app.task
 def ontology_build_from_scratch():
     # swate_url = "https://swate.nfdi4plants.de"
@@ -131,49 +135,123 @@ def ontology_build_from_scratch():
         print("file is", build_type)
         result = add_ontology_from_scratch.delay(build_type)
 
-    # print(building_objects.dict())
-    #
-    # return building_objects.dict()
-
     print("finished", result)
-    # print("file_list", files)
-    # for file in files:
-    #     result = requests.get(file)
-    #     data = json.loads(result.content)
-    #     print("data", data)
-    #     decoded_content = base64.b64decode(data["content"])
-    #     print("dec", decoded_content)
-
-    # print("files", files)
-
-        # swate_url = "https://swate.nfdi4plants.de"
-        # swate_api = SwateAPI(swate_url)
-        # converted_json = swate_api.convert_xslx(decoded_content)
 
 
-        # obo_parser = OBO_Parser(decoded_content)
-        # data = obo_parser.parse()
-        #
-        #
-        # conn = Neo4jConnection(uri="bolt://127.0.0.1:7687",
-        #                        user="neo4j",
-        #                        pwd="test")
-        # # conn.update_template2(template.dict())
-        # conn.add_ontologies()
+@app.task
+def delete_ontology_task(payload):
 
-    @app.task
-    def delete_ontology_task(payload):
+    conn = Neo4jConnection(uri="bolt://127.0.0.1:7687",
+                           user="neo4j",
+                           pwd="test")
 
-        conn = Neo4jConnection(uri="bolt://127.0.0.1:7687",
-                               user="neo4j",
-                               pwd="test")
+    print("payload", payload)
 
-        print("payload", payload)
+    if payload.get("url"):
+        print("url is available")
 
-        if payload.get("url"):
-            print("url is available")
+    if payload.get("ontology"):
+        print("ontologies were given")
+        for ontology_name in payload.get("ontology"):
+            conn.delete_ontology(ontology_name)
 
-        if payload.get("ontology"):
-            print("ontologies were given")
-            for ontology_name in payload.get("ontology"):
-                conn.delete_ontology(ontology_name)
+
+@app.task(bind=True)
+def add_ontology_task(self, url):
+    general_downloader = GeneralDownloader(url)
+    current_file = general_downloader.download_file()
+
+    # print("after download:", getrusage(RUSAGE_SELF).ru_maxrss * 4096 / 1024 / 1024)
+
+    # ontology_buffer = StringIO(current_file)
+
+    ontology_buffer = io.TextIOWrapper(current_file, newline=None)
+
+    obo_parser = OBO_Parser(ontology_buffer)
+    data = obo_parser.parse()
+    print("parsing finished")
+
+    # print("end of", getrusage(RUSAGE_SELF).ru_maxrss * 4096 / 1024 /1024)
+
+    # print("ID", celery.result.AsyncResult.result)
+    # print("task_id", self.request.id)
+    #
+    # s3_storage = S3Storage()
+    #
+    # s3_storage.download_one_file(self.request.id)
+
+    backend = S3Backend(app=app)
+
+    s3_key = backend.get_key_for_task(self.request.id).decode()
+    s3_key = str(s3_key)+"-results"
+    print("s3_key", s3_key)
+    backend.set(key=s3_key, value=json.dumps(data))
+
+
+    res = {"task_id": str(s3_key)}
+
+    print("s3 uploaded...")
+
+    return res
+
+@app.task
+def delete_ontology_task(payload):
+
+    conn = Neo4jConnection(uri="bolt://127.0.0.1:7687",
+                           user="neo4j",
+                           pwd="test")
+
+    print("payload", payload)
+
+    if payload.get("url"):
+        print("url is available")
+
+    if payload.get("ontology"):
+        print("ontologies were given")
+        for ontology_name in payload.get("ontology"):
+            conn.delete_ontology(ontology_name)
+
+
+# is this needed ?
+@app.task
+def ontology_task_temp(payload):
+
+    print("payload", payload)
+
+    print("commits")
+    print(payload.get("commits"))
+
+    commits = payload.get("commits")
+    repository_full_name = payload.get("repository").get("full_name")
+    commit_hash = payload.get("after")
+
+    print(repository_full_name)
+    print(commit_hash)
+
+    # repository_full_name = payload.repository.full_name
+    # commit_hash = payload.after
+
+    for commit in commits:
+        print("commit", commit)
+        # print(commit.modified)
+        for file in commit.get("modified"):
+            github_downloader = GitHubDownloader(file, repository_full_name, commit_hash)
+            current_file = github_downloader.download_file().decode()
+
+            ontology_buffer = StringIO(current_file)
+
+            # graph = obonet.read_obo(ontology_buffer)
+
+            obo_parser = OBO_Parser(ontology_buffer)
+
+
+            data = obo_parser.parse()
+
+            # df = pd.DataFrame(data.get("terms"))
+
+            print(data)
+
+            #df.to_csv("output.csv", sep=',')#
+
+
+    return data

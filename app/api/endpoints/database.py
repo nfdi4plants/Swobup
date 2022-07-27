@@ -10,7 +10,6 @@ from fastapi import APIRouter, Body, Depends, HTTPException, status
 from fastapi.responses import PlainTextResponse, JSONResponse, HTMLResponse
 from app.github.webhook_payload import PushWebhookPayload
 
-from app.tasks.process_ontology import ontology_task
 from app.custom.custom_payload import CustomPayload
 from app.custom.models.add_ontology import AddOntologyPayload
 from app.custom.models.delete_ontology import DeleteOntologyPayload, DeleteOntologyResponse
@@ -18,11 +17,9 @@ from app.custom.models.delete_ontology import DeleteOntologyPayload, DeleteOntol
 from app.github.downloader import GitHubDownloader
 from app.helpers.obo_parser import OBO_Parser
 
-from app.tasks.add_external_ontologies import add_extern_task
-from app.tasks.delete_ontologies import delete_ontology_task
-from app.tasks.add_to_database import write_to_db
+from app.tasks.database_tasks import add_ontologies
 
-from app.tasks.clear_database_task import clear_database_task
+from app.tasks.database_tasks import clear_database_task
 from app.neo4j.neo4jConnection import Neo4jConnection
 
 from resource import *

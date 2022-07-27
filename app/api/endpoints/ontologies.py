@@ -12,7 +12,6 @@ from celery import chain
 from fastapi import APIRouter, Body, Depends, HTTPException, status
 from app.github.webhook_payload import PushWebhookPayload
 
-from app.tasks.process_ontology import ontology_task
 from app.tasks.ontology_tasks import ontology_build_from_scratch
 
 from app.github.downloader import GitHubDownloader
@@ -26,12 +25,12 @@ from app.helpers.models.ontology.obo_file import OboFile
 from app.github.github_api import GithubAPI
 from app.helpers.general_downloader import GeneralDownloader
 
-from app.tasks.add_external_ontologies import add_extern_task
-from app.tasks.add_to_database import write_to_db
+from app.tasks.ontology_tasks import add_ontology_task
+from app.tasks.database_tasks import add_ontologies
 
 from app.custom.models.add_ontology import AddOntologyPayload
 from app.custom.models.delete_ontology import DeleteOntologyPayload
-from app.tasks.delete_ontologies import delete_ontology_task
+from app.tasks.ontology_tasks import delete_ontology_task
 
 router = APIRouter()
 
@@ -76,7 +75,7 @@ async def build_from_scratch():
 
     for url in urls:
         print("url", urls)
-        chain(add_extern_task.s(url), write_to_db.s()).apply_async()
+        chain(add_ontology_task.s(url), add_ontologies.s()).apply_async()
 
 
 @router.post("", summary="Add ontology by URL")
@@ -99,7 +98,7 @@ async def add_ontology(payload: AddOntologyPayload):
 
     for url in payload.url:
         print("current_url", url)
-        result = chain(add_extern_task.s(url), write_to_db.s()).apply_async()
+        result = chain(add_ontology_task.s(url), add_ontologies.s()).apply_async()
 
 
 
@@ -124,3 +123,8 @@ async def delete_ontology(payload: DeleteOntologyPayload):
     result = delete_ontology_task.delay(payload)
 
     return payload
+
+@router.delete("/clear", summary="Delete all ontologies")
+async def delete_all_templates():
+    #result = delete_template_all_custom.delay()
+    print("TODO: This has to be implemented")
