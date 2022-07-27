@@ -9,7 +9,8 @@ router = APIRouter()
 
 @router.get("", response_model=Health,
             responses={200: {"model": Health}, 503: {"model": Health}},
-            status_code=status.HTTP_200_OK)
+            status_code=status.HTTP_200_OK,
+            summary="Get health status of services")
 async def status():
     conn = Neo4jConnection(uri="bolt://localhost:7687",
                            user="neo4j",
