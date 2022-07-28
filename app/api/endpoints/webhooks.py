@@ -9,10 +9,10 @@ import base64
 from celery.result import AsyncResult
 from celery import chain
 
-from fastapi import APIRouter, Body, Depends, HTTPException, status
+from fastapi import APIRouter, Body, Depends, HTTPException, status, Response
 from app.github.webhook_payload import PushWebhookPayload
 
-from app.tasks.ontology_tasks import ontology_task_temp
+from app.tasks.ontology_tasks import ontology_webhoook_task
 from app.tasks.ontology_tasks import ontology_build_from_scratch
 
 from app.github.downloader import GitHubDownloader
@@ -34,7 +34,8 @@ from app.custom.models.delete_ontology import DeleteOntologyPayload
 router = APIRouter()
 
 
-@router.post("/ontology", summary="Ontology Webhook")
+@router.post("/ontology", summary="Ontology Webhook", status_code=status.HTTP_204_NO_CONTENT,
+             response_class=Response)
 async def ontology(payload: PushWebhookPayload):
 
     print("sending to celery...")
@@ -43,90 +44,34 @@ async def ontology(payload: PushWebhookPayload):
 
     # bla = {"bla":"blu"}
 
-    bla = payload.dict()
+    payload_dictionary = payload
 
 
-    result = ontology_task.delay(bla)
+    # print("pay", payload_dictionary)
 
+    print("payload", payload.dict())
 
-    #print("result:", result.get())
-
-    obo_file = result.get()
-
-    print("file", obo_file)
-
-
-    # obo_model = OboFile.parse_obj(obo_file)
-
-    # print("modell:", obo_file)
+    # commits = payload.commits.pop()
     #
-    # print(obo_file)
+    # modified = commits.modified
+    # added = commits.added
+    # removed = commits.removed
+    #
+    # print("1", modified)
+    # print(added)
+    # print(removed)
 
-    data = obo_file.get("terms")
+    # update_files = modified + added
 
 
+    #
+    # for file in update_files:
+    #     if ".obo" in file:
 
-
-    print("results")
-    result_df = pd.DataFrame(data)
-
-    result_df.to_csv("output.csv", sep=',')
-
-    relations_df = pd.DataFrame(obo_file.get("relationships"))
-    ontologies_df = pd.DataFrame(obo_file.get("ontologies"))
-
-    relations_df.to_csv("output-rel.csv", sep=',')
-    ontologies_df.to_csv("output-ont.csv", sep=',')
-
-    # print(result_df)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
 
-    # print("in ontology")
-    # print("payload", payload)
-    # print("respository:", payload.repository)
-    # # print("author:", payload.author)
-    # print("commits:", payload.commits)
-    # print("sender:", payload.sender)
-    # print("pusher:", payload.pusher)
-    #
-    # print("hash: ", payload.after)
-    #
-    # print("email:", payload.pusher.email)
-    #
-    #
-    #
-    # repository_full_name = payload.repository.full_name
-    # commit_hash = payload.after
-    #
-    # commits = payload.commits
-    #
-    # for commit in commits:
-    #     print(commit.modified)
-    #     for file in commit.modified:
-    #         github_downloader = GitHubDownloader(file, repository_full_name, commit_hash)
-    #         current_file = github_downloader.download_file().decode()
-    #
-    #         # print(current_file)
-    #
-    #         ontology_buffer = StringIO(current_file)
-    #
-    #         print(ontology_buffer)
-    #
-    #         # graph = obonet.read_obo(ontology_buffer)
-    #
-    #         obo_parser = OBO_Parser(ontology_buffer)
-    #
-    #         data = obo_parser.parse()
-    #
-    #         df = pd.DataFrame(data)
-    #
-    #         print(df)
-    #
-    #         df.to_csv("output.csv", sep=',')
-
-
-    # github_downloader = GitHubDownloader()
 
 
 

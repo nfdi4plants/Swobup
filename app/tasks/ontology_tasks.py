@@ -214,7 +214,7 @@ def delete_ontology_task(payload):
 
 # is this needed ?
 @app.task
-def ontology_task_temp(payload):
+def ontology_webhoook_task(payload):
 
     print("payload", payload)
 
@@ -234,7 +234,10 @@ def ontology_task_temp(payload):
     for commit in commits:
         print("commit", commit)
         # print(commit.modified)
-        for file in commit.get("modified"):
+        modified = commit.get("modified")
+        added = commit.get("added")
+        update_files = modified + added
+        for file in update_files:
             github_downloader = GitHubDownloader(file, repository_full_name, commit_hash)
             current_file = github_downloader.download_file().decode()
 
