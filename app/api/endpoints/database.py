@@ -6,7 +6,7 @@ import pandas as pd
 from celery.result import AsyncResult
 from celery import chain
 
-from fastapi import APIRouter, Body, Depends, HTTPException, status
+from fastapi import APIRouter, Body, Depends, HTTPException, status, Response
 from fastapi.responses import PlainTextResponse, JSONResponse, HTMLResponse
 from app.github.webhook_payload import PushWebhookPayload
 
@@ -27,7 +27,7 @@ from resource import *
 router = APIRouter()
 
 
-@router.delete("/clear", response_model=DeleteOntologyResponse, status_code=status.HTTP_201_CREATED,
+@router.delete("/clear", response_model=DeleteOntologyResponse, status_code=status.HTTP_200_OK,
                summary="Clear database")
 async def clear_database():
     print("deleting database")
@@ -41,7 +41,8 @@ async def clear_database():
     )
 
 
-@router.put("/init", summary="Initiate database and setting constraints")
+@router.put("/init", summary="Initiate database and setting constraints", status_code=status.HTTP_204_NO_CONTENT,
+             response_class=Response)
 async def initiate_db():
     conn = Neo4jConnection(uri="bolt://localhost:7687",
                            user="neo4j",
@@ -49,4 +50,4 @@ async def initiate_db():
 
     conn.set_constraints()
 
-    return JSONResponse(status_code=201, content="bla")
+    return Response(status_code=status.HTTP_204_NO_CONTENT)

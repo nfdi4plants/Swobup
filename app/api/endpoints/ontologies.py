@@ -9,14 +9,13 @@ import base64
 from celery.result import AsyncResult
 from celery import chain
 
-from fastapi import APIRouter, Body, Depends, HTTPException, status
+from fastapi import APIRouter, Body, Depends, HTTPException, status, Response
 from app.github.webhook_payload import PushWebhookPayload
 
 from app.tasks.ontology_tasks import ontology_build_from_scratch
 
 from app.github.downloader import GitHubDownloader
 from app.helpers.obo_parser import OBO_Parser
-
 
 from app.helpers.models.ontology.term import Term
 from app.helpers.models.ontology.ontology import Ontology
@@ -42,9 +41,9 @@ router = APIRouter()
 #     res = result.get()
 #     print("res", res)
 
-@router.put("/build", summary="Build and add ontologies from scratch")
+@router.put("/build", summary="Build and add ontologies from scratch", status_code=status.HTTP_204_NO_CONTENT,
+            response_class=Response)
 async def build_from_scratch():
-
     urls = []
 
     repository_name = "nfdi4plants/nfdi4plants_ontology"
@@ -77,9 +76,12 @@ async def build_from_scratch():
         print("url", urls)
         chain(add_ontology_task.s(url), add_ontologies.s()).apply_async()
 
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
 
 @router.post("", summary="Add ontology by URL",
-             status_code=status.HTTP_201_CREATED)
+             status_code=status.HTTP_201_CREATED,
+             response_class=Response)
 async def add_ontology(payload: AddOntologyPayload):
     print("sending to celery...")
 
@@ -101,9 +103,11 @@ async def add_ontology(payload: AddOntologyPayload):
         print("current_url", url)
         result = chain(add_ontology_task.s(url), add_ontologies.s()).apply_async()
 
+    return Response(status_code=status.HTTP_201_CREATED)
 
 
-@router.delete("", summary="Delete ontology by name")
+@router.delete("", summary="Delete ontology by name", status_code=status.HTTP_204_NO_CONTENT,
+            response_class=Response)
 async def delete_ontology(payload: DeleteOntologyPayload):
     urls = payload.url
     ontologies = payload.ontology
@@ -123,9 +127,15 @@ async def delete_ontology(payload: DeleteOntologyPayload):
 
     result = delete_ontology_task.delay(payload)
 
-    return payload
+    # return payload
 
-@router.delete("/clear", summary="Delete all ontologies")
-async def delete_all_templates():
-    #result = delete_template_all_custom.delay()
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@router.delete("/clear", summary="Delete all ontologies", status_code=status.HTTP_204_NO_CONTENT,
+            response_class=Response)
+async def delete_all_ontologies():
+    # result = delete_template_all_custom.delay()
     print("TODO: This has to be implemented")
+
+    return Response(status_code=status.HTTP_204_NO_CONTENT)

@@ -226,6 +226,17 @@ class Neo4jConnection:
         print("result", result)
 
 
+    def list_terms_of_ontology(self, ontology_name):
+        query = '''
+                MATCH (Ontology {name: $ontology_name})--(term)
+                RETURN term
+                '''
+
+        session = self.__driver.session()
+        result = session.run(query, ontology_name=ontology_name)
+
+        return result
+
 # conn = Neo4jConnection(uri="bolt://localhost:7687",
 #                        user="neo4j",
 #                        pwd="test")
