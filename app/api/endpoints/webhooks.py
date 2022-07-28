@@ -41,19 +41,26 @@ from app.tasks.template_tasks import add_template_custom, delete_template_custom
 
 from app.github.github_api import GithubAPI
 
+
 from app.neo4j.neo4jConnection import Neo4jConnection
 
 router = APIRouter()
 
 
 @router.post("/ontology", summary="Ontology Webhook", status_code=status.HTTP_204_NO_CONTENT,
-             response_class=Response)
+             response_class=Response,  dependencies=[Depends(github_authentication)])
 async def ontology(request: Request, payload: PushWebhookPayload):
     print("sending to celery...")
 
     payload_dictionary = payload
 
     body = await request.body()
+
+    # secret = os.environ.get("GITHUB_SECRET").encode("utf-8")
+    # signature = generate_hash_signature(secret, payload)
+    # print("checking signature")
+    # if x_hub_signature != f"sha1={signature}":
+    #     raise HTTPException(status_code=401, detail="Authentication error.")
 
     print("body", body)
 
@@ -92,7 +99,7 @@ async def ontology(request: Request, payload: PushWebhookPayload):
 
 
 @router.post("/template", summary="Template Webhook", status_code=status.HTTP_204_NO_CONTENT,
-             response_class=Response)
+             response_class=Response, dependencies=[Depends(github_authentication)])
 async def template(request: Request, payload: PushWebhookPayload):
     body = await request.body()
 

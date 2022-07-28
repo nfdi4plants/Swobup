@@ -31,6 +31,8 @@ from app.custom.models.add_ontology import AddOntologyPayload
 from app.custom.models.delete_ontology import DeleteOntologyPayload
 from app.tasks.ontology_tasks import delete_ontology_task
 
+from app.api.middlewares.http_basic_auth import *
+
 router = APIRouter()
 
 
@@ -42,7 +44,7 @@ router = APIRouter()
 #     print("res", res)
 
 @router.put("/build", summary="Build and add ontologies from scratch", status_code=status.HTTP_204_NO_CONTENT,
-            response_class=Response)
+            response_class=Response, dependencies=[Depends(basic_auth)])
 async def build_from_scratch():
     urls = []
 
@@ -68,8 +70,8 @@ async def build_from_scratch():
             general_downlaoder = GeneralDownloader(current_path)
             url_list = general_downlaoder.download_file()
             for url in url_list:
-                if "ncbitaxon" in url.decode():
-                    continue
+                # if "ncbitaxon" in url.decode():
+                #     continue
                 urls.append(url.decode().strip())
 
     for url in urls:
@@ -81,7 +83,8 @@ async def build_from_scratch():
 
 @router.post("", summary="Add ontology by URL",
              status_code=status.HTTP_201_CREATED,
-             response_class=Response)
+             response_class=Response,
+             dependencies=[Depends(basic_auth)])
 async def add_ontology(payload: AddOntologyPayload):
     print("sending to celery...")
 
@@ -107,7 +110,8 @@ async def add_ontology(payload: AddOntologyPayload):
 
 
 @router.delete("", summary="Delete ontology by name", status_code=status.HTTP_204_NO_CONTENT,
-            response_class=Response)
+               response_class=Response,
+               dependencies=[Depends(basic_auth)])
 async def delete_ontology(payload: DeleteOntologyPayload):
     urls = payload.url
     ontologies = payload.ontology
@@ -133,7 +137,8 @@ async def delete_ontology(payload: DeleteOntologyPayload):
 
 
 @router.delete("/clear", summary="Delete all ontologies", status_code=status.HTTP_204_NO_CONTENT,
-            response_class=Response)
+               response_class=Response,
+               dependencies=[Depends(basic_auth)])
 async def delete_all_ontologies():
     # result = delete_template_all_custom.delay()
     print("TODO: This has to be implemented")
