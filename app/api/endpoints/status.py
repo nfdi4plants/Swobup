@@ -13,9 +13,7 @@ router = APIRouter()
             summary="Get health status of services",
             )
 async def status():
-    conn = Neo4jConnection(uri="bolt://localhost:7687",
-                           user="neo4j",
-                           pwd="test")
+    conn = Neo4jConnection()
 
     db_status = conn.check()
     # status = "OK"

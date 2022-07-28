@@ -141,9 +141,7 @@ def ontology_build_from_scratch():
 @app.task
 def delete_ontology_task(payload):
 
-    conn = Neo4jConnection(uri="bolt://127.0.0.1:7687",
-                           user="neo4j",
-                           pwd="test")
+    conn = Neo4jConnection()
 
     print("payload", payload)
 
@@ -196,9 +194,7 @@ def add_ontology_task(self, url):
 @app.task
 def delete_ontology_task(payload):
 
-    conn = Neo4jConnection(uri="bolt://127.0.0.1:7687",
-                           user="neo4j",
-                           pwd="test")
+    conn = Neo4jConnection()
 
     print("payload", payload)
 
