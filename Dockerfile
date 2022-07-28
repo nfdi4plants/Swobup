@@ -6,7 +6,7 @@ COPY ./requirements.txt /swobup/requirements.txt
 
 RUN pip install --no-cache-dir --upgrade -r /swobup/requirements.txt
 
-COPY ./app /swobup/app
+COPY . /swobup
 
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80"]
 CMD ["celery", "-A" ,"swobup.tasks", "worker", "-l", "info"]
