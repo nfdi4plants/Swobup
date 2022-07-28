@@ -8,6 +8,9 @@ RUN pip install --no-cache-dir --upgrade -r /swobup/requirements.txt
 
 COPY . /swobup
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80"]
-CMD ["celery", "-A" ,"swobup.tasks", "worker", "-l", "info"]
-CMD ["celery", "-A", "swobup.tasks", "flower", "-l", "info", "--port", "1111"]
+COPY init.sh /usr/local/bin/
+RUN chmod u+x /usr/local/bin/init.sh
+
+EXPOSE 8000 1111
+
+ENTRYPOINT ["init.sh"]
