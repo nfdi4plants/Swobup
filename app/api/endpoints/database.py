@@ -2,9 +2,12 @@ import obonet
 from io import StringIO
 import sys
 import pandas as pd
+import secrets
 
 from celery.result import AsyncResult
 from celery import chain
+
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
 from fastapi import APIRouter, Body, Depends, HTTPException, status, Response
 from fastapi.responses import PlainTextResponse, JSONResponse, HTMLResponse
@@ -22,13 +25,15 @@ from app.tasks.database_tasks import add_ontologies
 from app.tasks.database_tasks import clear_database_task
 from app.neo4j.neo4jConnection import Neo4jConnection
 
+from app.api.middlewares.http_basic_auth import *
+
 from resource import *
 
 router = APIRouter()
 
 
 @router.delete("/clear", response_model=DeleteOntologyResponse, status_code=status.HTTP_200_OK,
-               summary="Clear database")
+               summary="Clear database", dependencies=[Depends(basic_auth)])
 async def clear_database():
     print("deleting database")
 
@@ -42,7 +47,7 @@ async def clear_database():
 
 
 @router.put("/init", summary="Initiate database and setting constraints", status_code=status.HTTP_204_NO_CONTENT,
-             response_class=Response)
+             response_class=Response, dependencies=[Depends(basic_auth)])
 async def initiate_db():
     conn = Neo4jConnection(uri="bolt://localhost:7687",
                            user="neo4j",
