@@ -187,7 +187,6 @@ def add_ontology_task(self, url):
     print("s3_key", s3_key)
     backend.set(key=s3_key, value=json.dumps(data))
 
-
     res = {"task_id": str(s3_key)}
 
     print("s3 uploaded...")
