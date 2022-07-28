@@ -43,9 +43,7 @@ def add_template_custom(url):
 
     template = Template.parse_obj(converted_json)
 
-    conn = Neo4jConnection(uri="bolt://127.0.0.1:7687",
-                           user="neo4j",
-                           pwd="test")
+    conn = Neo4jConnection()
     # conn.update_template2(template.dict())
     conn.update_template(template)
 
@@ -54,9 +52,7 @@ def add_template_custom(url):
 def delete_template_custom(template_id):
     swate_url = "https://swate.nfdi4plants.de"
 
-    conn = Neo4jConnection(uri="bolt://127.0.0.1:7687",
-                           user="neo4j",
-                           pwd="test")
+    conn = Neo4jConnection()
 
     conn.delete_template(template_id)
 
@@ -65,9 +61,7 @@ def delete_template_custom(template_id):
 def delete_template_all_custom():
     swate_url = "https://swate.nfdi4plants.de"
 
-    conn = Neo4jConnection(uri="bolt://127.0.0.1:7687",
-                           user="neo4j",
-                           pwd="test")
+    conn = Neo4jConnection()
 
     conn.delete_template_all()
 
@@ -115,9 +109,7 @@ def template_build_from_scratch():
 
         template = Template.parse_obj(converted_json)
 
-        conn = Neo4jConnection(uri="bolt://127.0.0.1:7687",
-                               user="neo4j",
-                               pwd="test")
+        conn = Neo4jConnection()
         # conn.update_template2(template.dict())
         conn.update_template(template)
 

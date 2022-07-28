@@ -1,3 +1,5 @@
+import os
+
 import neo4j
 
 from neo4j import GraphDatabase
@@ -8,10 +10,13 @@ from app.helpers.models.templates.template import Template
 
 class Neo4jConnection:
 
-    def __init__(self, uri, user, pwd):
-        self.__uri = uri
-        self.__user = user
-        self.__pwd = pwd
+    def __init__(self):
+        # self.__uri = uri
+        # self.__user = user
+        # self.__pwd = pwd
+        self.__uri = os.getenv("DB_URL")
+        self.__user = os.getenv("DB_USER")
+        self.__pwd = os.getenv("DB_PASSWORD")
         self.__driver = None
         try:
             self.__driver = GraphDatabase.driver(self.__uri, auth=(self.__user, self.__pwd))

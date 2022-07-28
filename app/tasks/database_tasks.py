@@ -83,9 +83,7 @@ def add_ontologies(data):
 
     print("##", data.get("ontologies"))
 
-    conn = Neo4jConnection(uri="bolt://127.0.0.1:7687",
-                           user="neo4j",
-                           pwd="test")
+    conn = Neo4jConnection()
 
     status = conn.check()
 
@@ -128,9 +126,7 @@ def update_ontologies(task_results):
 
     print(term_accessions)
 
-    conn = Neo4jConnection(uri="bolt://127.0.0.1:7687",
-                           user="neo4j",
-                           pwd="test")
+    conn = Neo4jConnection()
 
     ontology_name = data.get("ontologies")[0].get("name")
 
@@ -182,9 +178,7 @@ def update_ontologies(task_results):
 
 @app.task
 def clear_database_task():
-    conn = Neo4jConnection(uri="bolt://127.0.0.1:7687",
-                           user="neo4j",
-                           pwd="test")
+    conn = Neo4jConnection()
 
     # result = conn.delete_database()
     result = conn.delete_database()
