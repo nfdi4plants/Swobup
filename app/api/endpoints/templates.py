@@ -28,7 +28,7 @@ async def add_template(payload: AddTemplatePayload):
 
 
 @router.delete("", summary="Delete specific template by id", status_code=status.HTTP_204_NO_CONTENT,
-             response_class=Response)
+               response_class=Response)
 async def delete_template(payload: DeleteTemplatePayload):
     ids = payload.ids
 
@@ -40,7 +40,7 @@ async def delete_template(payload: DeleteTemplatePayload):
 
 
 @router.delete("/clear", summary="Clear database and delete all templates", status_code=status.HTTP_204_NO_CONTENT,
-             response_class=Response)
+               response_class=Response)
 async def delete_all_templates():
     result = delete_template_all_custom.delay()
     print("result", result)
@@ -49,7 +49,7 @@ async def delete_all_templates():
 
 
 @router.put("/build", summary="Build and add templates from scratch", status_code=status.HTTP_204_NO_CONTENT,
-             response_class=Response)
+            response_class=Response)
 async def build_from_scratch():
     result = template_build_from_scratch.delay()
     print("result", result)

@@ -92,6 +92,32 @@ class Neo4jConnection:
 
         return self.insert_data(query, rows, batch_size)
 
+    def update_terms(self, rows, batch_size=40000):
+        # Adds author nodes to the Neo4j graph as a batch job.
+        query = '''
+                UNWIND $rows AS row
+                MERGE (t:Term {accession: row.accession})
+                SET t.name = row.name
+                SET t.definition = row.definition
+                SET t.accession = row.accession
+                RETURN count(*) as total
+                '''
+
+        print("out of update_terms")
+
+        return self.insert_data(query, rows, batch_size)
+
+    def delete_terms(self, rows, batch_size=40000):
+        query = '''
+                UNWIND $rows AS row
+                MATCH (t:Term {accession: row.accession})
+                DETACH DELETE t
+                RETURN count(*) as total
+                '''
+        return self.insert_data(query, rows, batch_size)
+
+
+
     def add_ontologies(self, rows, batch_size=40000):
         # Adds author nodes to the Neo4j graph as a batch job.
 
@@ -102,6 +128,20 @@ class Neo4jConnection:
                 SET o.author = COALESCE(o.author,row.author)
                 SET o.version = COALESCE(o.version,row.version)
                 SET o.generated = COALESCE(o.generated,row.generated)
+                RETURN count(*) as total
+                '''
+        return self.insert_data(query, rows, batch_size)
+
+    def update_ontologies(self, rows, batch_size=40000):
+        # Adds author nodes to the Neo4j graph as a batch job.
+
+        query = '''
+                UNWIND $rows AS row
+                MERGE (o:Ontology {name: row.name})
+                SET o.lastUpdated = row.lastUpdated
+                SET o.author = row.author
+                SET o.version = row.version
+                SET o.generated = row.generated
                 RETURN count(*) as total
                 '''
         return self.insert_data(query, rows, batch_size)
@@ -229,13 +269,15 @@ class Neo4jConnection:
     def list_terms_of_ontology(self, ontology_name):
         query = '''
                 MATCH (Ontology {name: $ontology_name})--(term)
-                RETURN term
+                RETURN term.accession
                 '''
 
         session = self.__driver.session()
         result = session.run(query, ontology_name=ontology_name)
 
-        return result
+        term_accessions: list = result.value()
+
+        return term_accessions
 
 # conn = Neo4jConnection(uri="bolt://localhost:7687",
 #                        user="neo4j",

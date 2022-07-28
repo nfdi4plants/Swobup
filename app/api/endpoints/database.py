@@ -47,7 +47,7 @@ async def clear_database():
 
 
 @router.put("/init", summary="Initiate database and setting constraints", status_code=status.HTTP_204_NO_CONTENT,
-             response_class=Response, dependencies=[Depends(basic_auth)])
+            response_class=Response, dependencies=[Depends(basic_auth)])
 async def initiate_db():
     conn = Neo4jConnection(uri="bolt://localhost:7687",
                            user="neo4j",

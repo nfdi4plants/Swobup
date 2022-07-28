@@ -28,9 +28,9 @@ def add_ontologies(data):
     # print("id is now", data)
 
     # getting results from s3 storage
-    #s3_storage = S3Storage()
+    # s3_storage = S3Storage()
 
-    #data = s3_storage.download_one_file(data)
+    # data = s3_storage.download_one_file(data)
     # data = AsyncResult(data, app=app)
 
     backend = S3Backend(app=app)
@@ -87,8 +87,6 @@ def add_ontologies(data):
                            user="neo4j",
                            pwd="test")
 
-
-
     status = conn.check()
 
     # print("status", status)
@@ -110,6 +108,76 @@ def add_ontologies(data):
 
     #
     # return True
+
+
+@app.task
+def update_ontologies(task_results):
+    print("in update db")
+
+    backend = S3Backend(app=app)
+
+    task_id = task_results.get("task_id")
+    data = backend.get(task_id)
+    data = json.loads(data)
+
+    terms = data.get("terms")
+
+    term_accessions = []
+    for term in terms:
+        term_accessions.append(term.get("accession"))
+
+    print(term_accessions)
+
+    conn = Neo4jConnection(uri="bolt://127.0.0.1:7687",
+                           user="neo4j",
+                           pwd="test")
+
+    ontology_name = data.get("ontologies")[0].get("name")
+
+    # get list of to deleted terms
+    db_term_list = conn.list_terms_of_ontology(ontology_name)
+
+    terms_to_remove = list(set(db_term_list).difference(term_accessions))
+
+    # generate a list of dictionaries
+    terms_remove = []
+    for term_remove in terms_to_remove:
+        terms_remove.append({"accession":term_remove})
+
+    # create a dataframe from list of dictionaries
+    terms_remove_df = pd.DataFrame(terms_remove, index=None)
+
+    conn.delete_terms(terms_remove_df)
+
+    print("after deletion")
+
+
+
+
+    terms_df = pd.DataFrame(data.get("terms"), index=None)
+
+    ontology_df = pd.DataFrame(data.get("ontologies"), index=None)
+
+    relations_df = pd.DataFrame(data.get("relationships"), index=None)
+
+    relations_df.to_csv('rel.csv', index=False)
+
+    status = conn.check()
+
+    # print("adding ontologies")
+    conn.update_ontologies(ontology_df)
+    # print("adding terms")
+    conn.update_terms(terms_df)
+    # print("connecting ontologies")
+    conn.connect_ontology(terms_df)
+    # print("connecting relationships")
+    # conn.connect_ontology(relations_df)
+    for relation_type in relations_df.rel_type.unique():
+        # print("type:", relation_type)
+        # print("df:", relations_df.loc[relations_df["rel_type"] == relation_type])
+        current_rel_df = relations_df.loc[relations_df["rel_type"] == relation_type]
+        # print("adding relations of ", )
+        conn.connect_term_relationships(current_rel_df, relation_type, batch_size=40000)
 
 
 @app.task
