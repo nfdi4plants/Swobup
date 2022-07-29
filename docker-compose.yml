@@ -1,0 +1,50 @@
+version: '3.8'
+services:
+  redis:
+    image: redis:6.2-alpine
+    container_name: redis
+    restart: always
+    ports:
+      - '127.0.0.1:6379:6379'
+    command: redis-server --save 20 1 --loglevel warning
+    volumes:
+      - ./cache:/data
+    networks:
+      - swobup_network
+  neo4j:
+    image: neo4j:latest
+    container_name: neo4j
+    ports:
+      - "127.0.0.1:7474:7474"
+      - "127.0.0.1:7687:7687"
+    networks:
+      - swobup_network
+    environment:
+      - NEO4J_AUTH=neo4j/test
+      - NEO4J_dbms_memory_pagecache_size=2G
+      - NEO4J_dbms_memory_heap_initial__size=2G
+      - NEO4J_dbms_memory_heap_max__size=8G
+    volumes:
+      - ${HOME}/neo4j/data:/data
+      - ${HOME}/neo4j/logs:/logs
+      - ${HOME}/neo4j/import:/var/lib/neo4j/import
+      - ${HOME}/neo4j/plugins:/plugins
+    restart: unless-stopped
+  swobup:
+    image: git.bwcloud.uni-freiburg.de:5050/marcel/swobup:latest
+    container_name: swobup
+    environment:
+      - DB_URL = 'bolt://neo4j:7687'
+      - CELERY_BROKER = 'redis://redis:6379/0'
+    ports:
+      - "8000:8000"
+      - "1111:1111"
+    networks:
+      - swobup_network
+
+
+
+
+networks:
+  swobup_network:
+    driver: bridge
