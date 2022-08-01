@@ -35,7 +35,7 @@ def add_template_custom(url):
 
     print("current file", current_file)
 
-    swate_api = SwateAPI(swate_url)
+    swate_api = SwateAPI()
 
     converted_json = swate_api.convert_xslx(current_file)
 
@@ -102,7 +102,7 @@ def template_build_from_scratch():
         print("dec", decoded_content)
 
         swate_url = "https://swate.nfdi4plants.de"
-        swate_api = SwateAPI(swate_url)
+        swate_api = SwateAPI()
         converted_json = swate_api.convert_xslx(decoded_content)
 
         print("converted_json", converted_json)
