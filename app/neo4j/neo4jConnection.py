@@ -42,6 +42,7 @@ class Neo4jConnection:
         response = None
         try:
             session = self.__driver.session(database=db) if db is not None else self.__driver.session()
+            print("jfaldsa", parameters)
             response = list(session.run(query, parameters))
         except Exception as e:
             print("Query failed:", e)
@@ -50,6 +51,7 @@ class Neo4jConnection:
                 session.close()
         return response
 
+    # def insert_data(self, query, rows, batch_size, **params):
     def insert_data(self, query, rows, batch_size):
         # Function to handle the updating the Neo4j database in batch mode.
 
@@ -60,14 +62,26 @@ class Neo4jConnection:
         start = time.time()
         result = None
 
+        parameters = {'rows': rows[batch * batch_size:(batch + 1) * batch_size].to_dict('records')}
+
+        # print(params)
+        # print("jfdsal", params.get("params"))
+        #
+        # if params:
+        #     db_params:dict = params.get("params")
+        #     parameters.update(db_params)
+        #
+        #     parameters["rel_type"] = "test"
+        #
+        # print("parameters", parameters)
+
         while batch * batch_size < len(rows):
             # print("batch", batch)
             # print("batch_size", batch_size)
 
             # print(rows[batch * batch_size:(batch + 1) * batch_size].to_dict('records'))
 
-            res = self.query(query,
-                             parameters={'rows': rows[batch * batch_size:(batch + 1) * batch_size].to_dict('records')})
+            res = self.query(query, parameters)
 
             # print(rows[batch*batch_size:(batch+1)*batch_size].to_dict('records'))
 
@@ -121,8 +135,6 @@ class Neo4jConnection:
                 '''
         return self.insert_data(query, rows, batch_size)
 
-
-
     def add_ontologies(self, rows, batch_size=40000):
         # Adds author nodes to the Neo4j graph as a batch job.
 
@@ -168,20 +180,25 @@ class Neo4jConnection:
         if ":" in rel_type:
             rel_type = rel_type.replace(":", "_")
         if "-" in rel_type:
-            rel_type = "connection"
+            rel_type = rel_type.replace("-", "_")
 
-        statement_string = "UNWIND $rows AS row MATCH (t:Term {accession: row.node_from}), (s:Term {accession: row.node_to}) MERGE (s)-[:" + str(
-            rel_type) + "]->(t) RETURN count(*) as total"
+        statement_string = "UNWIND $rows AS row MATCH (t:Term {accession: row.node_from}), (s:Term {accession: " \
+                           "row.node_to}) MERGE (s)-[:" + str(rel_type) + "]->(t) RETURN count(*) as total"
 
-        query = '''
-                UNWIND $rows AS row
-                MATCH (t:Term {accession: row.node_from}), (s:Term {accession: row.node_to})
-                MERGE (s)-[:`+rel_type`]->(t)
-                RETURN count(*) as total
-                '''
+        # statement_string = "UNWIND $rows AS row MATCH (t:Term {accession: row.node_from}), (s:Term {accession: " \
+        #                    "row.node_to}) MERGE (s)-[:$rel_type]->(t) RETURN count(*) as total"
+
+        # query = '''
+        #         UNWIND $rows AS row
+        #         MATCH (t:Term {accession: row.node_from}), (s:Term {accession: row.node_to})
+        #         MERGE (s)-[:`+rel_type`]->(t)
+        #         RETURN count(*) as total
+        #         '''
 
         print("connecting rels")
         return self.insert_data(statement_string, rows, batch_size)
+
+        # return self.insert_data(statement_string, rows, batch_size, params={"rel_type": rel_type})
 
     def delete_ontology(self, ontology_name):
 
@@ -249,7 +266,6 @@ class Neo4jConnection:
 
         print("result", result)
 
-
     def delete_template(self, template_id):
         query = '''
                 MATCH (t:Template {id: $template_id}) DELETE t
@@ -269,7 +285,6 @@ class Neo4jConnection:
         result = session.run(query)
 
         print("result", result)
-
 
     def list_terms_of_ontology(self, ontology_name):
         query = '''
