@@ -306,12 +306,24 @@ class Neo4jConnection:
                 RETURN count(labels(t));
                 '''
 
+        session = self.__driver.session()
+        result = session.run(query)
+
+
+        return result.value().pop()
+
 
     def get_number_ontologies(self):
         query = '''
                 MATCH (o:Ontology) 
                 RETURN count(labels(o));
                 '''
+
+        session = self.__driver.session()
+        result = session.run(query)
+
+
+        return result.value().pop()
 
 
     def get_number_templates(self):
@@ -320,11 +332,23 @@ class Neo4jConnection:
                 RETURN count(labels(t));
                 '''
 
+        session = self.__driver.session()
+        result = session.run(query)
+
+
+        return result.value().pop()
+
     def get_number_relationships(self):
         query = '''
                 MATCH (n)-[r]->() 
                 RETURN COUNT(r)
                 '''
+
+        session = self.__driver.session()
+        result = session.run(query)
+
+
+        return result.value().pop()
 
 # conn = Neo4jConnection(uri="bolt://localhost:7687",
 #                        user="neo4j",
