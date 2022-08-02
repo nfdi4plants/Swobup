@@ -15,8 +15,8 @@ services:
     image: neo4j:latest
     container_name: neo4j
     ports:
-      - "127.0.0.1:7474:7474"
-      - "127.0.0.1:7687:7687"
+      - "0.0.0.0:7474:7474"
+      - "0.0.0.0:7687:7687"
     networks:
       - swobup_network
     environment:
@@ -24,18 +24,37 @@ services:
       - NEO4J_dbms_memory_pagecache_size=2G
       - NEO4J_dbms_memory_heap_initial__size=2G
       - NEO4J_dbms_memory_heap_max__size=8G
+      - NEO4J_dbms_default__listen__address=0.0.0.0
+      - NEO4J_dbms_default__advertised__address=10.20.51.223
+      - NEO4J_dbms.connector.bolt.address=0.0.0.0:7687
     volumes:
       - ${HOME}/neo4j/data:/data
       - ${HOME}/neo4j/logs:/logs
       - ${HOME}/neo4j/import:/var/lib/neo4j/import
       - ${HOME}/neo4j/plugins:/plugins
+      #- ${HOME}/neo4j/conf:/conf
     restart: unless-stopped
   swobup:
-    image: git.bwcloud.uni-freiburg.de:5050/marcel/swobup:latest
     container_name: swobup
     environment:
-      - DB_URL = 'bolt://neo4j:7687'
-      - CELERY_BROKER = 'redis://redis:6379/0'
+      - CELERY_BROKER=redis://redis:6379/0
+      - s3_access_key_id=2J1XRFN08O5Q8FPU66TY
+      - s3_secret_access_key=ZsbHYfXQvwVpKuuF+r1oldOitQGonL7Lv4T0/my+
+      - s3_bucket=frct-marcel
+      - s3_base_path=/swobup
+      - s3_endpoint_url=https://s3.bwsfs.de
+      - s3_region=us-east-1
+      - CELERY_S3_BUCKET=frct-marcel
+      - SWOBUP_USERNAME=swobup
+      - SWOBUP_PASSWORD=gahWez5e
+      - GITHUB_SECRET=test
+      - DB_URL=bolt://neo4j:7687
+      - DB_USER=neo4j
+      - DB_PASSWORD=test
+      - ONTOLOGY_REPOSITORY=""
+      - TEMPLATE_REPOSITORY=""
+      - SWATE_API=https://swate.nfdi4plants.de
+    image: git.bwcloud.uni-freiburg.de:5050/marcel/swobup:latest
     ports:
       - "8000:8000"
       - "1111:1111"
