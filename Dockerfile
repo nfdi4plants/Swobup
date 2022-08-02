@@ -8,6 +8,8 @@ RUN pip install --no-cache-dir --upgrade -r /swobup/requirements.txt
 
 COPY . /swobup
 
+RUN rm /swobup/.env
+
 COPY init.sh /usr/local/bin/
 RUN chmod u+x /usr/local/bin/init.sh
 

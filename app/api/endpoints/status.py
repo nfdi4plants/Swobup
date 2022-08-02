@@ -1,8 +1,11 @@
+import os
+
 from fastapi import APIRouter, Body, Depends, HTTPException, status, FastAPI
-from fastapi.responses import PlainTextResponse, JSONResponse, HTMLResponse
+from fastapi.responses import PlainTextResponse, JSONResponse, HTMLResponse, Response
 from app.neo4j.neo4jConnection import Neo4jConnection
 
 from app.custom.models.health import Health, Services
+from app.custom.models.status import Status
 
 router = APIRouter()
 
@@ -66,10 +69,28 @@ async def health():
         status=status
     )
 
-@router.get("/info", response_model=Health,
-            responses={200: {"model": Health}, 503: {"model": Health}},
+
+@router.get("/info", response_model=Status,
+            responses={200: {"model": Status}, 503: {}},
             status_code=status.HTTP_200_OK,
-            summary="Get health status of services",
+            summary="Get database informations",
             )
 async def status():
-    pass
+    conn = Neo4jConnection()
+
+    db_status = conn.check()
+
+    if not db_status:
+        return Response(status_code=503)
+
+    number_terms = conn.get_number_terms()
+    print("# terms", conn.get_number_terms())
+
+    number_ontologies = conn.get_number_ontologies()
+    number_templates = conn.get_number_templates()
+    number_relations = conn.get_number_relationships()
+
+    db_url = os.getenv("DB_URL")
+
+    return Status(number_terms=number_terms, number_ontologies=number_ontologies, number_templates=number_templates,
+                  number_relationships=number_relations, db_url=db_url)
