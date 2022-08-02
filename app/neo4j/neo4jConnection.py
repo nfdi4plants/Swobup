@@ -299,6 +299,33 @@ class Neo4jConnection:
 
         return term_accessions
 
+
+    def get_number_terms(self):
+        query = '''
+                MATCH (t:Term) 
+                RETURN count(labels(t));
+                '''
+
+
+    def get_number_ontologies(self):
+        query = '''
+                MATCH (o:Ontology) 
+                RETURN count(labels(o));
+                '''
+
+
+    def get_number_templates(self):
+        query = '''
+                MATCH (t:Template) 
+                RETURN count(labels(t));
+                '''
+
+    def get_number_relationships(self):
+        query = '''
+                MATCH (n)-[r]->() 
+                RETURN COUNT(r)
+                '''
+
 # conn = Neo4jConnection(uri="bolt://localhost:7687",
 #                        user="neo4j",
 #                        pwd="test")
