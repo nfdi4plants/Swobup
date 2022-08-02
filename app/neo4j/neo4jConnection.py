@@ -104,6 +104,7 @@ class Neo4jConnection:
                 SET t.name = COALESCE(t.name,row.name)
                 SET t.definition = COALESCE(t.definition,row.definition)
                 SET t.accession = COALESCE(t.accession,row.accession)
+                SET t.is_obsolete = COALESCE(t.is_obsolete,row.is_obsolete)
                 RETURN count(*) as total
                 '''
 
@@ -119,6 +120,7 @@ class Neo4jConnection:
                 SET t.name = row.name
                 SET t.definition = row.definition
                 SET t.accession = row.accession
+                SET t.is_obsolete = row.is_obsolete
                 RETURN count(*) as total
                 '''
 
@@ -251,6 +253,12 @@ class Neo4jConnection:
                 SET t.version = $version
                 SET t.authors = $authors
                 SET t.templateJson = $templateJson
+                SET t.organisation = $organisation
+                SET t.lastUpdated = $lastUpdated
+                SET t.tags = $tags
+                SET t.erTags = $erTags
+                SET t.lastUpdated = $lastUpdated
+                SET t.TimesUsed = COALESCE(t.timesUsed,0)
                 RETURN t
                 '''
 
@@ -258,7 +266,9 @@ class Neo4jConnection:
         # response = list(session.run(query, parameters))
 
         result = session.run(query, name=data.Name, id=data.Id, description=data.Description, version=data.Version,
-                             authors=str(data.Authors), templateJson=str(data.TemplateJson))
+                             authors=str(data.Authors), templateJson=str(data.TemplateJson),
+                             organisation=data.Organisation, lastUpdated="TODO", tags=str(data.Tags),
+                             erTags=str(data.ER))
 
         # result = self.query(query)
         # record = result[0]["total"]
@@ -299,7 +309,6 @@ class Neo4jConnection:
 
         return term_accessions
 
-
     def get_number_terms(self):
         query = '''
                 MATCH (t:Term) 
@@ -309,9 +318,7 @@ class Neo4jConnection:
         session = self.__driver.session()
         result = session.run(query)
 
-
         return result.value().pop()
-
 
     def get_number_ontologies(self):
         query = '''
@@ -322,9 +329,7 @@ class Neo4jConnection:
         session = self.__driver.session()
         result = session.run(query)
 
-
         return result.value().pop()
-
 
     def get_number_templates(self):
         query = '''
@@ -334,7 +339,6 @@ class Neo4jConnection:
 
         session = self.__driver.session()
         result = session.run(query)
-
 
         return result.value().pop()
 
@@ -346,7 +350,6 @@ class Neo4jConnection:
 
         session = self.__driver.session()
         result = session.run(query)
-
 
         return result.value().pop()
 

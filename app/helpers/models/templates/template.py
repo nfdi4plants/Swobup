@@ -10,13 +10,11 @@ class Template(BaseModel):
     Id: str
     Name: str
     Description: str
-    # Organisation: str
+    Organisation: str
     Version: str
     TemplateJson: str
     Authors: List[Dict]
     Tags: List[Dict]
     ER: List[Dict]
     # LastUpdated: str
-    #TimesUsed: int
-
-
+    # TimesUsed: int
