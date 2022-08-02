@@ -9,7 +9,7 @@ from app.api.endpoints import notifications
 
 api_router = APIRouter(prefix="/api/v2")
 
-api_router.include_router(status.router, prefix="/health", tags=["Status"])
+api_router.include_router(status.router, prefix="/status", tags=["Status"])
 api_router.include_router(webhooks.router, prefix="/webhook", tags=["Webhooks"])
 api_router.include_router(ontologies.router, prefix="/ontology", tags=["Ontologies"])
 api_router.include_router(templates.router, prefix="/template", tags=["Templates"])
