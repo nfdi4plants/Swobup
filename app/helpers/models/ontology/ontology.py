@@ -2,10 +2,6 @@ from typing import Optional
 
 from pydantic import BaseModel, validator
 
-from app.github.models.user import User
-from app.github.models.author import Author
-
-
 class Ontology(BaseModel):
     name: Optional[str]
     lastUpdated: Optional[str]
