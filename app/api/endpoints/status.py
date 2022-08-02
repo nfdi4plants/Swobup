@@ -7,12 +7,12 @@ from app.custom.models.health import Health, Services
 router = APIRouter()
 
 
-@router.get("", response_model=Health,
+@router.get("/health", response_model=Health,
             responses={200: {"model": Health}, 503: {"model": Health}},
             status_code=status.HTTP_200_OK,
             summary="Get health status of services",
             )
-async def status():
+async def health():
     conn = Neo4jConnection()
 
     db_status = conn.check()
@@ -65,3 +65,11 @@ async def status():
         services=Services(neo4j=neo4j_connection, swate="feature not implemented", rabbitmq="feature not impemented"),
         status=status
     )
+
+@router.get("/info", response_model=Health,
+            responses={200: {"model": Health}, 503: {"model": Health}},
+            status_code=status.HTTP_200_OK,
+            summary="Get health status of services",
+            )
+async def status():
+    pass
