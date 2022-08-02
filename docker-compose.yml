@@ -61,9 +61,6 @@ services:
     networks:
       - swobup_network
 
-
-
-
 networks:
   swobup_network:
     driver: bridge
