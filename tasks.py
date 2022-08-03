@@ -25,12 +25,12 @@ print("celery started...")
 
 app.autodiscover_tasks(imports, force=True)
 
-app.conf["s3_bucket"] = 'frct-public'
-app.conf["s3_access_key_id"] = '2J1XRFN08O5Q8FPU66TY'
-app.conf["s3_secret_access_key"] = 'ZsbHYfXQvwVpKuuF+r1oldOitQGonL7Lv4T0/my+'
+app.conf["s3_bucket"] = os.environ.get("s3_bucket")
+app.conf["s3_access_key_id"] = os.environ.get("s3_access_key_id")
+app.conf["s3_secret_access_key"] = os.environ.get("s3_access_key_id")
 # app.conf["s3_base_path"] = '/swobup/'
-app.conf["s3_base_path"] = ''
-app.conf["s3_endpoint_url"] = 'https://s3.bwsfs.de'
-app.conf["s3_region"] = 'us-east-1'
+app.conf["s3_base_path"] = os.environ.get("s3_base_path")
+app.conf["s3_endpoint_url"] = os.environ.get("s3_endpoint_url")
+app.conf["s3_region"] = os.environ.get("s3_region")
 
 print("sel", app.conf)
