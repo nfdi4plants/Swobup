@@ -25,13 +25,24 @@ const healthStatus = async () => {
 
     }
 
+    if (responseJson.services.swate == "disconnected") {
+        document.getElementById("swate_status").innerHTML = "Disconnected";
+        document.getElementById("swate_version").innerHTML = "-";
+        document.getElementById('swate_status').classList.remove('is-success');
+        document.getElementById('swate_status').classList.add('is-danger');
+
+    } else {
+        document.getElementById("swate_version").innerHTML = "v " + responseJson.services.swate;
+        document.getElementById("swate_status").innerHTML = "Connected";
+        document.getElementById('swate_status').classList.remove('is-danger');
+        document.getElementById('swate_status').classList.add('is-success');
+    }
+
 
     document.getElementById("broker_status").innerHTML = responseJson.services.rabbitmq;
     document.getElementById('broker_status').classList.remove('is-success');
     document.getElementById('broker_status').classList.add('is-warning');
-    document.getElementById("swate_status").innerHTML = responseJson.services.swate;
-    document.getElementById('swate_status').classList.remove('is-success');
-    document.getElementById('swate_status').classList.add('is-warning');
+
 }
 
 

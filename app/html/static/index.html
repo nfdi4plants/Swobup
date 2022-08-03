@@ -1,10 +1,17 @@
 <html>
 
 <head>
+    <meta content="noindex, nofollow" name="robots">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <meta charset="utf-8">
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+
+
     <script src="api.js" type="text/javascript"></script>
     <script src="nfdi_webcomponents.js" type="text/javascript"></script>
-    <link rel="stylesheet" href="dataplant.css">
-    <link rel="stylesheet" href="dataplant-extra.css">
+    <link href="dataplant.css" rel="stylesheet">
+    <link href="dataplant-extra.css" rel="stylesheet">
+
 
 </head>
 
@@ -13,7 +20,7 @@
 <nfdi-navbar></nfdi-navbar>
 
 
-<h1 id="headline">Sowbup Status Page</h1>
+<h1 id="headline">Swobup Status Page</h1>
 
 <section class="section">
     <div class="container p-4 has-rounded-border has-bg-split-20-lightblue registercard">
@@ -69,12 +76,19 @@
 
                                 <tr>
                                     <td>Broker</td>
-                                    <td><span class="tag is-success  is-medium" id="broker_status">>Loading</span></td>
+                                    <td><span class="tag is-success  is-medium" id="broker_status">Loading</span></td>
                                 </tr>
 
                                 <tr>
                                     <td>Swate</td>
-                                    <td><span class="tag is-success  is-medium" id="swate_status">Online</span></td>
+                                    <td>
+                                        <div class="control">
+                                            <div class="tags has-addons">
+                                                <span class="tag is-success is-medium" id="swate_status">Loading</span>
+                                                <span class="tag is-dark is-medium" id="swate_version">none</span>
+                                            </div>
+                                        </div>
+                                    </td>
                                 </tr>
 
                                 </tbody>
