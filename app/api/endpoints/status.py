@@ -57,7 +57,7 @@ async def health():
         return JSONResponse(status_code=503, content=Health(services=
                                                             Services(neo4j=neo4j_connection,
                                                                      swate="feature not implemented",
-                                                                     rabbitmq="feature not impemented"),
+                                                                     rabbitmq="feature not implemented"),
                                                             status=status).dict())
 
     else:
@@ -65,7 +65,7 @@ async def health():
         status = "OK"
 
     return Health(
-        services=Services(neo4j=neo4j_connection, swate="feature not implemented", rabbitmq="feature not impemented"),
+        services=Services(neo4j=neo4j_connection, swate="feature not implemented", rabbitmq="feature not implemented"),
         status=status
     )
 

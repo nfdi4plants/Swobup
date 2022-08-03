@@ -1,10 +1,10 @@
 <html>
 
 <head>
-
-     <script src="nfdi_webcomponents.js" type="text/javascript"></script>
-     <link rel="stylesheet" href="dataplant.css">
-     <link rel="stylesheet" href="dataplant-extra.css">
+  <script src="api.js" type="text/javascript"></script>
+  <script src="nfdi_webcomponents.js" type="text/javascript"></script>
+  <link rel="stylesheet" href="dataplant.css">
+  <link rel="stylesheet" href="dataplant-extra.css">
 
 </head>
 
@@ -13,8 +13,11 @@
 <body>
 <nfdi-navbar></nfdi-navbar>
 
+
+<h1 id="headline">Sowbup Status Page</h1>
+
 <section class="section" >
-  <div class="container p-4 has-rounded-border has-bg-split-20-darkblue registercard">
+  <div class="container p-4 has-rounded-border has-bg-split-20-lightblue registercard">
     <!--card ui-->
     <div id="msform">
     <!--
@@ -26,24 +29,17 @@
           <div class="container box has-bg-white m-4 p-0">
 
           <!-- here -->
-          <form onsubmit="login.disabled = true; return true;" action="${url.loginAction}" method="post">
+          <form>
 
             <div class="container p-4">
               <h1 class="title is-4 is-darkblue is-uppercase">
-                 bla
               </h1>
               <h1 class="title is-4 is-darkblue-lighter-20">
-                Welcome to Swobup
+                Health Information
               </h1>
               <div class="spacer"></div>
               <!--input fields-->
-
-
-
-
-
             </div>
-
             <!-- until here-->
             </form>
           </div>
@@ -53,21 +49,40 @@
           <div class="container m-4 is-white">
             <div class="content has-text-justified">
               <h3 style="color:white; padding-top:1.9em">
-                Log in with your scientific account  ​
               </h3>
               <div style="height:10px; text-align:left"></div>
-
-
-
-
-
-
         <div style="height:10px"></div>
 
-              <p>
-               If you have linked your scientific account to DataPLANT, you can use it to login to all services seamlessly.
-              <p>
-                Need an account?
+
+
+              <table class="table  table is-narrow" style="background-color: transparent !important">
+                <tbody>
+
+                  <tr>
+                    <td>Status</td>
+                    <td><span class="tag is-success  is-medium" id="status">Loading</span></td>
+
+                  </tr>
+
+                  <tr>
+                    <td>Database</td>
+                    <td><span class="tag is-success  is-medium" id="database_status">Loading</span></td>
+                  </tr>
+
+                  <tr>
+                    <td>Broker</td>
+                    <td><span class="tag is-success  is-medium" id="broker_status">>Loading</span></td>
+                  </tr>
+
+                  <tr>
+                    <td>Swate</td>
+                    <td><span class="tag is-success  is-medium" id="swate_status">Online</span></td>
+                  </tr>
+
+                </tbody>
+              </table>
+
+
               </p>
             </div>
           </div>
@@ -76,10 +91,80 @@
     </div>
     <!--END card ui-->
   </div>
+</section>
+
+<section class="section" >
+  <div class="container p-4 has-rounded-border has-bg-split-20-olive registercard">
+    <!--card ui-->
+    <div id="msform">
+    <!--
+    <form id="msform" onsubmit="login.disabled = true; return true;" action="${url.loginAction}" method="post">
+    -->
+    <!-- changed line above form to div -->
+      <div class="columns">
+        <div class="column align-items-top pb-5">
+          <div class="container box has-bg-white m-4 p-0">
+
+          <!-- here -->
+          <form>
+
+            <div class="container p-4">
+              <h1 class="title is-4 is-darkblue is-uppercase">
+              </h1>
+              <h1 class="title is-4 is-darkblue-lighter-20">
+                Database Information
+              </h1>
+              <div class="spacer"></div>
+              <!--input fields-->
+            </div>
+            <!-- until here-->
+            </form>
+          </div>
+        </div>
+        <!--text box-->
+        <div class="column align-items-center">
+          <div class="container m-4 is-white">
+            <div class="content has-text-justified">
+              <h3 style="color:white; padding-top:1.9em">
+              </h3>
+              <div style="height:10px; text-align:left"></div>
+            <div style="height:10px"></div>
 
 
+              <table class="table  table is-narrow" style="background-color: transparent !important">
+                <tbody>
 
+                  <tr>
+                    <td>Terms</td>
+                    <td><span class="tag is-info  is-medium" id="number_terms">Loading</span></td>
 
+                  </tr>
+
+                  <tr>
+                    <td>Ontologies</td>
+                    <td><span class="tag is-info  is-medium" id="number_ontologies">Loading</span></td>
+                  </tr>
+
+                  <tr>
+                    <td>Relationships</td>
+                    <td><span class="tag is-info  is-medium" id="number_relationships">Loading</span></td>
+                  </tr>
+
+                  <tr>
+                    <td>DB URL</td>
+                    <td><span class="tag is-info  is-medium" id="db_url">Loading</span></td>
+                  </tr>
+
+                </tbody>
+              </table>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--END card ui-->
+  </div>
 </section>
 
 
