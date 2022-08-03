@@ -7,6 +7,8 @@ from app.neo4j.neo4jConnection import Neo4jConnection
 from app.custom.models.health import Health, Services
 from app.custom.models.status import Status
 
+from app.helpers.swate_api import SwateAPI
+
 router = APIRouter()
 
 
@@ -16,56 +18,29 @@ router = APIRouter()
             summary="Get health status of services",
             )
 async def health():
-    conn = Neo4jConnection()
 
+    conn = Neo4jConnection()
     db_status = conn.check()
-    # status = "OK"
-    # status_code = 200
-    #
-    # if not db_status:
-    #     neo4jconnection = "not conncected"
-    #     status = "degraded"
-    #     status_code = 503
-    # else:
-    #     neo4jconnection = "connected"
-    #     status_code = 200
-    #
-    # conn.close()
-    #
-    # output = {
-    #     "services": {
-    #         "neo4j": neo4jconnection,
-    #         "swate": "feature not implemented",
-    #         "rabbitmq": "feature not implemented"
-    #     },
-    #     "status": status
-    # }
-    #
-    # return JSONResponse(output, status_code=status_code)
+
+    swate_version = "none"
+    swate_api = SwateAPI()
+    swate_version = swate_api.get_swate_version()
 
     neo4j_connection = None
     status = "OK"
+    neo4j_connection = "connected"
     if not db_status:
         neo4j_connection = "not connected"
         status = "degraded"
-        # raise HTTPException(status_code=503,
-        #                     detail=Health(services=
-        #                                   Services(neo4j=neo4j_connection,
-        #                                            swate="feature not implemented",
-        #                                            rabbitmq="feature not impemented"),
-        #                                   status=status).dict())
-        return JSONResponse(status_code=503, content=Health(services=
-                                                            Services(neo4j=neo4j_connection,
-                                                                     swate="feature not implemented",
-                                                                     rabbitmq="feature not implemented"),
-                                                            status=status).dict())
 
-    else:
-        neo4j_connection = "connected"
-        status = "OK"
+    if swate_version == "none":
+
+        status = "degraded"
+        swate_version = "disconnected"
+
 
     return Health(
-        services=Services(neo4j=neo4j_connection, swate="feature not implemented", rabbitmq="feature not implemented"),
+        services=Services(neo4j=neo4j_connection, swate=swate_version, rabbitmq="feature not implemented"),
         status=status
     )
 
