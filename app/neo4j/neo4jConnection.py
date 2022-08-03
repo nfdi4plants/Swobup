@@ -1,3 +1,4 @@
+import datetime
 import os
 
 import neo4j
@@ -265,9 +266,11 @@ class Neo4jConnection:
         session = self.__driver.session()
         # response = list(session.run(query, parameters))
 
+        update_time = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
+
         result = session.run(query, name=data.Name, id=data.Id, description=data.Description, version=data.Version,
                              authors=str(data.Authors), templateJson=str(data.TemplateJson),
-                             organisation=data.Organisation, lastUpdated="TODO", tags=str(data.Tags),
+                             organisation=data.Organisation, lastUpdated=update_time, tags=str(data.Tags),
                              erTags=str(data.ER))
 
         # result = self.query(query)
@@ -346,6 +349,21 @@ class Neo4jConnection:
         query = '''
                 MATCH (n)-[r]->() 
                 RETURN COUNT(r)
+                '''
+
+        session = self.__driver.session()
+        result = session.run(query)
+
+        return result.value().pop()
+
+    def get_neo4j_version(self):
+        query = '''
+                call
+                dbms.components()
+                yield versions
+                unwind
+                versions as version
+                return version;
                 '''
 
         session = self.__driver.session()

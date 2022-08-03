@@ -4,7 +4,7 @@ from fastapi import APIRouter, Body, Depends, HTTPException, status, FastAPI
 from fastapi.responses import PlainTextResponse, JSONResponse, HTMLResponse, Response
 from app.neo4j.neo4jConnection import Neo4jConnection
 
-from app.custom.models.health import Health, Services
+from app.custom.models.health import Health, Services, Neo4j
 from app.custom.models.status import Status
 
 from app.helpers.swate_api import SwateAPI
@@ -26,21 +26,23 @@ async def health():
     swate_api = SwateAPI()
     swate_version = swate_api.get_swate_version()
 
-    neo4j_connection = None
+    neo4j_version = "none"
     status = "OK"
     neo4j_connection = "connected"
     if not db_status:
         neo4j_connection = "not connected"
         status = "degraded"
+    else:
+        neo4j_version = conn.get_neo4j_version()
 
     if swate_version == "none":
-
         status = "degraded"
         swate_version = "disconnected"
 
 
     return Health(
-        services=Services(neo4j=neo4j_connection, swate=swate_version, rabbitmq="feature not implemented"),
+        services=Services(neo4j=Neo4j(status=neo4j_connection, version=neo4j_version), swate=swate_version,
+                          rabbitmq="feature not implemented"),
         status=status
     )
 

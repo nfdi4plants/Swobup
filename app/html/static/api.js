@@ -14,14 +14,16 @@ const healthStatus = async () => {
 
     }
 
-    if (responseJson.services.neo4j == "connected") {
+    if (responseJson.services.neo4j.status == "connected") {
         document.getElementById("database_status").innerHTML = "Connected";
         document.getElementById('database_status').classList.remove('is-danger');
         document.getElementById('database_status').classList.add('is-success');
+        document.getElementById("database_version").innerHTML = "v " + responseJson.services.neo4j.version;
     } else {
         document.getElementById("database_status").innerHTML = "Disconnected";
         document.getElementById('database_status').classList.remove('is-success');
         document.getElementById('database_status').classList.add('is-danger');
+        document.getElementById("database_version").innerHTML = " - ";
 
     }
 
