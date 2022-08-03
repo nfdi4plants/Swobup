@@ -21,3 +21,19 @@ class SwateAPI:
         response_json = response.json()
 
         return response_json
+
+
+    def get_swate_version(self):
+        url = self.backend_url + "/api/IServiceAPIv1/getAppVersion"
+
+        print("url", url)
+
+        response = requests.get(url)
+
+        if response.status_code == 200:
+
+            response_json = response.json()
+        else:
+            response_json = "none"
+
+        return response_json
