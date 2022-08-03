@@ -27,7 +27,7 @@ app.autodiscover_tasks(imports, force=True)
 
 app.conf["s3_bucket"] = os.environ.get("s3_bucket")
 app.conf["s3_access_key_id"] = os.environ.get("s3_access_key_id")
-app.conf["s3_secret_access_key"] = os.environ.get("s3_access_key_id")
+app.conf["s3_secret_access_key"] = os.environ.get("s3_secret_access_key")
 # app.conf["s3_base_path"] = '/swobup/'
 app.conf["s3_base_path"] = os.environ.get("s3_base_path")
 app.conf["s3_endpoint_url"] = os.environ.get("s3_endpoint_url")
