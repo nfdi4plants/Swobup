@@ -5,6 +5,7 @@ WORKDIR /swobup
 COPY ./requirements.txt /swobup/requirements.txt
 
 RUN pip install --no-cache-dir --upgrade -r /swobup/requirements.txt
+# RUN pip install uvicorn[standard]
 
 COPY . /swobup
 
