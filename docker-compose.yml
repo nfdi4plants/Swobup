@@ -49,7 +49,8 @@ services:
       - CELERY_S3_BUCKET=frct-marcel
       - SWOBUP_USERNAME=swobup
       - SWOBUP_PASSWORD=gahWez5e
-      - GITHUB_SECRET=test
+      - GITHUB_SECRET=phaegh0ke8Ki
+      #- GITHUB_SECRET=phaegh0ke8Ki
       - DB_URL=bolt://neo4j:7687
       - DB_USER=neo4j
       - DB_PASSWORD=test
