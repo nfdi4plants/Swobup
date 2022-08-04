@@ -57,8 +57,6 @@ const StatusInformation = async () => {
     document.getElementById("number_relationships").innerHTML = responseJson.number_relationships.toLocaleString();
     document.getElementById("number_templates").innerHTML = responseJson.number_templates.toLocaleString();
     document.getElementById("db_url").innerHTML = responseJson.db_url;
-
-    console.log( responseJson.number_templates.toLocaleString());
 }
 
 
