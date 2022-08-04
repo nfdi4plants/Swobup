@@ -94,6 +94,7 @@ async def ontology(request: Request, payload: PushWebhookPayload):
         if ".obo" or ".testobo" in filename:
             update_urls.append(github_api.convert_to_raw_url(filename))
 
+
     for url in update_urls:
         chain(add_ontology_task.s(url), update_ontologies.s()).apply_async()
 
