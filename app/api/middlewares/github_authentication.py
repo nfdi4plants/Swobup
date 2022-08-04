@@ -33,6 +33,7 @@ async def github_authentication(request: Request, x_hub_signature_256: str = Hea
     print("sig       ", signature)
     print("sig header", x_hub_signature_256)
     # if x_hub_signature_256 != f"sha256={signature}":
+    print("--", f"sha256={signature}")
     if x_hub_signature_256 != f"sha256={signature}":
         raise HTTPException(status.HTTP_401_UNAUTHORIZED,
                             detail="Not Authorized")
