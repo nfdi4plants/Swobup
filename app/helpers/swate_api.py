@@ -9,11 +9,18 @@ class SwateAPI:
         self.backend_url = os.getenv("SWATE_API", "https://swate.nfdi4plants.org")
 
         self.headers = {"Content-Type": "application/octet-stream"}
+        self.verify: bool = os.getenv("TURN_OFF_SSL_VERIFY", True)
+        if bool(os.getenv("TURN_OFF_SSL_VERIFY")):
+            self.verify = False
+            print("verification turned off")
+        else:
+            self.verify = True
+            print("verification turned on")
 
     def convert_xslx(self, file):
         url = self.backend_url + "/api/IISADotNetCommonAPIv1/toSwateTemplateJson"
 
-        response = requests.post(url, data=file, headers=self.headers)
+        response = requests.post(url, data=file, headers=self.headers, verify=self.verify)
 
         print("url", url)
         print("response", response)
@@ -22,13 +29,12 @@ class SwateAPI:
 
         return response_json
 
-
     def get_swate_version(self):
         url = self.backend_url + "/api/IServiceAPIv1/getAppVersion"
 
         print("url", url)
 
-        response = requests.get(url)
+        response = requests.get(url, verify=self.verify)
 
         if response.status_code == 200:
 

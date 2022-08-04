@@ -50,13 +50,13 @@ services:
       - SWOBUP_USERNAME=swobup
       - SWOBUP_PASSWORD=gahWez5e
       - GITHUB_SECRET=phaegh0ke8Ki
-      #- GITHUB_SECRET=phaegh0ke8Ki
       - DB_URL=bolt://neo4j:7687
       - DB_USER=neo4j
       - DB_PASSWORD=test
       - ONTOLOGY_REPOSITORY=""
       - TEMPLATE_REPOSITORY=""
       - SWATE_API=https://swate.nfdi4plants.org
+      #- TURN_OFF_SSL_VERIFY=True
     image: git.bwcloud.uni-freiburg.de:5050/marcel/swobup:latest
     ports:
       - "8000:8000"

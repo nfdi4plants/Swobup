@@ -14,6 +14,10 @@ origins = [
     "https://swobup.nfdi4plants.org",
 ]
 
+origins = [
+    "[*]",
+]
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
