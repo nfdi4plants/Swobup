@@ -9,7 +9,7 @@ class SwateAPI:
         self.backend_url = os.getenv("SWATE_API", "https://swate.nfdi4plants.org")
 
         self.headers = {"Content-Type": "application/octet-stream"}
-        self.verify: bool = os.getenv("TURN_OFF_SSL_VERIFY", True)
+        self.verify: True
         if bool(os.getenv("TURN_OFF_SSL_VERIFY")):
             self.verify = False
             print("verification turned off")
