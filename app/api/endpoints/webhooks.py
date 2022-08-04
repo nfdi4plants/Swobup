@@ -42,19 +42,48 @@ from app.tasks.template_tasks import add_template_custom, delete_template_custom
 from app.github.github_api import GithubAPI
 
 
+
 from app.neo4j.neo4jConnection import Neo4jConnection
 
 router = APIRouter()
 
+# ,  dependencies=[Depends(github_authentication)]
 
 @router.post("/ontology", summary="Ontology Webhook", status_code=status.HTTP_204_NO_CONTENT,
-             response_class=Response,  dependencies=[Depends(github_authentication)])
+             response_class=Response)
 async def ontology(request: Request, payload: PushWebhookPayload):
     print("sending to celery...")
 
+    body = await request.body()
+    body = bytes(body,'utf-8')
+
+    # sec = "test".encode()
+    #
+    # def compute_hmac(data):
+    #     mac = hmac.new(
+    #         sec.encode("utf8"), msg=data, digestmod=hashlib.sha256
+    #     )
+    #     return str(mac.hexdigest())
+
+    def compare_signature(digestmod, key: bytes, message: bytes, expected_signature: str) -> bool:
+        mac = hmac.new(key, message, digestmod)
+        print("mac", mac.hexdigest())
+        return hmac.compare_digest(mac.hexdigest(), expected_signature)
+
+    sec = b"test"
+    # mac = compute_hmac(body)
+    webhook_signature="sha256=e7702b88548cf5f32954b3300702abd9a0d8a3da549bbd6261189beb7de15740"
+
+    # print("mac", mac)
+    # print("bb", compute_hmac(body.decode().strip().encode('utf-8')))
+
+    print(compare_signature("sha256", sec, body, webhook_signature))
+
+    sys.exit()
+
     payload_dictionary = payload
 
-    body = await request.body()
+
 
     # secret = os.environ.get("GITHUB_SECRET").encode("utf-8")
     # signature = generate_hash_signature(secret, payload)
