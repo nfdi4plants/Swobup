@@ -66,14 +66,6 @@ async def ontology(request: Request, payload: PushWebhookPayload):
 
     # payload_dictionary = payload
 
-
-
-    # secret = os.environ.get("GITHUB_SECRET").encode("utf-8")
-    # signature = generate_hash_signature(secret, payload)
-    # print("checking signature")
-    # if x_hub_signature != f"sha1={signature}":
-    #     raise HTTPException(status_code=401, detail="Authentication error.")
-
     print("body", body)
 
     print("payload", payload.dict())
@@ -98,7 +90,9 @@ async def ontology(request: Request, payload: PushWebhookPayload):
     remove_urls = []
 
     for filename in update_files:
-        update_urls.append(github_api.convert_to_raw_url(filename))
+        print("filename", filename)
+        if ".obo" or ".testobo" in filename:
+            update_urls.append(github_api.convert_to_raw_url(filename))
 
     for url in update_urls:
         chain(add_ontology_task.s(url), update_ontologies.s()).apply_async()
@@ -146,25 +140,29 @@ async def template(request: Request, payload: PushWebhookPayload):
     print("updates", update_urls)
 
     for url in update_urls:
-        # chain(add_ontology_task.s(url), update_ontologies.s()).apply_async()
-        add_template_custom.delay(url)
+        if ".xlsx" in filename:
+            # chain(add_ontology_task.s(url), update_ontologies.s()).apply_async()
+            add_template_custom.delay(url)
 
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
-@router.post("/test", summary="Test Webhook", status_code=status.HTTP_204_NO_CONTENT)
+@router.post("/test", summary="Test authentication Webhook", status_code=status.HTTP_204_NO_CONTENT)
 async def test(request: Request, x_hub_signature_256:str = Header(None)):
     payload = await request.body()
+    # payload = payload.decode()
     print("pp", payload)
     secret = os.environ.get("GITHUB_SECRET").encode("utf-8")
+    # signature = generate_hash_signature(secret, payload.encode())
     signature = generate_hash_signature(secret, payload)
 
-    print("signature", signature)
+    print("signature", f"sha256={signature}")
     print("xhub", x_hub_signature_256)
 
     if x_hub_signature_256 != f"sha256={signature}":
         raise HTTPException(status_code=401, detail="Auth Error")
     return {}
 
+    print("login successful")
 
     return Response(status_code=204)
