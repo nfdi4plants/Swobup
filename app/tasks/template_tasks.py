@@ -101,7 +101,6 @@ def template_build_from_scratch():
         decoded_content = base64.b64decode(data["content"])
         print("dec", decoded_content)
 
-        swate_url = "https://swate.nfdi4plants.de"
         swate_api = SwateAPI()
         converted_json = swate_api.convert_xslx(decoded_content)
 
