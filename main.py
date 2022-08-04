@@ -14,9 +14,9 @@ origins = [
     "https://swobup.nfdi4plants.org",
 ]
 
-origins = [
-    "[*]",
-]
+# origins = [
+#     "[*]",
+# ]
 
 app.add_middleware(
     CORSMiddleware,
