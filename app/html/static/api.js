@@ -41,9 +41,9 @@ const healthStatus = async () => {
     }
 
 
-    document.getElementById("broker_status").innerHTML = responseJson.services.rabbitmq;
-    document.getElementById('broker_status').classList.remove('is-success');
-    document.getElementById('broker_status').classList.add('is-warning');
+    // document.getElementById("broker_status").innerHTML = responseJson.services.rabbitmq;
+    // document.getElementById('broker_status').classList.remove('is-success');
+    // document.getElementById('broker_status').classList.add('is-warning');
 
 }
 
@@ -55,12 +55,16 @@ const StatusInformation = async () => {
     document.getElementById("number_terms").innerHTML = responseJson.number_terms.toLocaleString();
     document.getElementById("number_ontologies").innerHTML = responseJson.number_ontologies.toLocaleString();
     document.getElementById("number_relationships").innerHTML = responseJson.number_relationships.toLocaleString();
+    document.getElementById("number_templates").innerHTML = responseJson.number_templates.toLocaleString();
     document.getElementById("db_url").innerHTML = responseJson.db_url;
+
+    console.log( responseJson.number_templates.toLocaleString());
 }
 
 
 window.onload = function () {
     healthStatus();
+    StatusInformation();
 };
 
 setInterval(healthStatus, 1000);
