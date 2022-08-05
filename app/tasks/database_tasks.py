@@ -72,9 +72,15 @@ def add_ontologies(data):
 
     terms_df = pd.DataFrame(data.get("terms"), index=None)
 
+    terms_df.to_csv('terms.csv', index=False)
+
     ontology_df = pd.DataFrame(data.get("ontologies"), index=None)
 
+    ontology_df.to_csv('ontologies.csv', index=False)
+
     relations_df = pd.DataFrame(data.get("relationships"), index=None)
+
+    relations_df.to_csv('relations.csv', index=False)
 
     # print("terms", terms_df)
     # print("ontologies", ontology_df)
