@@ -63,8 +63,6 @@ class Neo4jConnection:
         start = time.time()
         result = None
 
-        parameters = {'rows': rows[batch * batch_size:(batch + 1) * batch_size].to_dict('records')}
-
         # print(params)
         # print("jfdsal", params.get("params"))
         #
@@ -82,7 +80,10 @@ class Neo4jConnection:
 
             # print(rows[batch * batch_size:(batch + 1) * batch_size].to_dict('records'))
 
-            res = self.query(query, parameters)
+            # res = self.query(query, parameters)
+
+            res = self.query(query,
+                             parameters={'rows': rows[batch * batch_size:(batch + 1) * batch_size].to_dict('records')})
 
             # print(rows[batch*batch_size:(batch+1)*batch_size].to_dict('records'))
 
@@ -100,7 +101,15 @@ class Neo4jConnection:
     def add_terms(self, rows, batch_size=40000):
         # Adds author nodes to the Neo4j graph as a batch job.
 
-        print("adding term rows", rows)
+        query = '''
+                UNWIND $rows AS row
+                MERGE (t:Term {accession: row.accession})
+                SET t.name = COALESCE(t.name,row.name)
+                SET t.definition = COALESCE(t.definition,row.definition)
+                SET t.accession = COALESCE(t.accession,row.accession)
+                SET t.is_obsolete = COALESCE(t.is_obsolete,row.is_obsolete)
+                RETURN count(*) as total
+                '''
 
         # query = '''
         #         UNWIND $rows AS row
@@ -108,18 +117,8 @@ class Neo4jConnection:
         #         SET t.name = COALESCE(t.name,row.name)
         #         SET t.definition = COALESCE(t.definition,row.definition)
         #         SET t.accession = COALESCE(t.accession,row.accession)
-        #         SET t.is_obsolete = COALESCE(t.is_obsolete,row.is_obsolete)
         #         RETURN count(*) as total
         #         '''
-
-        query = '''
-                UNWIND $rows AS row
-                MERGE (t:Term {accession: row.accession})
-                SET t.name = COALESCE(t.name,row.name)
-                SET t.definition = COALESCE(t.definition,row.definition)
-                SET t.accession = COALESCE(t.accession,row.accession)
-                RETURN count(*) as total
-                '''
 
         print("out of add_terms")
 
