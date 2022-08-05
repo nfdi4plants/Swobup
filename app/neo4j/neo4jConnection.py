@@ -99,6 +99,9 @@ class Neo4jConnection:
 
     def add_terms(self, rows, batch_size=40000):
         # Adds author nodes to the Neo4j graph as a batch job.
+
+        print("adding term rows", rows)
+
         query = '''
                 UNWIND $rows AS row
                 MERGE (t:Term {accession: row.accession})
