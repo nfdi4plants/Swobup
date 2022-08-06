@@ -6,8 +6,6 @@ import neo4j
 from neo4j import GraphDatabase
 import time
 
-from app.helpers.models.templates.template import Template
-
 
 class Neo4jConnection:
 
@@ -23,7 +21,6 @@ class Neo4jConnection:
             self.__driver = GraphDatabase.driver(self.__uri, auth=(self.__user, self.__pwd))
         except Exception as e:
             print("Failed to create the driver:", e)
-
 
     def check(self):
         try:
@@ -255,41 +252,6 @@ class Neo4jConnection:
         self.query('CREATE FULLTEXT INDEX TermName IF NOT EXISTS FOR (n:Term) ON EACH [ n.name ]')
         self.query('CREATE FULLTEXT INDEX TermDescription IF NOT EXISTS FOR (n:Term) ON EACH [ n.description ]')
 
-    def update_template(self, data: Template):
-
-        print("data", data)
-
-        query = '''
-                MERGE (t:Template {id:$id})
-                SET t.name = $name
-                SET t.description = $description
-                SET t.version = $version
-                SET t.authors = $authors
-                SET t.templateJson = $templateJson
-                SET t.organisation = $organisation
-                SET t.lastUpdated = $lastUpdated
-                SET t.tags = $tags
-                SET t.erTags = $erTags
-                SET t.lastUpdated = $lastUpdated
-                SET t.TimesUsed = COALESCE(t.timesUsed,0)
-                RETURN t
-                '''
-
-        session = self.__driver.session()
-        # response = list(session.run(query, parameters))
-
-        update_time = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
-
-        result = session.run(query, name=data.Name, id=data.Id, description=data.Description, version=data.Version,
-                             authors=str(data.Authors), templateJson=str(data.TemplateJson),
-                             organisation=data.Organisation, lastUpdated=update_time, tags=str(data.Tags),
-                             erTags=str(data.ER))
-
-        # result = self.query(query)
-        # record = result[0]["total"]
-        # return record
-
-        print("result", result)
 
     def delete_template(self, template_id):
         query = '''
@@ -384,14 +346,14 @@ class Neo4jConnection:
         return result.value().pop()
 
 
-    def list_terms(self, ontology_name):
+    def list_terms(self):
         query = '''
                 MATCH (n:Term) 
-                RETURN n.name limit 100000
+                RETURN n.name
                 '''
 
         session = self.__driver.session()
-        result = session.run(query, ontology_name=ontology_name)
+        result = session.run(query)
 
         term_accessions: list = result.value()
 
