@@ -25,9 +25,9 @@ from ped_c import ped
 
 # from ..neo4j.neo4jConnection import Neo4jConnection
 
-from db import Neo4jConnection
+from app.neo4j.neo4jConnection import Neo4jConnection
 
-from main import Meta
+# from main import Meta
 
 
 class QGramIndex:
