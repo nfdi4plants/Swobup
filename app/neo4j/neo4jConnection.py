@@ -384,14 +384,14 @@ class Neo4jConnection:
         return result.value().pop()
 
 
-    def list_terms(self, ontology_name):
+    def list_terms(self):
         query = '''
                 MATCH (n:Term) 
-                RETURN n.name limit 100000
+                RETURN n.name limit 100
                 '''
 
         session = self.__driver.session()
-        result = session.run(query, ontology_name=ontology_name)
+        result = session.run(query)
 
         term_accessions: list = result.value()
 
