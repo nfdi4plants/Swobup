@@ -43,7 +43,13 @@ from app.github.github_api import GithubAPI
 
 from app.neo4j.neo4jConnection import Neo4jConnection
 
+from app.search.search import *
+
 router = APIRouter()
+
+from app.helpers.shared_memory import Meta
+
+cache = Meta(inverted_list={})
 
 
 
@@ -54,8 +60,12 @@ router = APIRouter()
 @router.post("bla", summary="Template Webhook", status_code=status.HTTP_200_OK,
              response_class=Response)
 async def template(request: Request):
-
+    delta = math.floor((len(inp) / 4))
     test = "bla"
+
+    inverted_list = cache.get_invertedList()
+
+    print("inv", inverted_list)
 
 
 
@@ -66,6 +76,16 @@ async def template(request: Request):
 @router.post("/init", summary="Template Webhook", status_code=status.HTTP_200_OK,
              response_class=Response)
 async def template(request: Request):
+
+    qgram = QGramIndex(3)
+    qgram.build_from_db()
+
+
+    inv_list = [1, 2, 3]
+
+    cache.update_invertedList(inv_list)
+
+
 
 
 
