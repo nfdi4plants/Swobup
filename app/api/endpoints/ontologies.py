@@ -102,9 +102,14 @@ async def add_ontology(payload: AddOntologyPayload):
 
     # result = add_extern_task.delay(bla)
 
+    result_ids = []
+
     for url in payload.url:
         print("current_url", url)
         result = chain(add_ontology_task.s(url), add_ontologies.s()).apply_async()
+        result_ids.append(result.id)
+
+    print("res IDS", result_ids)
 
     return Response(status_code=status.HTTP_201_CREATED)
 
