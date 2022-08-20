@@ -5,7 +5,9 @@ class Meta:
     def __init__(self, **kwargs: Dict[Any, Any]):
         # self.ultradict = UltraDict(name='fastapi_dict')
         # self.ultradict.update(**kwargs)
-        self.ultradict = UltraDict(name="inv")
+        self.ultradict = UltraDict(inverted_list={}, words=[])
+        self.inverted_lists = UltraDict(inverted_list={})
+        self.words = UltraDict(words=[])
         self.ultradict.update(**kwargs)
 
         print("self", self.ultradict)
@@ -26,3 +28,10 @@ class Meta:
 
     def get_invertedList(self):
         return self.ultradict.get("inverted_list")
+
+
+    def update_wordlist(self, wordlist):
+        self.ultradict.update([("words", wordlist)])
+
+    def get_words(self):
+        return self.ultradict.get("words")
