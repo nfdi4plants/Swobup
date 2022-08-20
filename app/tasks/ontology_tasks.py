@@ -75,8 +75,6 @@ def add_ontology_from_scratch(file_object:dict):
         url_list = decoded_content.decode().splitlines()
 
         for url in url_list:
-            if "ncbitaxon" in url:
-                continue
             result = chain(add_ontology.s(url), add_ontologies.s()).apply_async()
             print("resutl", result)
 
@@ -190,22 +188,6 @@ def add_ontology_task(self, url):
     print("s3 uploaded...")
 
     return res
-
-@app.task
-def delete_ontology_task(payload):
-
-    conn = Neo4jConnection()
-
-    print("payload", payload)
-
-    if payload.get("url"):
-        print("url is available")
-
-    if payload.get("ontology"):
-        print("ontologies were given")
-        for ontology_name in payload.get("ontology"):
-            conn.delete_ontology(ontology_name)
-
 
 # is this needed ?
 @app.task
