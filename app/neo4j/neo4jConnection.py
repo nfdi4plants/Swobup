@@ -387,7 +387,7 @@ class Neo4jConnection:
     def list_terms(self):
         query = '''
                 MATCH (n:Term) 
-                RETURN n.name limit 100
+                RETURN n.name
                 '''
 
         session = self.__driver.session()

@@ -75,6 +75,9 @@ class QGramIndex:
             # entity_name, score, rest_of_line = line.strip().split("\t", 2)
             entity_name = line
 
+            if entity_name is None:
+                continue
+
             # entity_name = entity_name.lower()
             entity_name = self.normalize(entity_name)
             self.words.append(entity_name)

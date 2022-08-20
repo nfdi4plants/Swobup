@@ -29,6 +29,8 @@ from app.neo4j.neo4jConnection import Neo4jConnection
 
 # from main import Meta
 
+from app.helpers.shared_memory import Meta
+
 
 class QGramIndex:
     """
@@ -40,11 +42,17 @@ class QGramIndex:
         Creates an empty qgram index.
         """
 
+        self.cache = Meta()
+        #
         self.q = q
         self.inverted_lists = {}  # The inverted lists
+        self.inverted_lists = self.cache.get_invertedList()
         self.padding = "$" * (q - 1)
         self.words = []
+        self.words = self.cache.get_words()
         self.scores = []
+
+
 
         # counter # of PED
         self.pedCounter = 0
@@ -60,7 +68,7 @@ class QGramIndex:
 
         result = db.list_terms()
 
-        print("res", result)
+        # print("res", result)
 
         file_name ="bla"
 
@@ -76,6 +84,9 @@ class QGramIndex:
         for line in result:
             # entity_name, score, rest_of_line = line.strip().split("\t", 2)
             entity_name = line
+
+            if entity_name is None:
+                continue
 
             # entity_name = entity_name.lower()
             entity_name = self.normalize(entity_name)
@@ -100,12 +111,27 @@ class QGramIndex:
                         lastValue + 1,
                     )
 
-                    print("ind", line)
-                    print(self.inverted_lists[qgram],line)
+                    # print("ind", line)
+                    # print(self.inverted_lists[qgram],line)
 
                 else:
                     self.inverted_lists[qgram].append((entity_id, 1))
 
+        # print("self", self.inverted_lists)
+        self.cache.update_invertedList(self.inverted_lists)
+        self.cache.update_wordlist(self.words)
+
+    def get_inverted_list(self):
+        return self.cache.get_invertedList()
+
+    def set_inverted_list(self, inverted_list):
+        self.inverted_lists = inverted_list
+
+    def get_wordlist(self):
+        return self.cache.get_words()
+
+    def set_wordlist(self, words):
+        self.words = words
 
     def build_from_file(self, file_name):
         """
@@ -160,6 +186,8 @@ class QGramIndex:
 
                     else:
                         self.inverted_lists[qgram].append((entity_id, 1))
+
+
 
     def normalize(self, word):
         """
