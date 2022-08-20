@@ -32,6 +32,7 @@ from app.custom.models.add_ontology import AddOntologyPayload
 from app.custom.models.delete_ontology import DeleteOntologyPayload
 
 from app.api.middlewares.github_authentication import *
+from app.api.middlewares.http_basic_auth import *
 
 from app.tasks.ontology_tasks import add_ontology_task
 from app.tasks.database_tasks import update_ontologies
@@ -51,41 +52,74 @@ from app.helpers.shared_memory import Meta
 
 cache = Meta(inverted_list={})
 
+# qgram = QGramIndex(3)
+
 
 
 # ,  dependencies=[Depends(github_authentication)]
 
 # global invertedList
 
-@router.post("bla", summary="Template Webhook", status_code=status.HTTP_200_OK,
+@router.get("/find", summary="Template Webhook", status_code=status.HTTP_200_OK,
              response_class=Response)
-async def template(request: Request):
-    delta = math.floor((len(inp) / 4))
+async def template(request: Request, q:str):
+
+    print("q", q)
+
+    qgram = QGramIndex(3)
+
+    qgram.set_inverted_list(cache.get_invertedList())
+
+
+    inp = qgram.normalize(q)
+    delta = math.floor((len(q) / 4))
     test = "bla"
 
     inverted_list = cache.get_invertedList()
-
-    print("inv", inverted_list)
-
-
+    words = cache.get_words()
+    qgram.set_wordlist(words)
 
 
-    return Response(status_code=status.HTTP_204_NO_CONTENT)
+    resultList = qgram.find_matches(inp, delta)
+    resultList = qgram.rank_matches(resultList)
+
+    found_words = []
+
+    for index in resultList[0:19]:
+        print(words[index[0] - 1])
+        found_words.append(words[index[0] - 1])
+
+
+    results = {
+        "results": found_words
+    }
+
+    results = json.dumps(results)
+
+
+
+
+
+
+
+
+    return Response(status_code=status.HTTP_200_OK, content=results)
 
 
 @router.post("/init", summary="Template Webhook", status_code=status.HTTP_200_OK,
-             response_class=Response)
+             response_class=Response,
+               dependencies=[Depends(basic_auth)])
 async def template(request: Request):
 
     qgram = QGramIndex(3)
     qgram.build_from_db()
 
+    inverted_list = qgram.get_inverted_list()
+    cache.update_invertedList(inverted_list)
+    words = qgram.get_wordlist()
+    cache.update_wordlist(words)
 
-    inv_list = [1, 2, 3]
-
-    cache.update_invertedList(inv_list)
-
-
+    print("building complete")
 
 
 

@@ -59,11 +59,47 @@ const StatusInformation = async () => {
     // document.getElementById("db_url").innerHTML = responseJson.db_url;
 }
 
+const query_term = async () => {
+console.log("sending term")
+    query = document.getElementById("query_input").value
+    console.log("query term", query)
+    const response = await fetch(`api/v2/search/find?q=${query}`);
+    const responseJson = await response.json(); //extract JSON from the http response
+
+//    document.getElementById("results").innerHTML = responseJson.results;
+    // document.getElementById("db_url").innerHTML = responseJson.db_url;
+
+    result =  responseJson.results;
+
+     const results = document.getElementById('results');
+       while (results.firstChild) {
+    results.removeChild(results.lastChild);
+  }
+
+
+
+
+    console.log("results", result)
+
+    for (var i = 0; i < result.length; i++) {
+          console.log(result[i]);
+          const el = document.createElement('div');
+          el.textContent = result[i]
+          const results = document.getElementById('results');
+          results.appendChild(el);
+    }
+
+}
+
 
 window.onload = function () {
     healthStatus();
     StatusInformation();
 };
 
+
+
 setInterval(healthStatus, 1000);
 setInterval(StatusInformation, 1000);
+
+addEventListener('query_input', query_term);
