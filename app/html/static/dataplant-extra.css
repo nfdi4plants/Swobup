@@ -50,3 +50,37 @@ td {
     color: white;
     font-size: 1.5em;
 }
+
+.header {
+  overflow: hidden;
+  padding-top: 95px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.header h1 {
+  float: left;
+  color: black;
+  text-align: center;
+  padding: 12px;
+  text-decoration: none;
+  font-size: 3.4em;
+  font-weight: 600;
+}
+
+.header .logo{
+  height: 125px;
+  width: auto;
+}
+
+.header-right {
+  float: right;
+}
+
+@media screen and (max-width: 500px) {
+
+  .header{
+    flex-direction: column;
+  }
+}
