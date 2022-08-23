@@ -3,7 +3,7 @@
     padding-bottom: 100px;
 }
 
-.content{
+.content {
     font-size: 1.2em;
     font-weight: 400;
     line-height: 1.5;
@@ -58,30 +58,30 @@ td {
 }
 
 .header {
-  overflow: hidden;
-  padding-top: 95px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+    overflow: hidden;
+    padding-top: 95px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .header h1 {
-  float: left;
-  color: black;
-  text-align: center;
-  padding: 12px;
-  text-decoration: none;
-  font-size: 3.4em;
-  font-weight: 600;
+    float: left;
+    color: black;
+    text-align: center;
+    padding: 12px;
+    text-decoration: none;
+    font-size: 3.4em;
+    font-weight: 600;
 }
 
-.header .logo{
-  height: 125px;
-  width: auto;
+.header .logo {
+    height: 125px;
+    width: auto;
 }
 
 .header-right {
-  float: right;
+    float: right;
 }
 
 .buttons-area {
@@ -93,19 +93,32 @@ td {
     flex-direction: row;
 }
 
-.description{
+.description {
     float: left;
     font-size: 1.3em;
     font-weight: 600;
 }
 
 .buttons {
-    float:right;
+    float: right;
+}
+
+@media screen and (max-width: 450px) {
+
+    .description {
+        float: left;
+        font-size: 1.0em;
+        font-weight: 600;
+    }
+
+    .status-view {
+        padding-top: 10px;
+    }
 }
 
 @media screen and (max-width: 500px) {
 
-  .header{
-    flex-direction: column;
-  }
+    .header {
+        flex-direction: column;
+    }
 }

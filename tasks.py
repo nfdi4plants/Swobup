@@ -5,7 +5,6 @@ from celery.backends.s3 import S3Backend
 
 load_dotenv()
 
-
 imports = ['app.tasks.process_ontology',
            'app.tasks.add_external_ontologies',
            'app.tasks.add_to_database',
@@ -34,4 +33,4 @@ app.conf["s3_base_path"] = os.environ.get("s3_base_path")
 app.conf["s3_endpoint_url"] = os.environ.get("s3_endpoint_url")
 app.conf["s3_region"] = os.environ.get("s3_region")
 
-print("sel", app.conf)
+print("configuration: ", app.conf)
