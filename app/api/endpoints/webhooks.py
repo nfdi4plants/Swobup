@@ -148,22 +148,22 @@ async def template(request: Request, payload: PushWebhookPayload):
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
-@router.post("/test", summary="Test authentication Webhook", status_code=status.HTTP_204_NO_CONTENT)
-async def test(request: Request, x_hub_signature_256:str = Header(None)):
-    payload = await request.body()
-    # payload = payload.decode()
-    print("pp", payload)
-    secret = os.environ.get("GITHUB_SECRET").encode("utf-8")
-    # signature = generate_hash_signature(secret, payload.encode())
-    signature = generate_hash_signature(secret, payload)
-
-    print("signature", f"sha256={signature}")
-    print("xhub", x_hub_signature_256)
-
-    if x_hub_signature_256 != f"sha256={signature}":
-        raise HTTPException(status_code=401, detail="Auth Error")
-    return {}
-
-    print("login successful")
-
-    return Response(status_code=204)
+# @router.post("/test", summary="Test authentication Webhook", status_code=status.HTTP_204_NO_CONTENT)
+# async def test(request: Request, x_hub_signature_256:str = Header(None)):
+#     payload = await request.body()
+#     # payload = payload.decode()
+#     print("pp", payload)
+#     secret = os.environ.get("GITHUB_SECRET").encode("utf-8")
+#     # signature = generate_hash_signature(secret, payload.encode())
+#     signature = generate_hash_signature(secret, payload)
+#
+#     print("signature", f"sha256={signature}")
+#     print("xhub", x_hub_signature_256)
+#
+#     if x_hub_signature_256 != f"sha256={signature}":
+#         raise HTTPException(status_code=401, detail="Auth Error")
+#     return {}
+#
+#     print("login successful")
+#
+#     return Response(status_code=204)
