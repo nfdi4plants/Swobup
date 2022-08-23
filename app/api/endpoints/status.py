@@ -1,13 +1,16 @@
 import os
 
-from fastapi import APIRouter, Body, Depends, HTTPException, status, FastAPI
-from fastapi.responses import PlainTextResponse, JSONResponse, HTMLResponse, Response
+from fastapi import APIRouter, Body, Depends, HTTPException, status, FastAPI, Response
+from fastapi.responses import PlainTextResponse, JSONResponse, HTMLResponse
 from app.neo4j.neo4jConnection import Neo4jConnection
 
 from app.custom.models.health import Health, Services, Neo4j
 from app.custom.models.status import Status
+from app.helpers.models.configuration.configuration import *
 
 from app.helpers.swate_api import SwateAPI
+
+from app.api.middlewares.http_basic_auth import *
 
 router = APIRouter()
 
@@ -71,3 +74,38 @@ async def status():
 
     return Status(number_terms=number_terms, number_ontologies=number_ontologies, number_templates=number_templates,
                   number_relationships=number_relations, db_url=db_url)
+
+
+@router.get("/configuration", response_model=Configuration,
+            responses={200: {"model": Configuration}},
+            # status_code=status.HTTP_200_OK,
+            summary="Get configuration parameters",
+            dependencies=[Depends(basic_auth)])
+async def config():
+
+    swobup_username = os.environ.get("SWOBUP_USERNAME")
+    swobup_password = os.environ.get("SWOBUP_PASSWORD")
+    github_secret = os.environ.get("GITHUB_SECRET")
+
+    neo4j_url = os.environ.get("DB_URL")
+    neo4j_username = os.environ.get("DB_USER")
+    neo4j_password = os.environ.get("DB_PASSWORD")
+
+    swate_api = os.environ.get("SWATE_API")
+    swate_ssl_verification = os.environ.get("TURN_OFF_SSL_VERIFY", False)
+
+    s3_bucket = os.environ.get("s3_bucket")
+    s3_access_key_id = os.environ.get("s3_access_key_id")
+    s3_secret_access_key = os.environ.get("s3_secret_access_key")
+    s3_base_path = os.environ.get("s3_base_path")
+    s3_endpoint_url = os.environ.get("s3_endpoint_url")
+    s3_region = os.environ.get("s3_region")
+
+    swobup_config = SwobupConfig(username=swobup_username,password=swobup_password, github_secret=github_secret)
+    neo4j_config = Neo4jConfig(username=neo4j_username, password=neo4j_password, url=neo4j_url)
+    swate_config = SwateConfig(api_url=swate_api, ssl_verification=swate_ssl_verification)
+    s3_config = S3Config(access_key_id=s3_access_key_id, secret_access_key=s3_secret_access_key,
+                         bucket=s3_bucket, base_path=s3_base_path, endpoint_url=s3_endpoint_url,
+                         region=s3_region)
+
+    return Configuration(swobup=swobup_config, swate=swate_config, neo4j=neo4j_config, s3=s3_config)
