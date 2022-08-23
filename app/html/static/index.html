@@ -47,12 +47,23 @@
                         <form>
 
                             <div class="container p-4">
-                                <h1 class="title is-4 is-darkblue is-uppercase">
+                                <h1 class="title is-4 is-lightblue is-uppercase">
+                                    Health
                                 </h1>
                                 <h1 class="title is-4 is-darkblue-lighter-20">
                                     Health Information
                                 </h1>
-                                <div class="spacer"></div>
+                                <!--                                <div class="spacer"></div>-->
+                                <div class="content">
+                                    <p>
+                                        Status information about the services connected to Swobup are displayed here.
+                                        The
+                                        database status shows whether there is a successful connection to the database.
+                                        As a sister programme to Swobup, the Swate status is also displayed. If
+                                        individual services are offline, the status of Swobup is also marked as offline.
+                                    </p>
+                                </div>
+                                <!--                                                                <img src="images/laptop-medical-solid.svg"></img>-->
                                 <!--input fields-->
                             </div>
                             <!-- until here-->
@@ -67,21 +78,30 @@
                             </h3>
                             <div style="height:10px; text-align:left"></div>
                             <div style="height:10px"></div>
+                            <!-- <img src="images/laptop-medical-solid.svg"></img>-->
+                            <div class="buttons-area">
 
+                                <div class="status-view">
+                                    <div class="description">Status</div>
 
-                            <table class="table  table is-narrow" style="background-color: transparent !important">
-                                <tbody>
+                                    <div class="buttons">
 
-                                <tr>
-                                    <td>Status</td>
-                                    <td><span class="tag is-success  is-medium" id="status">Loading</span></td>
+                                        <div class="control">
+                                            <div class="tags has-addons">
+                                                <!--                                                <span class="tag is-success is-medium"-->
+                                                <!--                                                      id="database_status">Loading</span>-->
+                                                <span class="tag is-dark is-medium" id="status">-</span>
+                                            </div>
+                                        </div>
 
-                                </tr>
+                                    </div>
+                                </div>
 
-                                <tr>
-                                    <td>Database</td>
-                                    <!--                                    <td><span class="tag is-success  is-medium" id="database_status">Loading</span>-->
-                                    <td>
+                                <div class="status-view">
+                                    <div class="description">Database</div>
+
+                                    <div class="buttons">
+
                                         <div class="control">
                                             <div class="tags has-addons">
                                                 <span class="tag is-success is-medium"
@@ -89,31 +109,29 @@
                                                 <span class="tag is-dark is-medium" id="database_version">-</span>
                                             </div>
                                         </div>
-                                    </td>
-                                </tr>
 
-                                <!--                                <tr>-->
-                                <!--                                    <td>Broker</td>-->
-                                <!--                                    <td><span class="tag is-success  is-medium" id="broker_status">Loading</span></td>-->
-                                <!--                                </tr>-->
+                                    </div>
+                                </div>
 
-                                <tr>
-                                    <td>Swate</td>
-                                    <td>
+                                <div class="status-view">
+                                    <div class="description">Swate</div>
+
+                                    <div class="buttons">
+
                                         <div class="control">
                                             <div class="tags has-addons">
                                                 <span class="tag is-success is-medium" id="swate_status">Loading</span>
                                                 <span class="tag is-dark is-medium" id="swate_version">-</span>
                                             </div>
                                         </div>
-                                    </td>
-                                </tr>
 
-                                </tbody>
-                            </table>
+                                    </div>
+                                </div>
 
 
-                            </p>
+                            </div>
+
+                            <!--                            </p>-->
                         </div>
                     </div>
                 </div>
@@ -132,25 +150,6 @@
             -->
             <!-- changed line above form to div -->
             <div class="columns">
-                <div class="column align-items-top pb-5">
-                    <div class="container box has-bg-white m-4 p-0">
-
-                        <!-- here -->
-                        <form>
-
-                            <div class="container p-4">
-                                <h1 class="title is-4 is-darkblue is-uppercase">
-                                </h1>
-                                <h1 class="title is-4 is-darkblue-lighter-20">
-                                    Database Information
-                                </h1>
-                                <div class="spacer"></div>
-                                <!--input fields-->
-                            </div>
-                            <!-- until here-->
-                        </form>
-                    </div>
-                </div>
                 <!--text box-->
                 <div class="column align-items-center">
                     <div class="container m-4 is-white">
@@ -160,41 +159,101 @@
                             <div style="height:10px; text-align:left"></div>
                             <div style="height:10px"></div>
 
+                            <div class="buttons-area">
 
-                            <table class="table  table is-narrow" style="background-color: transparent !important">
-                                <tbody>
+                                <div class="status-view">
+                                    <div class="description">Terms</div>
 
-                                <tr>
-                                    <td>Terms</td>
-                                    <td><span class="tag is-info  is-medium" id="number_terms">Loading</span></td>
+                                    <div class="buttons">
 
-                                </tr>
+                                        <div class="control">
+                                            <div class="tags has-addons">
+                                                <span class="tag is-info  is-medium" id="number_terms">Loading</span>
+                                            </div>
+                                        </div>
 
-                                <tr>
-                                    <td>Ontologies</td>
-                                    <td><span class="tag is-info  is-medium" id="number_ontologies">Loading</span></td>
-                                </tr>
+                                    </div>
+                                </div>
 
-                                <tr>
-                                    <td>Relationships</td>
-                                    <td><span class="tag is-info  is-medium" id="number_relationships">Loading</span>
-                                    </td>
-                                </tr>
+                                <div class="status-view">
+                                    <div class="description">Ontologies</div>
 
-                                <tr>
-                                    <td>Templates</td>
-                                    <td><span class="tag is-info  is-medium" id="number_templates">Loading</span></td>
-                                </tr>
+                                    <div class="buttons">
 
-                                <!--                                <tr>-->
-                                <!--                                    <td>DB URL</td>-->
-                                <!--                                    <td><span class="tag is-info  is-medium" id="db_url">Loading</span></td>-->
-                                <!--                                </tr>-->
+                                        <div class="control">
+                                            <div class="tags has-addons">
+                                                <span class="tag is-info  is-medium"
+                                                      id="number_ontologies">Loading</span>
+                                            </div>
+                                        </div>
 
-                                </tbody>
-                            </table>
+                                    </div>
+                                </div>
 
+                                <div class="status-view">
+                                    <div class="description">Relationships</div>
+
+                                    <div class="buttons">
+
+                                        <div class="control">
+                                            <div class="tags has-addons">
+                                                <span class="tag is-info  is-medium"
+                                                      id="number_relationships">Loading</span>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                                <div class="status-view">
+                                    <div class="description">Templates</div>
+
+                                    <div class="buttons">
+
+                                        <div class="control">
+                                            <div class="tags has-addons">
+                                                <span class="tag is-info  is-medium"
+                                                      id="number_templates">Loading</span>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+
+                            </div>
                         </div>
+                    </div>
+                </div>
+                <div class="column align-items-top pb-5">
+                    <div class="container box has-bg-white m-4 p-0">
+
+                        <!-- here -->
+                        <form>
+
+                            <div class="container p-4">
+                                <h1 class="title is-4 is-olive is-uppercase">
+                                    Database
+                                </h1>
+                                <h1 class="title is-4 is-darkblue-lighter-20">
+                                    Database Information
+                                </h1>
+                                <!--                                <div class="spacer"></div>-->
+                                <div class="content">
+                                    <p>
+                                        This displays information on the data contained in the Swate/Swobup database.
+                                        Terms are part of an ontology, while relations can indicate the connections
+                                        between individual terms and/or ontologies. The template display shows the
+                                        number of currently available Dataplant templates. Ontologies and templates can
+                                        be updated automatically using GIT operations with the help of installed
+                                        webhooks.
+                                    </p>
+                                </div>
+
+                                <!--input fields-->
+                            </div>
+                            <!-- until here-->
+                        </form>
                     </div>
                 </div>
             </div>
