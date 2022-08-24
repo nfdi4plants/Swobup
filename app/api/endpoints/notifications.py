@@ -21,9 +21,8 @@ router = APIRouter()
 
 
 @router.post("/send", summary="Create Swobup Mail", status_code=status.HTTP_204_NO_CONTENT,
-            response_class=Response, dependencies=[Depends(basic_auth)])
+             response_class=Response, dependencies=[Depends(basic_auth)])
 async def send_mail():
-
     print("no content")
 
     return Response(status_code=status.HTTP_204_NO_CONTENT)
