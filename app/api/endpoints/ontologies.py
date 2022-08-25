@@ -61,8 +61,8 @@ async def build_from_scratch():
         current_path = github_api.convert_to_raw_url(file.get("path"))
         if ".obo" in current_path:
             urls.append(current_path)
-        if ".testobo" in current_path:
-            urls.append(current_path)
+        # if ".testobo" in current_path:
+        #     urls.append(current_path)
         if ".include" in current_path:
             # include_file = requests.get(current_path)
             # data = json.loads(include_file.content)
