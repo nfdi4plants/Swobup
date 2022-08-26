@@ -15,6 +15,8 @@ from app.neo4j.neo4jConnection import Neo4jConnection
 
 from app.api.middlewares.http_basic_auth import *
 
+from app.tasks.mail_task import send_testmail
+
 from resource import *
 
 router = APIRouter()
@@ -23,6 +25,6 @@ router = APIRouter()
 @router.post("/send", summary="Create Swobup Mail", status_code=status.HTTP_204_NO_CONTENT,
              response_class=Response, dependencies=[Depends(basic_auth)])
 async def send_mail():
-    print("no content")
+    send_testmail.delay()
 
     return Response(status_code=status.HTTP_204_NO_CONTENT)
