@@ -51,13 +51,13 @@ def show_tasks_results(task_ids: list, task_results: list):
 
 @app.task
 def send_testmail():
-    mail_method = os.environ.get("NOTIFIER_METHOD")
+    # mail_method = os.environ.get("NOTIFIER_METHOD")
 
     mail_notifier = MailNotifier()
     mail_notifier.add_headline("#ffc000", "Swobup Test Message", "")
     mail_notifier.set_line_color("#4caed3")
     mail_notifier.add_main_information()
-    mail_notifier.add_text()
+    mail_notifier.add_test_text()
     mail_notifier.add_messages()
     mail_body = mail_notifier.build_mail()
 
@@ -66,5 +66,26 @@ def send_testmail():
     print("mail sent...")
 
 
+@app.task
+def send_webhook_mail():
+    # mail_method = os.environ.get("NOTIFIER_METHOD")
 
+    github_username = "Zersk"
+    commit_user = "Zersk"
+    commit_mailaddress = "marcel.tschoepe@gmail.com"
+    commit_message = "This is a test"
+    commit_timestamp = "now"
 
+    mail_notifier = MailNotifier()
+    mail_notifier.add_headline("#ffc000", "Swobup Test Message", "")
+    mail_notifier.set_line_color("#4caed3")
+    mail_notifier.add_main_information(github_username=github_username, commit_user=commit_user,
+                                       commit_mailaddress=commit_mailaddress, commit_message=commit_message,
+                                       commit_timestamp=commit_timestamp)
+    mail_notifier.add_webhook_text()
+    mail_notifier.add_messages()
+    mail_body = mail_notifier.build_mail()
+
+    print("sending mail...")
+    mail_notifier.send_mail(mail_body)
+    print("mail sent...")
