@@ -45,21 +45,23 @@ class MailNotifier:
     def set_line_color(self, hex_value):
         self.html_message = self.html_message.replace('$LINE_COLOR', hex_value)
 
-    def add_main_information(self):
+    def add_main_information(self, **kwargs):
 
-        github_username = ""
-        commit_user = ""
-        commit_mailaddress = ""
-        commit_message = ""
-        commit_timestamp = ""
+        print("kwargs", kwargs)
 
-        if github_username is "":
+        github_username = kwargs.get("github_username")
+        commit_user = kwargs.get("commit_user")
+        commit_mailaddress = kwargs.get("commit_mailaddress")
+        commit_message = kwargs.get("commit_message")
+        commit_timestamp = kwargs.get("commit_timestamp")
+
+        if not kwargs:
             main_info_file = ""
         else:
             main_info_file = open(self.template_path + "main_information.html", "r").read()
-            committer_details_file = main_info_file.replace('$GITHUB_USERNAME', github_username)
+            main_info_file = main_info_file.replace('$AUTHOR', github_username)
             main_info_file = main_info_file.replace('$COMMIT_NAME', commit_user)
-            main_info_file = main_info_file.replace('$COMMIT_MAIL', commit_mailaddress)
+            main_info_file = main_info_file.replace('$EMAIL', commit_mailaddress)
             main_info_file = main_info_file.replace('$COMMIT_MESSAGE', commit_message)
             main_info_file = main_info_file.replace('$COMMIT_TIMESTAMP', commit_timestamp)
 
@@ -68,8 +70,12 @@ class MailNotifier:
     def add_messages(self):
         self.html_message = self.html_message.replace('$MESSAGES', "")
 
-    def add_text(self):
+    def add_test_text(self):
         body_text = open(self.template_path + "testmail_text.html", "r").read()
+        self.html_message = self.html_message.replace('$TEXT', body_text)
+
+    def add_webhook_text(self):
+        body_text = open(self.template_path + "webhook_text.html", "r").read()
         self.html_message = self.html_message.replace('$TEXT', body_text)
 
     def build_mail(self):
