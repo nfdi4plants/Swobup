@@ -144,6 +144,15 @@ class MailNotifier:
         msgImage.add_header('Content-ID', '<dataplant-logo>')
         msgRoot.attach(msgImage)
 
+
+        fp = open(self.template_path + 'swobup-logo-black.png', 'rb')
+        msgImage = MIMEImage(fp.read())
+        fp.close()
+
+        # Define the image's ID as referenced above
+        msgImage.add_header('Content-ID', '<swobup-logo-black>')
+        msgRoot.attach(msgImage)
+
         return msgRoot
 
     def send_mail(self, message):
