@@ -27,6 +27,9 @@ class MailNotifier:
         self.html_message = ""
         self.text_message = ""
 
+        self.job_items = ""
+        self.job_details = ""
+
         print(os.getcwd())
 
         self.html_message = open(self.template_path + "main.html", "r").read()
@@ -49,21 +52,28 @@ class MailNotifier:
 
         print("kwargs", kwargs)
 
+        project_name =  kwargs.get("project_name")
+        branch = kwargs.get("branch")
         github_username = kwargs.get("github_username")
         commit_user = kwargs.get("commit_user")
         commit_mailaddress = kwargs.get("commit_mailaddress")
         commit_message = kwargs.get("commit_message")
         commit_timestamp = kwargs.get("commit_timestamp")
+        commit_hash = kwargs.get("commit_hash")
 
         if not kwargs:
             main_info_file = ""
         else:
             main_info_file = open(self.template_path + "main_information.html", "r").read()
+            main_info_file = main_info_file.replace('$GITHUB_PROJECT', project_name)
+            main_info_file = main_info_file.replace('$COMMIT_BRANCH', branch)
             main_info_file = main_info_file.replace('$AUTHOR', github_username)
             main_info_file = main_info_file.replace('$COMMIT_NAME', commit_user)
             main_info_file = main_info_file.replace('$EMAIL', commit_mailaddress)
             main_info_file = main_info_file.replace('$COMMIT_MESSAGE', commit_message)
             main_info_file = main_info_file.replace('$COMMIT_TIMESTAMP', commit_timestamp)
+            main_info_file = main_info_file.replace('$COMMIT_HASH', commit_hash)
+
 
         self.html_message = self.html_message.replace('$MAIN_INFORMATION', main_info_file)
 
@@ -77,6 +87,35 @@ class MailNotifier:
     def add_webhook_text(self):
         body_text = open(self.template_path + "webhook_text.html", "r").read()
         self.html_message = self.html_message.replace('$TEXT', body_text)
+
+    def add_job_details(self, alert_color, text_color, alert_text):
+        job_details = open(self.template_path + "job_details.html", "r").read()
+        job_details = job_details.replace('$ALERT_COLOR', alert_color)
+        job_details = job_details.replace('$TEXT_COLOR', text_color)
+        job_details = job_details.replace('$ALERT_TEXT', alert_text)
+        job_details = job_details.replace('$JOB_ITEMS', self.job_items)
+
+        self.html_message = self.html_message.replace('$MESSAGES', job_details)
+        # self.job_details =self.job_details + job_details
+
+
+    # alternative method sets job details
+    # def set_job_details(self):
+    #     self.html_message = self.html_message.replace('$MESSAGES', self.job_details)
+
+    def add_job_item(self, type, text):
+        job_item = open(self.template_path + "job_item.html", "r").read()
+
+        if type == "success":
+            job_icon = "cid:check-green"
+        else:
+            job_icon = "cid:red-cross"
+
+
+        job_item= job_item.replace('$JOB_ICON', job_icon)
+        job_item = job_item.replace('$JOB_TEXT', text)
+
+        self.job_items = self.job_items + job_item
 
     def build_mail(self):
 
@@ -145,12 +184,45 @@ class MailNotifier:
         msgRoot.attach(msgImage)
 
 
+        # fp = open(self.template_path + 'logo-blue.png', 'rb')
         fp = open(self.template_path + 'swobup-logo-black.png', 'rb')
         msgImage = MIMEImage(fp.read())
         fp.close()
 
         # Define the image's ID as referenced above
         msgImage.add_header('Content-ID', '<swobup-logo-black>')
+        msgRoot.attach(msgImage)
+
+        fp = open(self.template_path + 'red-cross.gif', 'rb')
+        msgImage = MIMEImage(fp.read())
+        fp.close()
+
+        # Define the image's ID as referenced above
+        msgImage.add_header('Content-ID', '<red-cross>')
+        msgRoot.attach(msgImage)
+
+        fp = open(self.template_path + 'check-green-inverted.gif', 'rb')
+        msgImage = MIMEImage(fp.read())
+        fp.close()
+
+        # Define the image's ID as referenced above
+        msgImage.add_header('Content-ID', '<check-green>')
+        msgRoot.attach(msgImage)
+
+        fp = open(self.template_path + 'branch-grey.gif', 'rb')
+        msgImage = MIMEImage(fp.read())
+        fp.close()
+
+        # Define the image's ID as referenced above
+        msgImage.add_header('Content-ID', '<branch-grey>')
+        msgRoot.attach(msgImage)
+
+        fp = open(self.template_path + 'commit-grey.gif', 'rb')
+        msgImage = MIMEImage(fp.read())
+        fp.close()
+
+        # Define the image's ID as referenced above
+        msgImage.add_header('Content-ID', '<commit-grey>')
         msgRoot.attach(msgImage)
 
         return msgRoot
