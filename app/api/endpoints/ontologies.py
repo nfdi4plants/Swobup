@@ -31,8 +31,12 @@ from app.custom.models.add_ontology import AddOntologyPayload
 from app.custom.models.delete_ontology import DeleteOntologyPayload
 from app.tasks.ontology_tasks import delete_ontology_task
 from app.tasks.mail_task import show_tasks_results, send_webhook_mail2
+from app.helpers.notifications.models.notification_model import Notifications
 
 from app.api.middlewares.http_basic_auth import *
+
+from app.helpers.notifications.models.colors import Colors
+from app.helpers.notifications.models.notification_model import Notifications, Message
 
 router = APIRouter()
 
@@ -68,8 +72,8 @@ async def build_from_scratch():
             # data = json.loads(include_file.content)
             # decoded_content = base64.b64decode(data["content"])
             # url_list = decoded_content.decode().splitlines()
-            general_downlaoder = GeneralDownloader(current_path)
-            url_list = general_downlaoder.download_file()
+            general_downloader = GeneralDownloader(current_path)
+            url_list = general_downloader.download_file()
             for url in url_list:
                 # if "ncbitaxon" in url.decode():
                 #     continue
@@ -106,10 +110,22 @@ async def add_ontology(payload: AddOntologyPayload):
     result_ids = []
     task_results = []
 
+    #notification_color = Colors()
+
+    notifications = Notifications(messages=[])
+    notifications.is_webhook = False
+    notifications.author = "marcel"
+    # print(notifications.messages)
+    notifications.messages.append(Message(type="success", message="succeeded"))
+
+
+    notifications_json = notifications.dict()
+
+
     for url in payload.url:
         print("current_url", url)
         # result = chain(add_ontology_task.s(url), add_ontologies.s()).apply_async()
-        result = chain(add_ontology_task.s(url), add_ontologies.s(), send_webhook_mail2.s()).apply_async()
+        result = chain(add_ontology_task.s(url, notifications_json), add_ontologies.s(), send_webhook_mail2.s()).apply_async()
         result_ids.append(result.id)
         # task_results.append(result.get())
 
