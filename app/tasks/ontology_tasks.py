@@ -33,6 +33,7 @@ from resource import *
 
 from app.tasks.database_tasks import add_ontologies
 from app.tasks.mail_task import send_webhook_mail2
+from app.helpers.notifications.models.notification_model import Notifications
 
 from celery.backends.s3 import S3Backend
 
@@ -154,7 +155,10 @@ def delete_ontology_task(payload):
 
 
 @app.task(bind=True)
-def add_ontology_task(self, url):
+def add_ontology_task(self, url, payload):
+
+    print("payload", payload)
+
     general_downloader = GeneralDownloader(url)
     current_file = general_downloader.download_file()
 

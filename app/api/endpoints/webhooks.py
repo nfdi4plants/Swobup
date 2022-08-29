@@ -91,7 +91,7 @@ async def ontology(request: Request, payload: PushWebhookPayload):
 
     for filename in update_files:
         print("filename", filename)
-        if ".obo" or ".testobo" in filename:
+        if ".obo" in filename:
             update_urls.append(github_api.convert_to_raw_url(filename))
 
 
