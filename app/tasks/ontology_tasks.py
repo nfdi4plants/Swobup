@@ -158,6 +158,7 @@ def delete_ontology_task(payload):
 def add_ontology_task(self, url, payload):
 
     print("payload", payload)
+    print("pay", Notifications(**payload))
 
     general_downloader = GeneralDownloader(url)
     current_file = general_downloader.download_file()
