@@ -16,7 +16,8 @@ imports = ['app.tasks.process_ontology',
 
 app = Celery('tasks',
              # backend=os.environ.get("CELERY_BACKEND"),
-             backend='s3',
+             #backend='s3',
+             backend=os.environ.get("CELERY_BACKEND"),
              broker=os.environ.get("CELERY_BROKER")
              # broker = 'redis://localhost:6379/0'
              )

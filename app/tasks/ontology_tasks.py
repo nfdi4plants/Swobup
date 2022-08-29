@@ -32,6 +32,7 @@ from app.neo4j.neo4jConnection import Neo4jConnection
 from resource import *
 
 from app.tasks.database_tasks import add_ontologies
+from app.tasks.mail_task import send_webhook_mail2
 
 from celery.backends.s3 import S3Backend
 
@@ -184,6 +185,7 @@ def add_ontology_task(self, url):
     backend.set(key=s3_key, value=json.dumps(data))
 
     res = {"task_id": str(s3_key)}
+    res["notifications"] = []
 
     print("s3 uploaded...")
 
