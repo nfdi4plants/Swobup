@@ -30,7 +30,7 @@ from app.tasks.database_tasks import add_ontologies
 from app.custom.models.add_ontology import AddOntologyPayload
 from app.custom.models.delete_ontology import DeleteOntologyPayload
 from app.tasks.ontology_tasks import delete_ontology_task
-from app.tasks.mail_task import show_tasks_results
+from app.tasks.mail_task import show_tasks_results, send_webhook_mail2
 
 from app.api.middlewares.http_basic_auth import *
 
@@ -108,12 +108,13 @@ async def add_ontology(payload: AddOntologyPayload):
 
     for url in payload.url:
         print("current_url", url)
-        result = chain(add_ontology_task.s(url), add_ontologies.s()).apply_async()
+        # result = chain(add_ontology_task.s(url), add_ontologies.s()).apply_async()
+        result = chain(add_ontology_task.s(url), add_ontologies.s(), send_webhook_mail2.s()).apply_async()
         result_ids.append(result.id)
         # task_results.append(result.get())
 
-    print("res IDS", result_ids)
-    show_tasks_results.delay(result_ids)
+    # print("res IDS", result_ids)
+    # show_tasks_results.delay(result_ids)
 
     return Response(status_code=status.HTTP_201_CREATED)
 

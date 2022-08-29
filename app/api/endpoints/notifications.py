@@ -32,7 +32,7 @@ async def send_mail():
 
 @router.post("/webhook/send", summary="Create Swobup Mail", status_code=status.HTTP_204_NO_CONTENT,
              response_class=Response, dependencies=[Depends(basic_auth)])
-async def send_mail():
+async def send_webhook_mail():
     send_webhook_mail.delay()
 
     return Response(status_code=status.HTTP_204_NO_CONTENT)
