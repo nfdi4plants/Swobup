@@ -44,7 +44,7 @@ class Neo4jConnection:
         response = None
         try:
             session = self.__driver.session(database=db) if db is not None else self.__driver.session()
-            print("jfaldsa", parameters)
+            # print("jfaldsa", parameters)
             response = list(session.run(query, parameters))
         except Exception as e:
             print("Query failed:", e)

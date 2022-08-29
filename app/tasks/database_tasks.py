@@ -15,6 +15,7 @@ from app.helpers.obo_parser import OBO_Parser
 from celery.result import AsyncResult
 
 from app.neo4j.neo4jConnection import Neo4jConnection
+from app.helpers.notifications.models.notification_model import Notifications
 
 from app.helpers.s3_storage import S3Storage
 
