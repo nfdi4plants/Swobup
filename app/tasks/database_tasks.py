@@ -46,6 +46,8 @@ def add_ontologies(data):
     # print("s3key", s3_key)
 
     task_id = data.get("task_id")
+    # notifications = data.get("notifications")
+    notifications = []
 
     print("task_id", task_id)
 
@@ -89,10 +91,14 @@ def add_ontologies(data):
 
     # print("adding ontologies")
     conn.add_ontologies(ontology_df)
+    notifications.append("Ontology written to DB")
+
     # print("adding terms")
     conn.add_terms(terms_df)
+    notifications.append("terms sucessfully written to DB")
     # print("connecting ontologies")
     conn.connect_ontology(terms_df)
+    notifications.append("Terms connected to Ontology")
     # print("connecting relationships")
     # conn.connect_ontology(relations_df)
     for relation_type in relations_df.rel_type.unique():
@@ -101,9 +107,14 @@ def add_ontologies(data):
         current_rel_df = relations_df.loc[relations_df["rel_type"] == relation_type]
         # print("adding relations of ", )
         conn.connect_term_relationships(current_rel_df, relation_type, batch_size=40000)
+    notifications.append("Relationships sucessfully written to DB")
 
     #
     # return True
+
+    backend.delete(task_id)
+
+    return notifications
 
 
 @app.task
@@ -136,7 +147,7 @@ def update_ontologies(task_results):
     # generate a list of dictionaries
     terms_remove = []
     for term_remove in terms_to_remove:
-        terms_remove.append({"accession":term_remove})
+        terms_remove.append({"accession": term_remove})
 
     # create a dataframe from list of dictionaries
     terms_remove_df = pd.DataFrame(terms_remove, index=None)
@@ -145,16 +156,13 @@ def update_ontologies(task_results):
 
     print("after deletion")
 
-
-
-
     terms_df = pd.DataFrame(data.get("terms"), index=None)
 
     ontology_df = pd.DataFrame(data.get("ontologies"), index=None)
 
     relations_df = pd.DataFrame(data.get("relationships"), index=None)
 
-    relations_df.to_csv('rel.csv', index=False)
+    # relations_df.to_csv('rel.csv', index=False)
 
     status = conn.check()
 
@@ -172,6 +180,8 @@ def update_ontologies(task_results):
         current_rel_df = relations_df.loc[relations_df["rel_type"] == relation_type]
         # print("adding relations of ", )
         conn.connect_term_relationships(current_rel_df, relation_type, batch_size=40000)
+
+    backend.delete(task_id)
 
 
 @app.task
