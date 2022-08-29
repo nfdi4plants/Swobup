@@ -119,7 +119,7 @@ class MailNotifier:
 
     def build_mail(self):
 
-        print("html is now", self.html_message)
+        # print("html is now", self.html_message)
 
         # Create the root message and fill in the from, to, and subject headers
         msgRoot = MIMEMultipart('related')
