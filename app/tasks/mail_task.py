@@ -110,6 +110,10 @@ def send_webhook_mail(messages):
 
 @app.task
 def send_webhook_mail2(messages):
+    if not os.environ.get("MAIL_NOTiFICATION") == "on":
+        print("mail notifications are turned off")
+        return
+
     # mail_method = os.environ.get("NOTIFIER_METHOD")
 
     project_name = "nfdi4plants/ontology_nfdi4pso"
