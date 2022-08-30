@@ -155,10 +155,12 @@ def delete_ontology_task(payload):
 
 
 @app.task(bind=True)
-def add_ontology_task(self, url, payload):
+def add_ontology_task(self, url, notifications):
 
-    print("payload", payload)
-    print("pay", Notifications(**payload))
+    print("payload", notifications)
+    notifications = Notifications(**notifications)
+
+    print("pay", notifications)
 
     general_downloader = GeneralDownloader(url)
     current_file = general_downloader.download_file()
@@ -170,8 +172,10 @@ def add_ontology_task(self, url, payload):
     ontology_buffer = io.TextIOWrapper(current_file, newline=None)
 
     obo_parser = OBO_Parser(ontology_buffer)
-    data = obo_parser.parse()
+    data = obo_parser.parse(notifications)
     print("parsing finished")
+
+    # print("notts", data[1])
 
     # print("end of", getrusage(RUSAGE_SELF).ru_maxrss * 4096 / 1024 /1024)
 
@@ -189,8 +193,9 @@ def add_ontology_task(self, url, payload):
     print("s3_key", s3_key)
     backend.set(key=s3_key, value=json.dumps(data))
 
+    notifications_json = notifications.dict()
     res = {"task_id": str(s3_key)}
-    res["notifications"] = []
+    res["notifications"] = notifications_json
 
     print("s3 uploaded...")
 
