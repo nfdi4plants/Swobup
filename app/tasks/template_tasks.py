@@ -22,13 +22,16 @@ from app.helpers.swate_api import SwateAPI
 from app.helpers.models.templates.template import Template
 
 from app.neo4j.neo4jConnection import Neo4jConnection
+from app.helpers.notifications.models.notification_model import Notifications, Message
 
 from resource import *
 
 
 @app.task
-def add_template_custom(url):
-    swate_url = "https://swate.nfdi4plants.de"
+def add_template_custom(url, notifications):
+    # swate_url = "https://swate.nfdi4plants.de"
+
+    notifications = Notifications(**notifications)
 
     general_downloader = GeneralDownloader(url)
     current_file = general_downloader.retrieve_xslx()
@@ -47,14 +50,31 @@ def add_template_custom(url):
     # conn.update_template2(template.dict())
     conn.update_template(template)
 
+    notifications.messages.append(Message(type="success", message="Template " + template.Name + "successfully written "
+                                                                                                "to database"))
+
+    result = {}
+    notifications_json = notifications.dict()
+    result["notifications"] = notifications_json
+
+    print("---", notifications_json)
+
+    return result
+
 
 @app.task
-def delete_template_custom(template_id):
-    swate_url = "https://swate.nfdi4plants.de"
+def delete_template_custom(template_id, notifications):
+    # swate_url = "https://swate.nfdi4plants.de"
+
+    notifications = Notifications(**notifications)
 
     conn = Neo4jConnection()
 
     conn.delete_template(template_id)
+
+    result = {}
+    notifications_json = notifications.dict()
+    result["notifications"] = notifications_json
 
 
 @app.task
@@ -111,5 +131,3 @@ def template_build_from_scratch():
         conn = Neo4jConnection()
         # conn.update_template2(template.dict())
         conn.update_template(template)
-
-
