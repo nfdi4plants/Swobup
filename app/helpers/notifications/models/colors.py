@@ -13,10 +13,11 @@ class Warning(BaseModel):
 
 
 class Success(BaseModel):
-    primary_color: str = "#a2b975"
-    secondary_color: str = "#d2e2b4"
-    font_color: str = "#6c7c4e"
+    primary_color: str = "#168875"
+    secondary_color: str = "#e1ebcd"
+    font_color: str = "#e1ebcd"
 
 class Colors(BaseModel):
-    success: Success
-    warning: Warning
+    headline: str = "#ffc000"
+    line_color_blue: str = "#4caed3"
+    line_color_yellow: str = "#ffc000"
