@@ -20,7 +20,11 @@ class Notifications(BaseModel):
     messages: List[Message]
     project: Optional[str]
     branch: Optional[str]
-    commit: Optional[Commit]
+    # commit: Optional[Commit]
     author: Optional[str]
     email: Optional[str]
+    commit_hash: Optional[str]
+    commit_text: Optional[str]
+    commit_url: Optional[str]
     is_webhook: Optional[bool]
+

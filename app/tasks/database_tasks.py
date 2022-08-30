@@ -15,7 +15,7 @@ from app.helpers.obo_parser import OBO_Parser
 from celery.result import AsyncResult
 
 from app.neo4j.neo4jConnection import Neo4jConnection
-from app.helpers.notifications.models.notification_model import Notifications
+from app.helpers.notifications.models.notification_model import Notifications, Message
 
 from app.helpers.s3_storage import S3Storage
 
@@ -46,9 +46,12 @@ def add_ontologies(data):
 
     # print("s3key", s3_key)
 
+    messages = data.get("notifications")
+
+    notifications = Notifications(**messages)
+
     task_id = data.get("task_id")
     # notifications = data.get("notifications")
-    notifications = []
 
     print("task_id", task_id)
 
@@ -92,14 +95,16 @@ def add_ontologies(data):
 
     # print("adding ontologies")
     conn.add_ontologies(ontology_df)
-    notifications.append("Ontology written to DB")
+
+    notifications.messages.append(Message(type="success", message="Ontology written to database"))
+
 
     # print("adding terms")
     conn.add_terms(terms_df)
-    notifications.append("terms sucessfully written to DB")
+    notifications.messages.append(Message(type="success", message="Terms written to database"))
     # print("connecting ontologies")
     conn.connect_ontology(terms_df)
-    notifications.append("Terms connected to Ontology")
+    notifications.messages.append(Message(type="success", message="Terms connected to ontology"))
     # print("connecting relationships")
     # conn.connect_ontology(relations_df)
     for relation_type in relations_df.rel_type.unique():
@@ -108,12 +113,16 @@ def add_ontologies(data):
         current_rel_df = relations_df.loc[relations_df["rel_type"] == relation_type]
         # print("adding relations of ", )
         conn.connect_term_relationships(current_rel_df, relation_type, batch_size=40000)
-    notifications.append("Relationships sucessfully written to DB")
+    notifications.messages.append(Message(type="success", message="Relationships written to database"))
 
     #
     # return True
 
     backend.delete(task_id)
+
+    notifications = notifications.dict()
+
+    print("notis", notifications)
 
     return notifications
 
@@ -129,6 +138,10 @@ def update_ontologies(task_results):
     data = json.loads(data)
 
     terms = data.get("terms")
+
+    messages = task_results.get("notifications")
+
+    notifications = Notifications(**messages)
 
     term_accessions = []
     for term in terms:
@@ -169,10 +182,15 @@ def update_ontologies(task_results):
 
     # print("adding ontologies")
     conn.update_ontologies(ontology_df)
+
+    notifications.messages.append(Message(type="success", message="Ontology written to database"))
+
     # print("adding terms")
     conn.update_terms(terms_df)
+    notifications.messages.append(Message(type="success", message="Terms written to database"))
     # print("connecting ontologies")
     conn.connect_ontology(terms_df)
+    notifications.messages.append(Message(type="success", message="Terms connected to ontology"))
     # print("connecting relationships")
     # conn.connect_ontology(relations_df)
     for relation_type in relations_df.rel_type.unique():
@@ -181,8 +199,16 @@ def update_ontologies(task_results):
         current_rel_df = relations_df.loc[relations_df["rel_type"] == relation_type]
         # print("adding relations of ", )
         conn.connect_term_relationships(current_rel_df, relation_type, batch_size=40000)
+    notifications.messages.append(Message(type="success", message="Relationships written to database"))
 
     backend.delete(task_id)
+
+
+    notifications = notifications.dict()
+
+    print("notis", notifications)
+
+    return notifications
 
 
 @app.task

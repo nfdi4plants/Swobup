@@ -60,6 +60,10 @@ class MailNotifier:
         commit_message = kwargs.get("commit_message")
         commit_timestamp = kwargs.get("commit_timestamp")
         commit_hash = kwargs.get("commit_hash")
+        commit_url = kwargs.get("commit_url")
+
+        if commit_hash is not None:
+            commit_hash = commit_hash[0:8]
 
         if not kwargs:
             main_info_file = ""
@@ -73,6 +77,7 @@ class MailNotifier:
             main_info_file = main_info_file.replace('$COMMIT_MESSAGE', commit_message)
             main_info_file = main_info_file.replace('$COMMIT_TIMESTAMP', commit_timestamp)
             main_info_file = main_info_file.replace('$COMMIT_HASH', commit_hash)
+            main_info_file = main_info_file.replace('$COMMIT_URL', commit_url)
 
 
         self.html_message = self.html_message.replace('$MAIN_INFORMATION', main_info_file)
@@ -84,8 +89,10 @@ class MailNotifier:
         body_text = open(self.template_path + "testmail_text.html", "r").read()
         self.html_message = self.html_message.replace('$TEXT', body_text)
 
-    def add_webhook_text(self):
+    def add_webhook_text(self, commit_hash, commit_url):
         body_text = open(self.template_path + "webhook_text.html", "r").read()
+        body_text = body_text.replace('$COMMIT_HASH', commit_hash)
+        body_text = body_text.replace('$COMMIT_URL', commit_url)
         self.html_message = self.html_message.replace('$TEXT', body_text)
 
     def add_job_details(self, alert_color, text_color, alert_text):
