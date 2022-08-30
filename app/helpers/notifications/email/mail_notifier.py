@@ -95,6 +95,10 @@ class MailNotifier:
         body_text = body_text.replace('$COMMIT_URL', commit_url)
         self.html_message = self.html_message.replace('$TEXT', body_text)
 
+    def add_alternate_text(self):
+        body_text = open(self.template_path + "other_text.html", "r").read()
+        self.html_message = self.html_message.replace('$TEXT', body_text)
+
     def add_job_details(self, alert_color, text_color, alert_text):
         job_details = open(self.template_path + "job_details.html", "r").read()
         job_details = job_details.replace('$ALERT_COLOR', alert_color)
