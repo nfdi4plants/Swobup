@@ -13,9 +13,9 @@ class Warning(BaseModel):
 
 
 class Success(BaseModel):
-    primary_color: str = "#168875"
-    secondary_color: str = "#e1ebcd"
-    font_color: str = "#e1ebcd"
+    primary_color: str = "#d2f3ed"
+    secondary_color: str = "#168875"
+    font_color: str = "#168875"
 
 class Colors(BaseModel):
     headline: str = "#ffc000"
