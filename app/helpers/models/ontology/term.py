@@ -2,6 +2,8 @@ from typing import Optional
 
 from pydantic import BaseModel, ValidationError, validator
 
+# from app.helpers.notifications.models.notification_model import Notifications, Message
+
 
 class Term(BaseModel):
     accession: Optional[str]
