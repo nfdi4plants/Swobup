@@ -138,27 +138,43 @@ def send_webhook_mail2(messages):
 
     print("messages", messages)
 
+
+
     notifications = Notifications(**messages)
 
-    project_name = notifications.project
-    branch = notifications.branch
-    github_username = notifications.author
-    commit_user = notifications.author
-    commit_mailaddress = notifications.email
-    commit_message = notifications.commit_text
-    commit_timestamp = "now"
-    commit_hash = notifications.commit_hash
-    commit_url = notifications.commit_url
+    print("is_hook?", notifications.is_webhook)
+
 
     mail_notifier = MailNotifier()
+
+
+    if notifications.is_webhook:
+
+        project_name = notifications.project
+        branch = notifications.branch
+        github_username = notifications.author
+        commit_user = notifications.author
+        commit_mailaddress = notifications.email
+        commit_message = notifications.commit_text
+        commit_timestamp = "now"
+        commit_hash = notifications.commit_hash
+        commit_url = notifications.commit_url
+        mail_notifier.add_main_information(project_name=project_name, branch=branch, github_username=github_username,
+                                           commit_user=commit_user, commit_mailaddress=commit_mailaddress,
+                                           commit_message=commit_message, commit_timestamp=commit_timestamp,
+                                           commit_hash=commit_hash, commit_url=commit_url)
+
+        mail_notifier.add_webhook_text(commit_hash, commit_url)
+    else:
+        mail_notifier.add_main_information()
+        mail_notifier.add_alternate_text()
+
+
     # mail_notifier.add_headline("#ffc000", "Swobup Test Message", "")
     mail_notifier.add_headline(colors.line_color_yellow, "Swobup Commit Report", "")
     mail_notifier.set_line_color(colors.line_color_blue)
-    mail_notifier.add_main_information(project_name= project_name, branch=branch, github_username=github_username,
-                                       commit_user=commit_user, commit_mailaddress=commit_mailaddress,
-                                       commit_message=commit_message, commit_timestamp=commit_timestamp,
-                                       commit_hash=commit_hash, commit_url=commit_url)
-    mail_notifier.add_webhook_text(commit_hash, commit_url)
+
+
     # mail_notifier.add_messages()
     # mail_notifier.add_job_item("fail", "Ontology could not be merged")
     # mail_notifier.add_job_item("success", "Terms successfully written")

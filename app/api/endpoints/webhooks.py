@@ -93,7 +93,7 @@ async def ontology(request: Request, payload: PushWebhookPayload):
     github_api = GithubAPI(repository_name, branch)
 
     notifications = Notifications(messages=[])
-    notifications.is_webhook = False
+    notifications.is_webhook = True
     notifications.email = payload.pusher.email
     # notifications.commit.commit_hash = payload.after
     # notifications.commit.commit_url = payload.repository.html_url
@@ -127,10 +127,27 @@ async def ontology(request: Request, payload: PushWebhookPayload):
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
+# @router.post("/template", summary="Template Webhook", status_code=status.HTTP_204_NO_CONTENT,
+#              response_class=Response, dependencies=[Depends(github_authentication)])
 @router.post("/template", summary="Template Webhook", status_code=status.HTTP_204_NO_CONTENT,
-             response_class=Response, dependencies=[Depends(github_authentication)])
+             response_class=Response)
 async def template(request: Request, payload: PushWebhookPayload):
+    print("webhook")
     body = await request.body()
+
+    notifications = Notifications(messages=[])
+    notifications.is_webhook = False
+    notifications.email = payload.pusher.email
+    # notifications.commit.commit_hash = payload.after
+    # notifications.commit.commit_url = payload.repository.html_url
+    # notifications.commit.commit_text = payload.commits[0].message
+    notifications.commit_hash = payload.after
+    notifications.commit_url = payload.commits[-1].url
+    notifications.commit_text = payload.commits[-1].message
+    notifications.author = payload.pusher.name
+    notifications.project = payload.repository.full_name
+
+    notifications.branch = "main"
 
     print("body", body)
     print("payload", payload.dict())
@@ -162,10 +179,13 @@ async def template(request: Request, payload: PushWebhookPayload):
 
     print("updates", update_urls)
 
+    notifications_json = notifications.dict()
+
     for url in update_urls:
         if ".xlsx" in filename:
             # chain(add_ontology_task.s(url), update_ontologies.s()).apply_async()
-            add_template_custom.delay(url)
+            # add_template_custom.delay(url, notifications_json)
+            chain(add_template_custom.s(url, notifications_json), send_webhook_mail2.s()).apply_async()
 
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
