@@ -41,6 +41,9 @@ from app.tasks.template_tasks import add_template_custom, delete_template_custom
 
 from app.github.github_api import GithubAPI
 
+from app.helpers.notifications.models.notification_model import Notifications, Message
+from app.tasks.mail_task import show_tasks_results, send_webhook_mail2
+
 
 
 from app.neo4j.neo4jConnection import Neo4jConnection
@@ -57,8 +60,10 @@ def generate_hash_signature(
 ):
     return hmac.new(secret, payload, digest_method).hexdigest()
 
+# @router.post("/ontology", summary="Ontology Webhook", status_code=status.HTTP_204_NO_CONTENT,
+#              response_class=Response,  dependencies=[Depends(github_authentication)])
 @router.post("/ontology", summary="Ontology Webhook", status_code=status.HTTP_204_NO_CONTENT,
-             response_class=Response,  dependencies=[Depends(github_authentication)])
+             response_class=Response)
 async def ontology(request: Request, payload: PushWebhookPayload):
     print("sending to celery...")
 
@@ -74,7 +79,8 @@ async def ontology(request: Request, payload: PushWebhookPayload):
     branch = payload.ref.split("/")[-1]
     branch = payload.after
     hash_id = payload.after
-    commits = payload.commits.pop()
+    # commits = payload.commits.pop()
+    commits = payload.commits[-1]
 
     modified = commits.modified
     added = commits.added
@@ -86,6 +92,22 @@ async def ontology(request: Request, payload: PushWebhookPayload):
 
     github_api = GithubAPI(repository_name, branch)
 
+    notifications = Notifications(messages=[])
+    notifications.is_webhook = False
+    notifications.email = payload.pusher.email
+    # notifications.commit.commit_hash = payload.after
+    # notifications.commit.commit_url = payload.repository.html_url
+    # notifications.commit.commit_text = payload.commits[0].message
+    notifications.commit_hash = payload.after
+    notifications.commit_url = payload.commits[-1].url
+    notifications.commit_text = payload.commits[-1].message
+    notifications.author = payload.pusher.name
+    notifications.project = payload.repository.full_name
+
+    notifications.branch = "main"
+
+    notifications_json = notifications.dict()
+
     update_urls = []
     remove_urls = []
 
@@ -96,7 +118,7 @@ async def ontology(request: Request, payload: PushWebhookPayload):
 
 
     for url in update_urls:
-        chain(add_ontology_task.s(url), update_ontologies.s()).apply_async()
+        chain(add_ontology_task.s(url, notifications_json), update_ontologies.s(), send_webhook_mail2.s()).apply_async()
 
     # TODO: same for removed urls
     # for url in remove_urls:

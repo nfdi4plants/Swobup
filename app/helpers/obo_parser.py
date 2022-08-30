@@ -11,6 +11,8 @@ from app.helpers.models.ontology.ontology import Ontology
 from app.helpers.models.ontology.relationships import Relationships
 from app.helpers.models.ontology.obo_file import OboFile
 
+from app.helpers.notifications.models.notification_model import Notifications, Message
+
 from resource import *
 
 
@@ -93,15 +95,18 @@ class OBO_Parser:
 
         return ontology.name
 
-    def parse(self):
+    def parse(self, notifications: Notifications):
         # try to read ontology file
         try:
             graph = obonet.read_obo(self.ontology_file, ignore_obsolete=False)
             print("rerading ontology into graph")
+            notifications.messages.append(Message(type="success", message="reading successful"))
 
         except Exception as e:
             print(e)
-            sys.exit()
+            notifications.messages.append(Message(type="fail", message="Ontology could not be read"))
+            # sys.exit()
+            return
 
         try:
             ontology_name = graph.graph.get("name", None)
@@ -141,8 +146,9 @@ class OBO_Parser:
                                 version=ontology_version, generated=False)
             self.obo_file.ontologies.append(ontology)
             self.collected_ontologies.add(ontology_name)
+            notifications.messages.append(Message(type="success", message="Ontology "+ontology_name +" successfully read"))
         except:
-            print("name not found")
+            notifications.messages.append(Message(type="fail", message="Ontology could not be read"))
 
         try:
             nodes = graph.nodes
