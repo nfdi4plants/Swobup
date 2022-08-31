@@ -99,8 +99,6 @@ class OBO_Parser:
         # try to read ontology file
         try:
             graph = obonet.read_obo(self.ontology_file, ignore_obsolete=False)
-            print("rerading ontology into graph")
-            notifications.messages.append(Message(type="success", message="reading successful"))
 
         except Exception as e:
             print(e)
@@ -110,6 +108,7 @@ class OBO_Parser:
 
         try:
             ontology_name = graph.graph.get("name", None)
+            notifications.ontology_name = ontology_name
             ontology_author = graph.graph.get("saved-by", None)
             ontology_version = graph.graph.get("data-version", None)
             ontology_lastUpdated = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
@@ -146,9 +145,9 @@ class OBO_Parser:
                                 version=ontology_version, generated=False)
             self.obo_file.ontologies.append(ontology)
             self.collected_ontologies.add(ontology_name)
-            notifications.messages.append(Message(type="success", message="Ontology "+ontology_name +" successfully read"))
         except:
-            notifications.messages.append(Message(type="fail", message="Ontology could not be read"))
+            notifications.messages.append(Message(type="fail", message="Ontology file does not comply with the "
+                                                                       "guidelines"))
 
         try:
             nodes = graph.nodes

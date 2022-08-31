@@ -21,6 +21,7 @@ from app.helpers.notifications.models.notification_model import Notifications, M
 from app.helpers.notifications.models.colors import Colors, Warning, Success
 
 from app.helpers.notifications.models.colors import Colors
+from app.helpers.notifications.email.models.images import Images
 
 from app.neo4j.neo4jConnection import Neo4jConnection
 
@@ -60,73 +61,30 @@ def send_testmail():
     # mail_method = os.environ.get("NOTIFIER_METHOD")
 
     colors = Colors()
+    images = Images()
+    images.webhook = False
+    images.warning = False
+    images.success = False
 
-    mail_notifier = MailNotifier()
+    mail_notifier = MailNotifier("marcel.tschoepe@rz.uni-freiburg.de")
     mail_notifier.add_headline(colors.headline, "Swobup Test Message", "")
     mail_notifier.set_line_color(colors.line_color_blue)
     mail_notifier.add_main_information()
     mail_notifier.add_test_text()
     mail_notifier.add_messages()
-    mail_body = mail_notifier.build_mail()
+    mail_body = mail_notifier.build_mail(images)
 
     print("sending mail...")
     mail_notifier.send_mail(mail_body)
     print("mail sent...")
-
 
 @app.task
 def send_webhook_mail(messages):
-    # mail_method = os.environ.get("NOTIFIER_METHOD")
 
-    print("messages", messages)
-
-    notifications = Notifications(**messages)
+    images = Images()
 
 
 
-    project_name = notifications.project
-    branch = notifications.branch
-    github_username = notifications.author
-    commit_user = notifications.author
-    commit_mailaddress = notifications.email
-    commit_message = notifications.commit_text
-    commit_timestamp = "now"
-    commit_hash = notifications.commit_hash
-
-    mail_notifier = MailNotifier()
-
-    # mail_notifier.add_headline("#ffc000", "Swobup Test Message", "")
-    mail_notifier.add_headline("#79daca", "Swobup Test Message", "")
-    mail_notifier.set_line_color("#4caed3")
-    mail_notifier.add_main_information(project_name= project_name, branch=branch, github_username=github_username, commit_user=commit_user,
-                                       commit_mailaddress=commit_mailaddress, commit_message=commit_message,
-                                       commit_timestamp=commit_timestamp, commit_hash=commit_hash)
-    mail_notifier.add_webhook_text()
-    # mail_notifier.add_messages()
-    # mail_notifier.add_job_item("fail", "Ontology could not be merged")
-    # mail_notifier.add_job_item("success", "Terms successfully written")
-    # mail_notifier.add_job_details("#FDF4F6", "#D22852", "Job failed")
-
-    for message in notifications.messages:
-        mail_notifier.add_job_item(message.type, message.message)
-
-    # mail_notifier.add_job_item("fail", "Name of Term AC:10001 is capitalized")
-    # mail_notifier.add_job_item("success", "Terms successfully written")
-    # mail_notifier.add_job_item("success", "Relationships successfully written")
-    # mail_notifier.add_job_details("#79daca", "#093a32", "Job successful")
-
-    # mail_notifier.set_job_details()
-
-    mail_body = mail_notifier.build_mail()
-
-    # print("body", mail_body)
-
-    print("sending mail...")
-    mail_notifier.send_mail(mail_body)
-    print("mail sent...")
-
-@app.task
-def send_webhook_mail2(messages):
     print("sending mail")
     if not os.environ.get("MAIL_NOTiFICATION") == "on":
         print("mail notifications are turned off")
@@ -142,10 +100,12 @@ def send_webhook_mail2(messages):
 
     notifications = Notifications(**messages)
 
+    print("after import")
+
     print("is_hook?", notifications.is_webhook)
 
 
-    mail_notifier = MailNotifier()
+    mail_notifier = MailNotifier(notifications.email)
 
 
     if notifications.is_webhook:
@@ -165,9 +125,11 @@ def send_webhook_mail2(messages):
                                            commit_hash=commit_hash, commit_url=commit_url)
 
         mail_notifier.add_webhook_text(commit_hash, commit_url)
+        images.webhook = True
     else:
         mail_notifier.add_main_information()
         mail_notifier.add_alternate_text()
+        images.webhook = False
 
 
     # mail_notifier.add_headline("#ffc000", "Swobup Test Message", "")
@@ -185,17 +147,21 @@ def send_webhook_mail2(messages):
         mail_notifier.add_job_item(message.type, message.message)
         if message.type == "fail":
             message_type = 0
+            images.warning = True
+        else:
+            message_type = 1
+            images.success = True
 
     if message_type == 1:
         job_type = Success()
     else:
         job_type = Warning()
 
-    mail_notifier.add_job_details(job_type.primary_color, job_type.secondary_color, "Job successful")
+    mail_notifier.add_job_details(job_type.primary_color, job_type.secondary_color, job_type.text)
 
     # mail_notifier.set_job_details()
 
-    mail_body = mail_notifier.build_mail()
+    mail_body = mail_notifier.build_mail(images)
 
     # print("body", mail_body)
 

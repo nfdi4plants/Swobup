@@ -91,20 +91,24 @@ def add_ontologies(data):
 
     status = conn.check()
 
+    if status is False:
+        print("database not connected")
+        notifications.messages.append(Message(type="fail", message="Could not connect to database"))
+        notifications = notifications.dict()
+        return notifications
+
+    ontology_name = data.get("ontologies")[0].get("name")
+
     # print("status", status)
 
     # print("adding ontologies")
     conn.add_ontologies(ontology_df)
 
-    notifications.messages.append(Message(type="success", message="Ontology written to database"))
-
 
     # print("adding terms")
     conn.add_terms(terms_df)
-    notifications.messages.append(Message(type="success", message="Terms written to database"))
     # print("connecting ontologies")
     conn.connect_ontology(terms_df)
-    notifications.messages.append(Message(type="success", message="Terms connected to ontology"))
     # print("connecting relationships")
     # conn.connect_ontology(relations_df)
     for relation_type in relations_df.rel_type.unique():
@@ -113,12 +117,14 @@ def add_ontologies(data):
         current_rel_df = relations_df.loc[relations_df["rel_type"] == relation_type]
         # print("adding relations of ", )
         conn.connect_term_relationships(current_rel_df, relation_type, batch_size=40000)
-    notifications.messages.append(Message(type="success", message="Relationships written to database"))
 
     #
     # return True
 
     backend.delete(task_id)
+
+    notifications.messages.append(
+        Message(type="success", message="Ontology " + "<b>" + ontology_name + "</b> written to database"))
 
     notifications = notifications.dict()
 
@@ -151,6 +157,14 @@ def update_ontologies(task_results):
 
     conn = Neo4jConnection()
 
+    status = conn.check()
+
+    if status is False:
+        print("database not connected")
+        notifications.messages.append(Message(type="fail", message="Could not connect to database"))
+        notifications = notifications.dict()
+        return notifications
+
     ontology_name = data.get("ontologies")[0].get("name")
 
     # get list of to deleted terms
@@ -178,19 +192,18 @@ def update_ontologies(task_results):
 
     # relations_df.to_csv('rel.csv', index=False)
 
-    status = conn.check()
+    # terms_df.to_csv('terms.csv', index=False)
+
 
     # print("adding ontologies")
     conn.update_ontologies(ontology_df)
 
-    notifications.messages.append(Message(type="success", message="Ontology written to database"))
+
 
     # print("adding terms")
     conn.update_terms(terms_df)
-    notifications.messages.append(Message(type="success", message="Terms written to database"))
     # print("connecting ontologies")
     conn.connect_ontology(terms_df)
-    notifications.messages.append(Message(type="success", message="Terms connected to ontology"))
     # print("connecting relationships")
     # conn.connect_ontology(relations_df)
     for relation_type in relations_df.rel_type.unique():
@@ -199,14 +212,17 @@ def update_ontologies(task_results):
         current_rel_df = relations_df.loc[relations_df["rel_type"] == relation_type]
         # print("adding relations of ", )
         conn.connect_term_relationships(current_rel_df, relation_type, batch_size=40000)
-    notifications.messages.append(Message(type="success", message="Relationships written to database"))
 
     backend.delete(task_id)
 
 
-    notifications = notifications.dict()
+    notifications.messages.append(Message(type="success", message="Ontology " +"<b>" +ontology_name +"</b> written to database"))
+    notifications.messages.append(Message(type="success", message="File contained " +str(len(ontology_df)) + " other ontologies, that were written to database"))
+    notifications.messages.append(Message(type="success", message="File contained " +str(len(terms_df)) + " terms"))
+    notifications.messages.append(Message(type="success", message="File contained " +str(len( relations_df)) +" relations"))
 
-    print("notis", notifications)
+
+    notifications = notifications.dict()
 
     return notifications
 
