@@ -45,8 +45,8 @@ async def delete_template(payload: DeleteTemplatePayload):
 @router.delete("/clear", summary="Clear database and delete all templates", status_code=status.HTTP_204_NO_CONTENT,
                response_class=Response, dependencies=[Depends(basic_auth)])
 async def delete_all_templates():
-    # result = delete_template_all_custom.delay()
-    chain(delete_template_all_custom.s(notifications_json), send_webhook_mail.s()).apply_async()
+    result = delete_template_all_custom.delay()
+    # chain(delete_template_all_custom.s(notifications_json), send_webhook_mail.s()).apply_async()
     print("result", result)
 
     return Response(status_code=status.HTTP_204_NO_CONTENT)

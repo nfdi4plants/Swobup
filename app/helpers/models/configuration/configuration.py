@@ -33,6 +33,17 @@ class S3Config(BaseModel):
     endpoint_url: Optional[str]
     region: Optional[str]
 
+class MailConfig(BaseModel):
+    active: Optional[str]
+    method: Optional[str]
+    server: Optional[str]
+    username: Optional[str]
+    password: Optional[str]
+    port: Optional[str]
+    sender: Optional[str]
+    cc: Optional[str]
+
+
 
 class Configuration(BaseModel):
     notification: Optional[NotificationConfig]
@@ -40,3 +51,4 @@ class Configuration(BaseModel):
     neo4j: Optional[Neo4jConfig]
     swate: Optional[SwateConfig]
     s3: Optional[S3Config]
+    mail: Optional[MailConfig]

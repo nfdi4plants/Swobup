@@ -15,13 +15,13 @@ import os
 
 class MailNotifier:
     def __init__(self, send_to):
-        self.strCc = os.environ.get("NOTIFIER_ADDITIONAL_RECEIVER", None)
-        self.port = os.environ.get("NOTIFIER_PORT")
-        self.strFrom = os.environ.get("NOTIFIER_SENDER")
-        self.password = os.environ.get("NOTIFIER_PASSWORD")
-        self.username = os.environ.get("NOTIFIER_USERNAME")
-        self.server = os.environ.get("NOTIFIER_SERVER")
-        self.method = os.environ.get("MAIL_METHOD", "smtp")
+        self.strCc = os.environ.get("MAIL_ADDITIONAL_RECEIVER", None)
+        self.port = os.environ.get("MAIL_PORT")
+        self.strFrom = os.environ.get("MAIL_SENDER")
+        self.password = os.environ.get("MAIL_PASSWORD")
+        self.username = os.environ.get("MAIL_USERNAME")
+        self.server = os.environ.get("MAIL_SERVER")
+        self.method = os.environ.get("MAIL_METHOD", "smtps")
         self.strTo = send_to
 
         self.template_path = "app/helpers/notifications/email/templates/html/"
@@ -251,7 +251,7 @@ class MailNotifier:
         else:
             rcpt_addresses = [self.strTo]
 
-        if self.method == "smtp":
+        if self.method == "smtps":
             with smtplib.SMTP_SSL(self.server, self.port, context=context) as server:
                 server.login(self.username, self.password)
                 server.sendmail(
@@ -259,10 +259,11 @@ class MailNotifier:
                 )
                 server.quit()
         else:
+            print("using starttls mode and sending to ", rcpt_addresses)
 
             with smtplib.SMTP(self.server, self.port) as server:
-                server.starttls(context=context)
                 server.ehlo()
+                server.starttls()
                 server.login(self.username, self.password)
                 server.sendmail(
                     self.strFrom, rcpt_addresses, message.as_string()
