@@ -86,6 +86,8 @@ class Neo4jConnection:
             res = self.query(query,
                              parameters={'rows': rows[batch * batch_size:(batch + 1) * batch_size].to_dict('records')})
 
+            print("row", query)
+
             # print(rows[batch*batch_size:(batch+1)*batch_size].to_dict('records'))
 
             # print("toal", total)
@@ -196,6 +198,7 @@ class Neo4jConnection:
             rel_type = rel_type.replace(":", "_")
         if "-" in rel_type:
             rel_type = rel_type.replace("-", "_")
+
 
         statement_string = "UNWIND $rows AS row MATCH (t:Term {accession: row.node_from}), (s:Term {accession: " \
                            "row.node_to}) MERGE (s)-[:" + str(rel_type) + "]->(t) RETURN count(*) as total"

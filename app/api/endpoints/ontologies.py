@@ -114,7 +114,7 @@ async def add_ontology(payload: AddOntologyPayload):
 
     notifications = Notifications(messages=[])
     notifications.is_webhook = False
-    notifications.author = "marcel"
+    # notifications.author = "marcel"
     # print(notifications.messages)
     notifications.messages.append(Message(type="success", message="succeeded"))
 
@@ -125,7 +125,8 @@ async def add_ontology(payload: AddOntologyPayload):
     for url in payload.url:
         print("current_url", url)
         # result = chain(add_ontology_task.s(url), add_ontologies.s()).apply_async()
-        result = chain(add_ontology_task.s(url, notifications_json), add_ontologies.s(), send_webhook_mail.s()).apply_async()
+        # result = chain(add_ontology_task.s(url, notifications_json), add_ontologies.s(), send_webhook_mail.s()).apply_async()
+        result = chain(add_ontology_task.s(url, notifications_json), add_ontologies.s()).apply_async()
         result_ids.append(result.id)
         # task_results.append(result.get())
 
