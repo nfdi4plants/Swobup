@@ -57,8 +57,12 @@ def show_tasks_results(task_ids: list):
 
 
 @app.task
-def send_testmail():
+def send_testmail(mail_address):
     # mail_method = os.environ.get("NOTIFIER_METHOD")
+
+    if not os.environ.get("MAIL_NOTIFICATION") == "on":
+        print("mail notifications are turned off")
+        return
 
     colors = Colors()
     images = Images()
@@ -66,7 +70,7 @@ def send_testmail():
     images.warning = False
     images.success = False
 
-    mail_notifier = MailNotifier("marcel.tschoepe@rz.uni-freiburg.de")
+    mail_notifier = MailNotifier(mail_address)
     mail_notifier.add_headline(colors.headline, "Swobup Test Message", "")
     mail_notifier.set_line_color(colors.line_color_blue)
     mail_notifier.add_main_information()
@@ -86,7 +90,7 @@ def send_webhook_mail(messages):
 
 
     print("sending mail")
-    if not os.environ.get("MAIL_NOTiFICATION") == "on":
+    if not os.environ.get("MAIL_NOTIFICATION") == "on":
         print("mail notifications are turned off")
         return
 

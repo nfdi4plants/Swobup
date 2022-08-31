@@ -40,6 +40,7 @@ services:
     container_name: swobup
     environment:
       - CELERY_BROKER=redis://redis:6379/0
+      - CELERY_BACKEND=redis://redis:6379/0
       - s3_access_key_id=2J1XRFN08O5Q8FPU66TY
       - s3_secret_access_key=ZsbHYfXQvwVpKuuF+r1oldOitQGonL7Lv4T0/my+
       - s3_bucket=frct-marcel
@@ -57,13 +58,15 @@ services:
       - TEMPLATE_REPOSITORY=""
       - SWATE_API=https://swate.nfdi4plants.org
       #- TURN_OFF_SSL_VERIFY=True
-      - MAIL_NOTiFICATION = 'on'
-      - NOTIFIER_METHOD = 'smtps'
-      - NOTIFIER_SERVER = ''
-      - NOTIFIER_PASSWORD = ''
-      - NOTIFIER_PORT = ''
-      - NOTIFIER_SENDER = ''
-      - NOTIFIER_ADDITIONAL_RECEIVER = ''
+      - MAIL_NOTIFICATION=on
+      - MAIL_METHOD=starttls
+      - MAIL_SERVER=smtp.office365.com
+      - MAIL_USERNAME=servicebot@nfdi4plants.org # username is optional, if not given sender will be used
+      - MAIL_PASSWORD=OM;Q<E^[LQxmHQ8
+      - MAIL_PORT=587
+      - MAIL_SENDER=noreply@nfdi4plants.org
+      - MAIL_ADDITIONAL_RECEIVER=marcel.tschoepe@rz.uni-freiburg.de,dataplant-ta1@lists.nfdi.de
+
     image: git.bwcloud.uni-freiburg.de:5050/marcel/swobup:latest
     ports:
       - "8000:8000"
