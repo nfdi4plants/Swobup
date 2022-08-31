@@ -108,7 +108,6 @@ class OBO_Parser:
 
         try:
             ontology_name = graph.graph.get("name", None)
-            notifications.ontology_name = ontology_name
             ontology_author = graph.graph.get("saved-by", None)
             ontology_version = graph.graph.get("data-version", None)
             ontology_lastUpdated = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
@@ -143,6 +142,9 @@ class OBO_Parser:
 
             ontology = Ontology(name=ontology_name, lastUpdated=ontology_lastUpdated, author=ontology_author,
                                 version=ontology_version, generated=False)
+
+            notifications.ontology_name = ontology.name
+
             self.obo_file.ontologies.append(ontology)
             self.collected_ontologies.add(ontology_name)
         except:

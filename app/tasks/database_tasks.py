@@ -80,6 +80,12 @@ def add_ontologies(data):
     ontology_df = pd.DataFrame(data.get("ontologies"), index=None)
     relations_df = pd.DataFrame(data.get("relationships"), index=None)
 
+    # ontology_df.to_csv('ontos.csv', index=False)
+    #
+    # relations_df.to_csv('rel.csv', index=False)
+    #
+    # terms_df.to_csv('terms.csv', index=False)
+
     # print("terms", terms_df)
     # print("ontologies", ontology_df)
 
@@ -190,8 +196,10 @@ def update_ontologies(task_results):
 
     relations_df = pd.DataFrame(data.get("relationships"), index=None)
 
+    # ontology_df.to_csv('ontos.csv', index=False)
+    #
     # relations_df.to_csv('rel.csv', index=False)
-
+    #
     # terms_df.to_csv('terms.csv', index=False)
 
 
