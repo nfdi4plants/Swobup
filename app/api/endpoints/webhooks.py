@@ -58,10 +58,10 @@ def generate_hash_signature(
 ):
     return hmac.new(secret, payload, digest_method).hexdigest()
 
-# @router.post("/ontology", summary="Ontology Webhook", status_code=status.HTTP_204_NO_CONTENT,
-#              response_class=Response,  dependencies=[Depends(github_authentication)])
 @router.post("/ontology", summary="Ontology Webhook", status_code=status.HTTP_204_NO_CONTENT,
-             response_class=Response)
+             response_class=Response,  dependencies=[Depends(github_authentication)])
+# @router.post("/ontology", summary="Ontology Webhook", status_code=status.HTTP_204_NO_CONTENT,
+#              response_class=Response)
 async def ontology(request: Request, payload: PushWebhookPayload):
     print("sending to celery...")
 
@@ -92,7 +92,7 @@ async def ontology(request: Request, payload: PushWebhookPayload):
 
     notifications = Notifications(messages=[])
     notifications.is_webhook = True
-    notifications.email = payload.pusher.email
+    notifications.email = payload.commits[-1].author.email
     # notifications.commit.commit_hash = payload.after
     # notifications.commit.commit_url = payload.repository.html_url
     # notifications.commit.commit_text = payload.commits[0].message
@@ -125,17 +125,17 @@ async def ontology(request: Request, payload: PushWebhookPayload):
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
-# @router.post("/template", summary="Template Webhook", status_code=status.HTTP_204_NO_CONTENT,
-#              response_class=Response, dependencies=[Depends(github_authentication)])
 @router.post("/template", summary="Template Webhook", status_code=status.HTTP_204_NO_CONTENT,
-             response_class=Response)
+             response_class=Response, dependencies=[Depends(github_authentication)])
+# @router.post("/template", summary="Template Webhook", status_code=status.HTTP_204_NO_CONTENT,
+#              response_class=Response)
 async def template(request: Request, payload: PushWebhookPayload):
     print("webhook")
     body = await request.body()
 
     notifications = Notifications(messages=[])
     notifications.is_webhook = True
-    notifications.email = payload.pusher.email
+    notifications.email = payload.commits[-1].author.email
     # notifications.commit.commit_hash = payload.after
     # notifications.commit.commit_url = payload.repository.html_url
     # notifications.commit.commit_text = payload.commits[0].message
