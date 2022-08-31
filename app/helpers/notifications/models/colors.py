@@ -7,15 +7,17 @@ from app.github.models.author import Author
 
 
 class Warning(BaseModel):
-    primary_color: str = "#c21f3a"
-    secondary_color: str = "#F2D2D7"
+    primary_color: str = "#F2D2D7"
+    secondary_color: str = "#c21f3a"
     font_color: str = "#871528"
+    text:str = "Job failed"
 
 
 class Success(BaseModel):
     primary_color: str = "#d2f3ed"
     secondary_color: str = "#168875"
     font_color: str = "#168875"
+    text: str = "Job successful"
 
 class Colors(BaseModel):
     headline: str = "#ffc000"
