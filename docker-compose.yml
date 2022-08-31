@@ -57,6 +57,13 @@ services:
       - TEMPLATE_REPOSITORY=""
       - SWATE_API=https://swate.nfdi4plants.org
       #- TURN_OFF_SSL_VERIFY=True
+      - MAIL_NOTiFICATION = 'on'
+      - NOTIFIER_METHOD = 'smtps'
+      - NOTIFIER_SERVER = ''
+      - NOTIFIER_PASSWORD = ''
+      - NOTIFIER_PORT = ''
+      - NOTIFIER_SENDER = ''
+      - NOTIFIER_ADDITIONAL_RECEIVER = ''
     image: git.bwcloud.uni-freiburg.de:5050/marcel/swobup:latest
     ports:
       - "8000:8000"
