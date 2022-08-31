@@ -17,6 +17,6 @@ class Ontology(BaseModel):
 
     @validator("name")
     def rewrite_name(cls, value):
-        if value == "obi.obo":
-            value = "obi"
+        value = value.split("/")[-1]
+        value = value.split(".")[0]
         return value
