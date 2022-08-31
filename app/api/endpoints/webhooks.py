@@ -42,9 +42,7 @@ from app.tasks.template_tasks import add_template_custom, delete_template_custom
 from app.github.github_api import GithubAPI
 
 from app.helpers.notifications.models.notification_model import Notifications, Message
-from app.tasks.mail_task import show_tasks_results, send_webhook_mail2
-
-
+from app.tasks.mail_task import show_tasks_results, send_webhook_mail
 
 from app.neo4j.neo4jConnection import Neo4jConnection
 
@@ -118,7 +116,7 @@ async def ontology(request: Request, payload: PushWebhookPayload):
 
 
     for url in update_urls:
-        chain(add_ontology_task.s(url, notifications_json), update_ontologies.s(), send_webhook_mail2.s()).apply_async()
+        chain(add_ontology_task.s(url, notifications_json), update_ontologies.s(), send_webhook_mail.s()).apply_async()
 
     # TODO: same for removed urls
     # for url in remove_urls:
@@ -136,7 +134,7 @@ async def template(request: Request, payload: PushWebhookPayload):
     body = await request.body()
 
     notifications = Notifications(messages=[])
-    notifications.is_webhook = False
+    notifications.is_webhook = True
     notifications.email = payload.pusher.email
     # notifications.commit.commit_hash = payload.after
     # notifications.commit.commit_url = payload.repository.html_url
@@ -185,7 +183,7 @@ async def template(request: Request, payload: PushWebhookPayload):
         if ".xlsx" in filename:
             # chain(add_ontology_task.s(url), update_ontologies.s()).apply_async()
             # add_template_custom.delay(url, notifications_json)
-            chain(add_template_custom.s(url, notifications_json), send_webhook_mail2.s()).apply_async()
+            chain(add_template_custom.s(url, notifications_json), send_webhook_mail.s()).apply_async()
 
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 

@@ -27,4 +27,5 @@ class Notifications(BaseModel):
     commit_text: Optional[str]
     commit_url: Optional[str]
     is_webhook: Optional[bool]
+    ontology_name: Optional[str]
 

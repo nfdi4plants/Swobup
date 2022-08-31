@@ -32,7 +32,6 @@ from app.neo4j.neo4jConnection import Neo4jConnection
 from resource import *
 
 from app.tasks.database_tasks import add_ontologies
-from app.tasks.mail_task import send_webhook_mail2
 from app.helpers.notifications.models.notification_model import Notifications
 
 from celery.backends.s3 import S3Backend

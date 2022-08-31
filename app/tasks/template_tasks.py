@@ -48,14 +48,26 @@ def add_template_custom(url, notifications):
 
     conn = Neo4jConnection()
     # conn.update_template2(template.dict())
+
+    status = conn.check()
+
+    if status is False:
+        print("database not connected")
+        notifications.messages.append(Message(type="fail", message="Could not connect to database"))
+        notifications = notifications.dict()
+        return notifications
+
+
     conn.update_template(template)
 
-    notifications.messages.append(Message(type="success", message="Template " + template.Name + "successfully written "
-                                                                                                "to database"))
+
+    notifications.messages.append(
+        Message(type="success", message="Template " + "<b>" + template.Name + "</b>" + " successfully written "
+                                                                                      "to database"))
 
     result = {}
     notifications_json = notifications.dict()
-    result["notifications"] = notifications_json
+    result = notifications_json
 
     print("---", notifications_json)
 
