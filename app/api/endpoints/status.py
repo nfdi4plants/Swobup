@@ -101,11 +101,16 @@ async def config():
     s3_endpoint_url = os.environ.get("s3_endpoint_url")
     s3_region = os.environ.get("s3_region")
 
+    s3_region = os.environ.get("s3_region")
+
+
     swobup_config = SwobupConfig(username=swobup_username,password=swobup_password, github_secret=github_secret)
     neo4j_config = Neo4jConfig(username=neo4j_username, password=neo4j_password, url=neo4j_url)
     swate_config = SwateConfig(api_url=swate_api, ssl_verification=swate_ssl_verification)
     s3_config = S3Config(access_key_id=s3_access_key_id, secret_access_key=s3_secret_access_key,
                          bucket=s3_bucket, base_path=s3_base_path, endpoint_url=s3_endpoint_url,
                          region=s3_region)
+    #TODO
+    mail_config = MailConfig()
 
-    return Configuration(swobup=swobup_config, swate=swate_config, neo4j=neo4j_config, s3=s3_config)
+    return Configuration(swobup=swobup_config, swate=swate_config, neo4j=neo4j_config, s3=s3_config, mail=mail_config)
