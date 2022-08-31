@@ -8,11 +8,13 @@ from email.mime.image import MIMEImage
 from email import charset
 from datetime import datetime
 
+from app.helpers.notifications.email.models.images import Images
+
 import os
 
 
 class MailNotifier:
-    def __init__(self):
+    def __init__(self, send_to):
         self.strCc = os.environ.get("NOTIFIER_ADDITIONAL_RECEIVER", None)
         self.port = os.environ.get("NOTIFIER_PORT")
         self.strFrom = os.environ.get("NOTIFIER_SENDER")
@@ -20,7 +22,7 @@ class MailNotifier:
         self.username = os.environ.get("NOTIFIER_USERNAME")
         self.server = os.environ.get("NOTIFIER_SERVER")
         self.method = os.environ.get("MAIL_METHOD", "smtp")
-        self.strTo = "marcel.tschoepe@rz.uni-freiburg.de"
+        self.strTo = send_to
 
         self.template_path = "app/helpers/notifications/email/templates/html/"
 
@@ -128,7 +130,7 @@ class MailNotifier:
 
         self.job_items = self.job_items + job_item
 
-    def build_mail(self):
+    def build_mail(self, images:Images):
 
         # print("html is now", self.html_message)
 
@@ -204,37 +206,40 @@ class MailNotifier:
         msgImage.add_header('Content-ID', '<swobup-logo-black>')
         msgRoot.attach(msgImage)
 
-        fp = open(self.template_path + 'red-cross.gif', 'rb')
-        msgImage = MIMEImage(fp.read())
-        fp.close()
+        if images.warning:
+            fp = open(self.template_path + 'red-cross.gif', 'rb')
+            msgImage = MIMEImage(fp.read())
+            fp.close()
 
-        # Define the image's ID as referenced above
-        msgImage.add_header('Content-ID', '<red-cross>')
-        msgRoot.attach(msgImage)
+            # Define the image's ID as referenced above
+            msgImage.add_header('Content-ID', '<red-cross>')
+            msgRoot.attach(msgImage)
 
-        fp = open(self.template_path + 'check-green-inverted.gif', 'rb')
-        msgImage = MIMEImage(fp.read())
-        fp.close()
+        if images.success:
+            fp = open(self.template_path + 'check-green-inverted.gif', 'rb')
+            msgImage = MIMEImage(fp.read())
+            fp.close()
 
-        # Define the image's ID as referenced above
-        msgImage.add_header('Content-ID', '<check-green>')
-        msgRoot.attach(msgImage)
+            # Define the image's ID as referenced above
+            msgImage.add_header('Content-ID', '<check-green>')
+            msgRoot.attach(msgImage)
 
-        fp = open(self.template_path + 'branch-grey.gif', 'rb')
-        msgImage = MIMEImage(fp.read())
-        fp.close()
+        if images.webhook:
+            fp = open(self.template_path + 'branch-grey.gif', 'rb')
+            msgImage = MIMEImage(fp.read())
+            fp.close()
 
-        # Define the image's ID as referenced above
-        msgImage.add_header('Content-ID', '<branch-grey>')
-        msgRoot.attach(msgImage)
+            # Define the image's ID as referenced above
+            msgImage.add_header('Content-ID', '<branch-grey>')
+            msgRoot.attach(msgImage)
 
-        fp = open(self.template_path + 'commit-grey.gif', 'rb')
-        msgImage = MIMEImage(fp.read())
-        fp.close()
+            fp = open(self.template_path + 'commit-grey.gif', 'rb')
+            msgImage = MIMEImage(fp.read())
+            fp.close()
 
-        # Define the image's ID as referenced above
-        msgImage.add_header('Content-ID', '<commit-grey>')
-        msgRoot.attach(msgImage)
+            # Define the image's ID as referenced above
+            msgImage.add_header('Content-ID', '<commit-grey>')
+            msgRoot.attach(msgImage)
 
         return msgRoot
 
