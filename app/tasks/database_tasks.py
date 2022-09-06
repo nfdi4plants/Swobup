@@ -82,7 +82,7 @@ def add_ontologies(data):
 
     # ontology_df.to_csv('ontos.csv', index=False)
     #
-    #relations_df.to_csv('rel.csv', index=False)
+    # relations_df.to_csv('rel.csv', index=False)
     #
     # terms_df.to_csv('terms.csv', index=False)
 
