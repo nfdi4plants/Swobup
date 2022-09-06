@@ -1,5 +1,6 @@
 import json
 
+import networkx
 import obonet
 import sys
 import pandas
@@ -32,6 +33,8 @@ class OBO_Parser:
 
         self.collected_terms = set()
         self.collected_ontologies = set()
+        
+        self.typedefs = {}
 
 
     def get_author_list(line):
@@ -99,6 +102,16 @@ class OBO_Parser:
         # try to read ontology file
         try:
             graph = obonet.read_obo(self.ontology_file, ignore_obsolete=False)
+
+            typedefs = graph.graph.get("typedefs")
+
+            for definition in typedefs:
+                id = definition.get("id")
+                if id not in self.typedefs:
+                    self.typedefs[id] = definition.get("name")
+
+            # print("typedefs", self.typedefs)
+
 
         except Exception as e:
             print(e)
@@ -261,6 +274,10 @@ class OBO_Parser:
 
             # search all child nodes of current node and add to relation list
             for child, parent, rel_type in graph.out_edges(node, keys=True):
+
+                if rel_type in self.typedefs:
+                    # print("typedef found", rel_type)
+                    rel_type = self.typedefs.get(rel_type)
 
                 relationship = Relationships(node_from=parent, node_to=child, rel_type=rel_type)
                 self.obo_file.relationships.append(relationship)
