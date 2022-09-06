@@ -75,7 +75,15 @@ def add_template_custom(url, notifications):
 
 
 @app.task
-def delete_template_custom(template_id, notifications):
+def delete_template_custom(template_id, **notifications):
+
+    if notifications:
+        notifications = Notifications(**notifications)
+    else:
+        notifications = Notifications(messages=[])
+        notifications.is_webhook = False
+
+
     # swate_url = "https://swate.nfdi4plants.de"
 
     notifications = Notifications(**notifications)
