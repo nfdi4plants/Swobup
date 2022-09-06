@@ -82,7 +82,7 @@ def add_ontologies(data):
 
     # ontology_df.to_csv('ontos.csv', index=False)
     #
-    # relations_df.to_csv('rel.csv', index=False)
+    #relations_df.to_csv('rel.csv', index=False)
     #
     # terms_df.to_csv('terms.csv', index=False)
 
@@ -117,12 +117,16 @@ def add_ontologies(data):
     conn.connect_ontology(terms_df)
     # print("connecting relationships")
     # conn.connect_ontology(relations_df)
-    for relation_type in relations_df.rel_type.unique():
-        # print("type:", relation_type)
-        # print("df:", relations_df.loc[relations_df["rel_type"] == relation_type])
-        current_rel_df = relations_df.loc[relations_df["rel_type"] == relation_type]
-        # print("adding relations of ", )
-        conn.connect_term_relationships(current_rel_df, relation_type, batch_size=40000)
+    # for relation_type in relations_df.rel_type.unique():
+    #     # print("type:", relation_type)
+    #     # print("df:", relations_df.loc[relations_df["rel_type"] == relation_type])
+    #     current_rel_df = relations_df.loc[relations_df["rel_type"] == relation_type]
+    #     # print("adding relations of ", )
+    #     conn.connect_term_relationships(current_rel_df, relation_type, batch_size=40000)
+
+    # print("adding relations: ")
+    # print("rel_def", relations_df)
+    conn.connect_term_relationships_apoc(relations_df)
 
     #
     # return True
@@ -214,12 +218,14 @@ def update_ontologies(task_results):
     conn.connect_ontology(terms_df)
     # print("connecting relationships")
     # conn.connect_ontology(relations_df)
-    for relation_type in relations_df.rel_type.unique():
-        # print("type:", relation_type)
-        # print("df:", relations_df.loc[relations_df["rel_type"] == relation_type])
-        current_rel_df = relations_df.loc[relations_df["rel_type"] == relation_type]
-        # print("adding relations of ", )
-        conn.connect_term_relationships(current_rel_df, relation_type, batch_size=40000)
+    conn.connect_term_relationships_apoc(relations_df)
+
+    # for relation_type in relations_df.rel_type.unique():
+    #     # print("type:", relation_type)
+    #     # print("df:", relations_df.loc[relations_df["rel_type"] == relation_type])
+    #     current_rel_df = relations_df.loc[relations_df["rel_type"] == relation_type]
+    #     # print("adding relations of ", )
+    #     conn.connect_term_relationships(current_rel_df, relation_type, batch_size=40000)
 
     backend.delete(task_id)
 
