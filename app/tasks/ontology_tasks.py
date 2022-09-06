@@ -154,10 +154,14 @@ def delete_ontology_task(payload):
 
 
 @app.task(bind=True)
-def add_ontology_task(self, url, notifications):
+def add_ontology_task(self, url, **notifications):
 
     print("payload", notifications)
-    notifications = Notifications(**notifications)
+    if notifications:
+        notifications = Notifications(**notifications)
+    else:
+        notifications = Notifications(messages=[])
+        notifications.is_webhook = False
 
     print("pay", notifications)
 
