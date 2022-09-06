@@ -44,7 +44,6 @@ class Neo4jConnection:
         response = None
         try:
             session = self.__driver.session(database=db) if db is not None else self.__driver.session()
-            # print("jfaldsa", parameters)
             response = list(session.run(query, parameters))
         except Exception as e:
             print("Query failed:", e)
@@ -79,14 +78,14 @@ class Neo4jConnection:
             # print("batch", batch)
             # print("batch_size", batch_size)
 
-            # print(rows[batch * batch_size:(batch + 1) * batch_size].to_dict('records'))
+            # print("-_", rows[batch * batch_size:(batch + 1) * batch_size].to_dict('records'))
 
             # res = self.query(query, parameters)
 
             res = self.query(query,
                              parameters={'rows': rows[batch * batch_size:(batch + 1) * batch_size].to_dict('records')})
 
-            print("row", query)
+            # print("row", query)
 
             # print(rows[batch*batch_size:(batch+1)*batch_size].to_dict('records'))
 
@@ -98,6 +97,8 @@ class Neo4jConnection:
                       "batches": batch,
                       "time": time.time() - start}
             # print(result)
+
+            # print("rows", rows)
 
         return result
 
@@ -191,6 +192,7 @@ class Neo4jConnection:
         print("adding ontos")
         return self.insert_data(query, rows, batch_size)
 
+    # cypher only method, problems with some chars, see apoc method that has no problems
     def connect_term_relationships(self, rows, rel_type, batch_size=100000):
         # rel_type = "is_a"
         # rel_type = rel_type
@@ -217,6 +219,29 @@ class Neo4jConnection:
         return self.insert_data(statement_string, rows, batch_size)
 
         # return self.insert_data(statement_string, rows, batch_size, params={"rel_type": rel_type})
+
+
+    def connect_term_relationships_apoc(self, rows, batch_size=100000):
+
+        # query = '''
+        #         CALL apoc.periodic.iterate('
+        #         UWNIND $rows as row
+        #         MATCH (t:Term {accession: row.node_from})
+        #         MATCH (s:Term {accession: row.node_to})
+        #         CALL apoc.merge.relationship(row.node_from, row.type, row.type, row.node_to) yield rel
+        #         RETURN count(*)
+        #         ', {batchSize:40000, iterateList:true})
+        #         '''
+
+        query = '''
+                UNWIND $rows AS row
+                MATCH (t:Term {accession: row.node_from})
+                MATCH (s:Term {accession: row.node_to})
+                CALL apoc.merge.relationship(t, row.rel_type, {}, {},  s, {}) yield rel
+                RETURN count(*) as total
+                '''
+
+        return self.insert_data(query, rows, batch_size)
 
     def delete_ontology(self, ontology_name):
 
