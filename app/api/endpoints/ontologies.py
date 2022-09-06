@@ -126,7 +126,7 @@ async def add_ontology(payload: AddOntologyPayload):
         print("current_url", url)
         # result = chain(add_ontology_task.s(url), add_ontologies.s()).apply_async()
         # result = chain(add_ontology_task.s(url, notifications_json), add_ontologies.s(), send_webhook_mail.s()).apply_async()
-        result = chain(add_ontology_task.s(url, notifications_json), add_ontologies.s()).apply_async()
+        result = chain(add_ontology_task.s(url), add_ontologies.s()).apply_async()
         result_ids.append(result.id)
         # task_results.append(result.get())
 
