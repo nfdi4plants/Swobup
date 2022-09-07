@@ -101,19 +101,14 @@ class OBO_Parser:
     def parse(self, notifications: Notifications):
         # try to read ontology file
         try:
-            print("rading")
             graph = obonet.read_obo(self.ontology_file, ignore_obsolete=False)
 
-            print("gr", graph.graph)
             typedefs = graph.graph.get("typedefs", None)
 
-            print("typedefs", typedefs)
-
-            if typedefs is not None:
-                for definition in typedefs:
-                    id = definition.get("id")
-                    if id not in self.typedefs:
-                        self.typedefs[id] = definition.get("name")
+            for definition in typedefs:
+                id = definition.get("id")
+                if id not in self.typedefs:
+                    self.typedefs[id] = definition.get("name")
 
             # print("typedefs", self.typedefs)
 
