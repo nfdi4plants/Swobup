@@ -103,12 +103,15 @@ class OBO_Parser:
         try:
             graph = obonet.read_obo(self.ontology_file, ignore_obsolete=False)
 
-            typedefs = graph.graph.get("typedefs")
+            typedefs = graph.graph.get("typedefs", None)
 
-            for definition in typedefs:
-                id = definition.get("id")
-                if id not in self.typedefs:
-                    self.typedefs[id] = definition.get("name")
+            print("typedefs", typedefs)
+
+            if typedefs is not None:
+                for definition in typedefs:
+                    id = definition.get("id")
+                    if id not in self.typedefs:
+                        self.typedefs[id] = definition.get("name")
 
             # print("typedefs", self.typedefs)
 
