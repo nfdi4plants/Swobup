@@ -154,9 +154,10 @@ def delete_ontology_task(payload):
 
 
 @app.task(bind=True)
-def add_ontology_task(self, url, *notifications):
+def add_ontology_task(self, url, **notis):
 
-    print("payload", notifications)
+    print("payload", notis)
+    notifications = notis.get("notifications")
     if notifications:
         notifications = Notifications(**notifications)
     else:
