@@ -58,10 +58,10 @@ def generate_hash_signature(
 ):
     return hmac.new(secret, payload, digest_method).hexdigest()
 
-# @router.post("/ontology", summary="Ontology Webhook", status_code=status.HTTP_204_NO_CONTENT,
-#              response_class=Response,  dependencies=[Depends(github_authentication)])
 @router.post("/ontology", summary="Ontology Webhook", status_code=status.HTTP_204_NO_CONTENT,
-             response_class=Response)
+             response_class=Response,  dependencies=[Depends(github_authentication)])
+# @router.post("/ontology", summary="Ontology Webhook", status_code=status.HTTP_204_NO_CONTENT,
+#              response_class=Response)
 async def ontology(request: Request, payload: PushWebhookPayload):
     print("sending to celery...")
 
