@@ -159,6 +159,8 @@ def update_ontologies(task_results):
 
     backend = S3Backend(app=app)
 
+    #print(backend.endpoint_url, backend.url, backend.app, backend.base_path, backend.bucket_name)
+
     task_id = task_results.get("task_id")
     data = backend.get(task_id)
     if data is None or "null":
