@@ -99,8 +99,6 @@ def add_ontologies(data):
 
     # neo4j_connector = Neo4jConnection()
 
-    print("##", data.get("ontologies"))
-
     conn = Neo4jConnection()
 
     status = conn.check()
@@ -172,7 +170,6 @@ def update_ontologies(task_results):
         return notifications
 
     data = json.loads(data)
-    print("data is", data)
 
     terms = data.get("terms")
 
@@ -181,8 +178,6 @@ def update_ontologies(task_results):
     term_accessions = []
     for term in terms:
         term_accessions.append(term.get("accession"))
-
-    print(term_accessions)
 
     conn = Neo4jConnection()
 
