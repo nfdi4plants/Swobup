@@ -279,7 +279,7 @@ class OBO_Parser:
                     # print("typedef found", rel_type)
                     rel_type = self.typedefs.get(rel_type)
 
-                relationship = Relationships(node_from=parent, node_to=child, rel_type=rel_type)
+                relationship = Relationships(node_from=child, node_to=parent, rel_type=rel_type)
                 self.obo_file.relationships.append(relationship)
 
                 if not self.term_available(child):
