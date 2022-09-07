@@ -62,8 +62,10 @@ def add_ontologies(data):
 
     data = backend.get(bla)
 
-    if data is None or "null":
-        print("could not connect to storage backend")
+    print("data is", data)
+
+    if data is None:
+        print("could not connect to storage backend (adding)")
         notifications.messages.append(Message(type="fail", message="Could not connect to storage backend"))
         notifications = notifications.dict()
         return notifications
@@ -163,7 +165,7 @@ def update_ontologies(task_results):
 
     task_id = task_results.get("task_id")
     data = backend.get(task_id)
-    if data is None or "null":
+    if data is None:
         print("could not connect to storage backend")
         notifications.messages.append(Message(type="fail", message="Could not connect to storage backend"))
         notifications = notifications.dict()
