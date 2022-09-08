@@ -29,6 +29,9 @@ from app.helpers.models.templates.template import Template
 
 from app.neo4j.neo4jConnection import Neo4jConnection
 
+from app.tasks.database_tasks import update_ontologies
+from app.tasks.mail_task import show_tasks_results, send_webhook_mail
+
 from resource import *
 
 from app.tasks.database_tasks import add_ontologies
@@ -80,62 +83,7 @@ def add_ontology_from_scratch(file_object:dict):
             print("resutl", result)
 
 
-
-
-
         # return data
-
-# old task
-@app.task
-def ontology_build_from_scratch():
-    # swate_url = "https://swate.nfdi4plants.de"
-    #
-    # conn = Neo4jConnection(uri="bolt://127.0.0.1:7687",
-    #                        user="neo4j",
-    #                        pwd="test")
-    #
-    # conn.delete_template_all()
-
-    repository_name = "nfdi4plants/nfdi4plants_ontology"
-    branch = "main"
-
-    github_downloader = GitHubDownloader("bla", "blu", "bli")
-    res = github_downloader.get_master_tree(repository_name, branch)
-
-    file_list = res.get("tree")
-
-    print("file_list", file_list)
-
-    files = []
-
-    building_objects = BuildingObjects()
-
-
-    for file in file_list:
-        print("ff", file.get("path"))
-        if ".obo" in file.get("path"):
-            # files.append(file.get("url"))
-            building_type = BuildingType(url=file.get("url"), type="obo")
-            building_objects.files.append(building_type)
-        if ".testobo" in file.get("path"):
-            # files.append(file.get("url"))
-            building_type = BuildingType(url=file.get("url"), type="obo")
-            building_objects.files.append(building_type)
-        if ".include" in file.get("path"):
-            # files.append(file.get("url"))
-            building_type = BuildingType(url=file.get("url"), type="include")
-            building_objects.files.append(building_type)
-
-    # ret = chain(ontology_task.s(payload.commits), ontology_task.s(payload.commits)).apply_async()
-
-    print("ggg", building_objects.dict().get("files"))
-
-    for build_type in building_objects.dict().get("files"):
-        print("file is", build_type)
-        result = add_ontology_from_scratch.delay(build_type)
-
-    print("finished", result)
-
 
 @app.task
 def delete_ontology_task(payload):
@@ -211,3 +159,60 @@ def add_ontology_task(self, url, **notis):
     print("s3 uploaded...")
 
     return res
+
+
+@app.task(bind=True)
+def process_ext_ontolgies(self, url_tuple, **notifications):
+
+    notifications = notifications.get("notifications")
+    if notifications:
+        notifications = Notifications(**notifications)
+    else:
+        notifications = Notifications(messages=[])
+        notifications.is_webhook = False
+
+    before_list = []
+    after_list = []
+
+    print("in processing ext ontos")
+    print("tuple1", url_tuple)
+
+    before_url = url_tuple[0]
+    after_url = url_tuple[1]
+
+    before_downloader = GeneralDownloader(before_url)
+    after_downloader = GeneralDownloader(after_url)
+
+    before_file = before_downloader.download_file()
+    after_file = after_downloader.download_file()
+
+    print(before_file)
+    print(after_file)
+
+    before_file_buffer = io.TextIOWrapper(before_file, newline=None)
+    after_file_buffer = io.TextIOWrapper(after_file, newline=None)
+
+    for line in before_file_buffer.read().splitlines():
+        before_list.append(line)
+
+    for line in after_file_buffer.read().splitlines():
+        after_list.append(line)
+
+    new_ontology_urls = list(set(after_list).difference(before_list))
+
+    print("before: ", before_file)
+    print("after: ", after_list)
+
+    print("new ontos", new_ontology_urls)
+
+    notifications_json = notifications.dict()
+
+    for url in new_ontology_urls:
+        chain(add_ontology_task.s(url, notifications=notifications_json), update_ontologies.s(),
+              send_webhook_mail.s()).apply_async()
+
+
+
+
+
+
