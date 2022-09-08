@@ -174,9 +174,6 @@ def process_ext_ontolgies(self, url_tuple, **notifications):
     before_list = []
     after_list = []
 
-    print("in processing ext ontos")
-    print("tuple1", url_tuple)
-
     before_url = url_tuple[0]
     after_url = url_tuple[1]
 
@@ -185,9 +182,6 @@ def process_ext_ontolgies(self, url_tuple, **notifications):
 
     before_file = before_downloader.download_file()
     after_file = after_downloader.download_file()
-
-    print(before_file)
-    print(after_file)
 
     before_file_buffer = io.TextIOWrapper(before_file, newline=None)
     after_file_buffer = io.TextIOWrapper(after_file, newline=None)
@@ -199,11 +193,6 @@ def process_ext_ontolgies(self, url_tuple, **notifications):
         after_list.append(line)
 
     new_ontology_urls = list(set(after_list).difference(before_list))
-
-    print("before: ", before_file)
-    print("after: ", after_list)
-
-    print("new ontos", new_ontology_urls)
 
     notifications_json = notifications.dict()
 

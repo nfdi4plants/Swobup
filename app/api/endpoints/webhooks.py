@@ -117,7 +117,6 @@ async def ontology(request: Request, payload: PushWebhookPayload):
         if ".include" in filename:
             url_tuple = (github_api.convert_to_raw_url(filename, payload.before),
                          github_api.convert_to_raw_url(filename, payload.after))
-            print("url tuple", url_tuple)
             include_urls.append(url_tuple)
 
 
