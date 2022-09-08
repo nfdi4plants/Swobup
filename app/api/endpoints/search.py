@@ -12,7 +12,6 @@ from celery import chain
 from fastapi import APIRouter, Body, Depends, HTTPException, status, Response, Request
 from app.github.webhook_payload import PushWebhookPayload
 
-from app.tasks.ontology_tasks import ontology_webhoook_task
 from app.tasks.ontology_tasks import ontology_build_from_scratch
 
 from app.github.downloader import GitHubDownloader
