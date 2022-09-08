@@ -177,6 +177,13 @@ def add_ontology_task(self, url, **notis):
 
     obo_parser = OBO_Parser(ontology_buffer)
     data = obo_parser.parse(notifications)
+
+    # stop if ontology could not be parsed
+    if data is None:
+        notifications_json = notifications.dict()
+        res = {"task_id": self.request.id, "notifications": notifications_json}
+        return res
+
     print("parsing finished")
 
     # print("notts", data[1])
@@ -204,50 +211,3 @@ def add_ontology_task(self, url, **notis):
     print("s3 uploaded...")
 
     return res
-
-# is this needed ?
-@app.task
-def ontology_webhoook_task(payload):
-
-    print("payload", payload)
-
-    print("commits")
-    print(payload.get("commits"))
-
-    commits = payload.get("commits")
-    repository_full_name = payload.get("repository").get("full_name")
-    commit_hash = payload.get("after")
-
-    print(repository_full_name)
-    print(commit_hash)
-
-    # repository_full_name = payload.repository.full_name
-    # commit_hash = payload.after
-
-    for commit in commits:
-        print("commit", commit)
-        # print(commit.modified)
-        modified = commit.get("modified")
-        added = commit.get("added")
-        update_files = modified + added
-        for file in update_files:
-            github_downloader = GitHubDownloader(file, repository_full_name, commit_hash)
-            current_file = github_downloader.download_file().decode()
-
-            ontology_buffer = StringIO(current_file)
-
-            # graph = obonet.read_obo(ontology_buffer)
-
-            obo_parser = OBO_Parser(ontology_buffer)
-
-
-            data = obo_parser.parse()
-
-            # df = pd.DataFrame(data.get("terms"))
-
-            print(data)
-
-            #df.to_csv("output.csv", sep=',')#
-
-
-    return data
