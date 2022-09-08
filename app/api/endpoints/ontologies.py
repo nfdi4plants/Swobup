@@ -12,8 +12,6 @@ from celery import chain
 from fastapi import APIRouter, Body, Depends, HTTPException, status, Response
 from app.github.webhook_payload import PushWebhookPayload
 
-from app.tasks.ontology_tasks import ontology_build_from_scratch
-
 from app.github.downloader import GitHubDownloader
 from app.helpers.obo_parser import OBO_Parser
 
@@ -55,14 +53,14 @@ async def build_from_scratch():
 
     repository_name = "nfdi4plants/nfdi4plants_ontology"
     branch = "main"
-    github_api = GithubAPI(repository_name=repository_name, branch=branch)
+    github_api = GithubAPI(repository_name=repository_name)
 
-    tree = github_api.get_master_tree().get("tree")
+    tree = github_api.get_master_tree(branch).get("tree")
 
     print("tree", tree)
 
     for file in tree:
-        current_path = github_api.convert_to_raw_url(file.get("path"))
+        current_path = github_api.convert_to_raw_url(file.get("path"), branch)
         if ".obo" in current_path:
             urls.append(current_path)
         # if ".testobo" in current_path:
