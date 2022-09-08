@@ -108,10 +108,16 @@ async def ontology(request: Request, payload: PushWebhookPayload):
     update_urls = []
     remove_urls = []
 
+    include_urls = []
+
     for filename in update_files:
         print("filename", filename)
         if ".obo" in filename:
             update_urls.append(github_api.convert_to_raw_url(filename))
+
+        if ".include" in filename:
+            include_urls.append(github_api.convert_to_raw_url(filename))
+
 
 
     for url in update_urls:
