@@ -38,6 +38,8 @@ from app.tasks.database_tasks import add_ontologies
 from app.helpers.notifications.models.notification_model import Notifications
 
 from celery.backends.s3 import S3Backend
+from celery.backends.base import BaseKeyValueStoreBackend
+from app.helpers.storage_backend import StorageBackend
 
 @app.task
 def add_ontology(url):
@@ -117,10 +119,6 @@ def add_ontology_task(self, url, **notis):
     general_downloader = GeneralDownloader(url)
     current_file = general_downloader.download_file()
 
-    # print("after download:", getrusage(RUSAGE_SELF).ru_maxrss * 4096 / 1024 / 1024)
-
-    # ontology_buffer = StringIO(current_file)
-
     ontology_buffer = io.TextIOWrapper(current_file, newline=None)
 
     obo_parser = OBO_Parser(ontology_buffer)
@@ -134,23 +132,17 @@ def add_ontology_task(self, url, **notis):
 
     print("parsing finished")
 
-    # print("notts", data[1])
+    base_backend = BaseKeyValueStoreBackend(app=app)
+    print("before storage backend")
+    backend = StorageBackend()
+    # backend = S3Backend(app=app)
+    s3_key = base_backend.get_key_for_task(self.request.id).decode()
 
-    # print("end of", getrusage(RUSAGE_SELF).ru_maxrss * 4096 / 1024 /1024)
-
-    # print("ID", celery.result.AsyncResult.result)
-    # print("task_id", self.request.id)
-    #
-    # s3_storage = S3Storage()
-    #
-    # s3_storage.download_one_file(self.request.id)
-
-    backend = S3Backend(app=app)
-
-    s3_key = backend.get_key_for_task(self.request.id).decode()
+    # s3_key = backend.get_key_for_task(self.request.id).decode()
     s3_key = str(s3_key)+"-results"
     print("s3_key", s3_key)
     backend.set(key=s3_key, value=json.dumps(data))
+
 
     notifications_json = notifications.dict()
     res = {"task_id": str(s3_key)}
