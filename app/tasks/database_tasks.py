@@ -20,6 +20,9 @@ from app.helpers.notifications.models.notification_model import Notifications, M
 from app.helpers.s3_storage import S3Storage
 
 from celery.backends.s3 import S3Backend
+
+from app.helpers.storage_backend import StorageBackend
+
 import json
 
 
@@ -34,7 +37,9 @@ def add_ontologies(data):
     # data = s3_storage.download_one_file(data)
     # data = AsyncResult(data, app=app)
 
-    backend = S3Backend(app=app)
+    # backend = S3Backend(app=app)
+
+    backend = StorageBackend()
 
     # print(backend.bucket_name)
     # print(backend.aws_access_key_id)
@@ -62,7 +67,7 @@ def add_ontologies(data):
 
     data = backend.get(bla)
 
-    print("data is", data)
+    # print("data is", data)
 
     if data is None:
         print("could not connect to storage backend (adding)")
@@ -70,9 +75,9 @@ def add_ontologies(data):
         notifications = notifications.dict()
         return notifications
 
-    print("t", type(data))
+    # print("t", type(data))
     data = json.loads(data)
-    print("d", type(data))
+    # print("d", type(data))
 
     # print("res", res)
 
@@ -157,7 +162,8 @@ def update_ontologies(task_results):
 
     notifications = Notifications(**messages)
 
-    backend = S3Backend(app=app)
+    # backend = S3Backend(app=app)
+    backend = StorageBackend()
 
     #print(backend.endpoint_url, backend.url, backend.app, backend.base_path, backend.bucket_name)
 
