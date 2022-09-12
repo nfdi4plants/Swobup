@@ -103,6 +103,19 @@ td {
     float: right;
 }
 
+
+.has-bg-split-20-yellow {
+    background-color: #F9CD69;
+    color: black;
+}
+
+@media screen and (min-width: 1024px) {
+    .has-bg-split-20-yellow {
+        background: linear-gradient(rgba(0, 0, 0, 0) 20%, #F9CD69 20%);
+    }
+}
+
+
 @media screen and (max-width: 450px) {
 
     .description {
