@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+import datetime
 
 
 class ItemBase(BaseModel):
@@ -18,7 +19,7 @@ class Activity(ActivityBase):
 
 
 class ActivityCreate(ActivityBase):
-    pass
+    timestamp: str = datetime.datetime.now()
 
 
 class ItemCreate(ItemBase):
