@@ -58,7 +58,7 @@ services:
       - TEMPLATE_REPOSITORY=""
       - SWATE_API=https://swate.nfdi4plants.org
       #- TURN_OFF_SSL_VERIFY=True
-      #- SWOBUP_DATASTORAGE = "local"
+      - SWOBUP_DATASTORAGE = "local"
       - MAIL_NOTIFICATION=on
       - MAIL_METHOD=starttls
       - MAIL_SERVER=smtp.office365.com
