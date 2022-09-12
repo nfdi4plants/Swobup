@@ -27,3 +27,9 @@ def get_db():
 @router.get("/actions/", response_model=schemas.Activity)
 def get_actions(db:Session = Depends(get_db)):
     return crud.get_activities(db=db)
+
+
+@router.put("/actions/", response_model=schemas.Activity)
+def get_actions(activity: schemas.Activity, db:Session = Depends(get_db)):
+    # db_activity = crud.create_activity(db, activity=activity)
+    return crud.create_activity(db, activity=activity)
