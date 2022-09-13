@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Body, Depends, HTTPException, status, Response
+from typing import List
 
 from app.tasks.database_tasks import clear_database_task
 from app.neo4j.neo4jConnection import Neo4jConnection
@@ -24,7 +25,7 @@ def get_db():
         db.close()
 
 
-@router.get("/actions/", response_model=schemas.Activity)
+@router.get("/actions/", response_model=List[schemas.Activity])
 def get_actions(db:Session = Depends(get_db)):
     return crud.get_activities(db=db)
 
