@@ -73,8 +73,10 @@ async def build_from_scratch():
             general_downloader = GeneralDownloader(current_path)
             url_list = general_downloader.download_file()
             for url in url_list:
-                # if "ncbitaxon" in url.decode():
-                #     continue
+                if "ncbitaxon" in url.decode():
+                    continue
+                if "chebi" in url.decode():
+                    continue
                 urls.append(url.decode().strip())
 
     for url in urls:
