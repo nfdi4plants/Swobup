@@ -26,8 +26,8 @@ from app.helpers.storage_backend import StorageBackend
 import json
 
 
-@app.task
-def add_ontologies(data):
+@app.task(name="DB add ontology", bind=True, max_retries=3)
+def add_ontologies(self, data):
     print("in write db")
     # print("id is now", data)
 
@@ -118,26 +118,29 @@ def add_ontologies(data):
 
     # print("status", status)
 
-    # print("adding ontologies")
-    conn.add_ontologies(ontology_df)
+    try:
+        # print("adding ontologies")
+        conn.add_ontologies(ontology_df)
 
 
-    # print("adding terms")
-    conn.add_terms(terms_df)
-    # print("connecting ontologies")
-    conn.connect_ontology(terms_df)
-    # print("connecting relationships")
-    # conn.connect_ontology(relations_df)
-    # for relation_type in relations_df.rel_type.unique():
-    #     # print("type:", relation_type)
-    #     # print("df:", relations_df.loc[relations_df["rel_type"] == relation_type])
-    #     current_rel_df = relations_df.loc[relations_df["rel_type"] == relation_type]
-    #     # print("adding relations of ", )
-    #     conn.connect_term_relationships(current_rel_df, relation_type, batch_size=40000)
+        # print("adding terms")
+        conn.add_terms(terms_df)
+        # print("connecting ontologies")
+        conn.connect_ontology(terms_df)
+        # print("connecting relationships")
+        # conn.connect_ontology(relations_df)
+        # for relation_type in relations_df.rel_type.unique():
+        #     # print("type:", relation_type)
+        #     # print("df:", relations_df.loc[relations_df["rel_type"] == relation_type])
+        #     current_rel_df = relations_df.loc[relations_df["rel_type"] == relation_type]
+        #     # print("adding relations of ", )
+        #     conn.connect_term_relationships(current_rel_df, relation_type, batch_size=40000)
 
-    # print("adding relations: ")
-    # print("rel_def", relations_df)
-    conn.connect_term_relationships_apoc(relations_df)
+        # print("adding relations: ")
+        # print("rel_def", relations_df)
+        conn.connect_term_relationships_apoc(relations_df)
+    except Exception as ex:
+        self.retry(countdown=3 ** self.request.retries)
 
     #
     # return True
@@ -154,7 +157,7 @@ def add_ontologies(data):
     return notifications
 
 
-@app.task
+@app.task(name="update_ontology_DB.task", bind=True, max_retries=3)
 def update_ontologies(task_results):
     print("in update db")
 
