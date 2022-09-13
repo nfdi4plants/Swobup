@@ -12,7 +12,6 @@ from celery import chain
 from fastapi import APIRouter, Body, Depends, HTTPException, status, Response, Request
 from app.github.webhook_payload import PushWebhookPayload
 
-
 from app.github.downloader import GitHubDownloader
 from app.helpers.obo_parser import OBO_Parser
 
@@ -45,6 +44,7 @@ from app.neo4j.neo4jConnection import Neo4jConnection
 
 router = APIRouter()
 
+
 # ,  dependencies=[Depends(github_authentication)]
 
 
@@ -54,6 +54,7 @@ def generate_hash_signature(
         digest_method=hashlib.sha256,
 ):
     return hmac.new(secret, payload, digest_method).hexdigest()
+
 
 # @router.post("/ontology", summary="Ontology Webhook", status_code=status.HTTP_204_NO_CONTENT,
 #              response_class=Response,  dependencies=[Depends(github_authentication)])
@@ -99,7 +100,6 @@ async def ontology(request: Request, payload: PushWebhookPayload):
     notifications.author = payload.pusher.name
     notifications.project = payload.repository.full_name
 
-
     notifications.branch = "main"
 
     notifications_json = notifications.dict()
@@ -119,13 +119,12 @@ async def ontology(request: Request, payload: PushWebhookPayload):
                          github_api.convert_to_raw_url(filename, payload.after))
             include_urls.append(url_tuple)
 
-
     for url_tuple in include_urls:
         process_ext_ontolgies.delay(url_tuple, notifications=notifications_json)
 
-
     for url in update_urls:
-        chain(add_ontology_task.s(url, notifications=notifications_json), update_ontologies.s(), send_webhook_mail.s()).apply_async()
+        chain(add_ontology_task.s(url, notifications=notifications_json), update_ontologies.s(),
+              send_webhook_mail.s()).apply_async()
 
     # TODO: same for removed urls
     # for url in remove_urls:
@@ -195,7 +194,6 @@ async def template(request: Request, payload: PushWebhookPayload):
             chain(add_template_custom.s(url, notifications_json), send_webhook_mail.s()).apply_async()
 
     return Response(status_code=status.HTTP_204_NO_CONTENT)
-
 
 # @router.post("/test", summary="Test authentication Webhook", status_code=status.HTTP_204_NO_CONTENT)
 # async def test(request: Request, x_hub_signature_256:str = Header(None)):
