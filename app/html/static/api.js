@@ -59,6 +59,36 @@ const StatusInformation = async () => {
     // document.getElementById("db_url").innerHTML = responseJson.db_url;
 }
 
+
+const Activities = async () => {
+    const response = await fetch('/api/v2/activities/actions/');
+    const responseJson = await response.json();
+
+    console.log(responseJson)
+
+
+    for (var i=0; i<responseJson.length; i++) {
+        const el = document.createElement('div');
+        el.textContent = responseJson[i].message
+        el.textContent = responseJson[i].color
+
+                  const results = document.getElementById('activity_area');
+          results.appendChild(el);
+
+
+    }
+
+
+    //     for (var i = 0; i < responseJson.length; i++) {
+    //       console.log(responseJson[i]);
+    //       // const el = document.createElement('div');
+    //       // el.textContent = responseJson[i]
+    //       // const results = document.getElementById('results');
+    //       // results.appendChild(el);
+    // }
+
+}
+
 const query_term = async () => {
 console.log("sending term")
     query = document.getElementById("query_input").value
@@ -95,11 +125,13 @@ console.log("sending term")
 window.onload = function () {
     healthStatus();
     StatusInformation();
+    Activities();
 };
 
 
 
 setInterval(healthStatus, 1000);
 setInterval(StatusInformation, 1000);
+// setInterval(Activities, 1000);
 
-addEventListener('query_input', query_term);
+// addEventListener('query_input', query_term);

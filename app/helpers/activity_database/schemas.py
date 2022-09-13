@@ -9,7 +9,7 @@ class ItemBase(BaseModel):
 
 class ActivityBase(BaseModel):
     message: str
-    timestamp: str
+    # timestamp: str
     color: str
 
 class Activity(ActivityBase):
