@@ -42,52 +42,6 @@ from celery.backends.base import BaseKeyValueStoreBackend
 from app.helpers.storage_backend import StorageBackend
 
 @app.task
-def add_ontology(url):
-
-    general_downloader = GeneralDownloader(url)
-    current_file = general_downloader.download_file()
-
-    # print("after download:", getrusage(RUSAGE_SELF).ru_maxrss * 4096 / 1024 / 1024)
-
-
-    # ontology_buffer = StringIO(current_file)
-
-    ontology_buffer = io.TextIOWrapper(current_file, newline=None)
-
-    obo_parser = OBO_Parser(ontology_buffer)
-    data = obo_parser.parse()
-    print("parsing finished")
-
-    # print("end of", getrusage(RUSAGE_SELF).ru_maxrss * 4096 / 1024 /1024)
-
-    return data
-
-# old task
-@app.task
-def add_ontology_from_scratch(file_object:dict):
-
-    print("file_object is", file_object)
-
-    if file_object.get("type") == "obo":
-        pass
-    if file_object.get("type") == "include":
-        url = file_object.get("url")
-
-        result = requests.get(url)
-        data = json.loads(result.content)
-        decoded_content = base64.b64decode(data["content"])
-
-        print("dec", decoded_content)
-        url_list = decoded_content.decode().splitlines()
-
-        for url in url_list:
-            result = chain(add_ontology.s(url), add_ontologies.s()).apply_async()
-            print("resutl", result)
-
-
-        # return data
-
-@app.task
 def delete_ontology_task(payload):
 
     conn = Neo4jConnection()
@@ -103,7 +57,7 @@ def delete_ontology_task(payload):
             conn.delete_ontology(ontology_name)
 
 
-@app.task(bind=True)
+@app.task(name="parsing ontologies", bind=True)
 def add_ontology_task(self, url, **notis):
 
     print("payload", notis)
@@ -153,7 +107,7 @@ def add_ontology_task(self, url, **notis):
     return res
 
 
-@app.task(bind=True)
+@app.task(name="processing ext ontologies", bind=True)
 def process_ext_ontolgies(self, url_tuple, **notifications):
 
     notifications = notifications.get("notifications")
