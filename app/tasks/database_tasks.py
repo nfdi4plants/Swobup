@@ -26,7 +26,7 @@ from app.helpers.storage_backend import StorageBackend
 import json
 
 
-@app.task(name="DB add ontology", bind=True, max_retries=3)
+@app.task(name="add ontology to DB", bind=True, max_retries=3)
 def add_ontologies(self, data):
     print("in write db")
     # print("id is now", data)
@@ -157,7 +157,7 @@ def add_ontologies(self, data):
     return notifications
 
 
-@app.task(name="update_ontology_DB.task", bind=True, max_retries=3)
+@app.task(name="update ontology in DB", bind=True, max_retries=3)
 def update_ontologies(task_results):
     print("in update db")
 

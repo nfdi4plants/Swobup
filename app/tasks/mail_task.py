@@ -56,7 +56,7 @@ def show_tasks_results(task_ids: list):
     # print("--", task_results)
 
 
-@app.task
+@app.task(name="sending testmail")
 def send_testmail(mail_address):
     # mail_method = os.environ.get("NOTIFIER_METHOD")
 
@@ -82,7 +82,7 @@ def send_testmail(mail_address):
     mail_notifier.send_mail(mail_body)
     print("mail sent...")
 
-@app.task
+@app.task(name="sending mail")
 def send_webhook_mail(messages):
 
     images = Images()
