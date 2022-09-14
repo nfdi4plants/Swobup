@@ -27,7 +27,7 @@ from app.helpers.notifications.models.notification_model import Notifications, M
 from resource import *
 
 
-@app.task
+@app.task(name="adding template to DB")
 def add_template_custom(url, notifications):
     # swate_url = "https://swate.nfdi4plants.de"
 
@@ -74,7 +74,7 @@ def add_template_custom(url, notifications):
     return result
 
 
-@app.task
+@app.task(name="deleting template")
 def delete_template_custom(template_id, **notifications):
 
     if notifications:
@@ -106,7 +106,7 @@ def delete_template_all_custom():
     conn.delete_template_all()
 
 
-@app.task
+@app.task(name="build templates from scratch")
 def template_build_from_scratch():
     # swate_url = "https://swate.nfdi4plants.de"
     #
