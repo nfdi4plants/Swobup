@@ -281,7 +281,7 @@ class Neo4jConnection:
         self.query('CREATE CONSTRAINT IF NOT EXISTS ON (t:Term) ASSERT t.accession IS UNIQUE')
         self.query('CREATE CONSTRAINT IF NOT EXISTS ON (t:Template) ASSERT t.id IS UNIQUE')
         self.query('CREATE FULLTEXT INDEX TermName IF NOT EXISTS FOR (n:Term) ON EACH [ n.name ]')
-        self.query('CREATE FULLTEXT INDEX TermDescription IF NOT EXISTS FOR (n:Term) ON EACH [ n.definition ]')
+        self.query('CREATE FULLTEXT INDEX TermDefinition IF NOT EXISTS FOR (n:Term) ON EACH [ n.definition ]')
         self.query('CREATE FULLTEXT INDEX TermNameAndDefinition IF NOT EXISTS FOR (t: Term) ON EACH[t.name, '
                    't.definition]')
 
