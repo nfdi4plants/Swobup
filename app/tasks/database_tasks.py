@@ -1,26 +1,10 @@
-import obonet
-import networkx
-import datetime
-import sys
-import pandas as pd
-from io import StringIO
+import os
 
-import time
+import pandas as pd
 
 from tasks import app
-from app.github.webhook_payload import PushWebhookPayload
-from app.github.downloader import GitHubDownloader
-from app.helpers.obo_parser import OBO_Parser
-
-from celery.result import AsyncResult
-
 from app.neo4j.neo4jConnection import Neo4jConnection
 from app.helpers.notifications.models.notification_model import Notifications, Message
-
-from app.helpers.s3_storage import S3Storage
-
-from celery.backends.s3 import S3Backend
-
 from app.helpers.storage_backend import StorageBackend
 
 import json
@@ -29,6 +13,7 @@ import json
 @app.task(name="add ontology to DB", bind=True, max_retries=3)
 def add_ontologies(self, data):
     print("in write db")
+    batch_size = int(os.environ.get("DB_BATCH_SIZE", 100000))
     # print("id is now", data)
 
     # getting results from s3 storage
@@ -120,13 +105,13 @@ def add_ontologies(self, data):
 
     try:
         # print("adding ontologies")
-        conn.add_ontologies(ontology_df)
+        conn.add_ontologies(ontology_df, batch_size=batch_size)
 
 
         # print("adding terms")
-        conn.add_terms(terms_df)
+        conn.add_terms(terms_df, batch_size=batch_size)
         # print("connecting ontologies")
-        conn.connect_ontology(terms_df)
+        conn.connect_ontology(terms_df, batch_size=batch_size)
         # print("connecting relationships")
         # conn.connect_ontology(relations_df)
         # for relation_type in relations_df.rel_type.unique():
@@ -138,7 +123,7 @@ def add_ontologies(self, data):
 
         # print("adding relations: ")
         # print("rel_def", relations_df)
-        conn.connect_term_relationships_apoc(relations_df)
+        conn.connect_term_relationships_apoc(relations_df, batch_size=batch_size)
     except Exception as ex:
         self.retry(countdown=3 ** self.request.retries)
 

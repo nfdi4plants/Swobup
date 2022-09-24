@@ -1,10 +1,4 @@
-"""
-Copyright 2019, University of Freiburg
-Chair of Algorithms and Data Structures.
-Hannah Bast <bast@cs.uni-freiburg.de>
-Claudius Korzen <korzen@cs.uni-freiburg.de>
-Patrick Brosi <brosi@cs.uni-freiburg.de>
-"""
+# TODO delete this class, this was only meant for testing purposes
 
 import readline  # NOQA
 import sys
@@ -28,9 +22,6 @@ from ped_c import ped
 from app.neo4j.neo4jConnection import Neo4jConnection
 
 # from main import Meta
-
-from app.helpers.shared_memory import Meta
-
 
 class QGramIndex:
     """

@@ -1,7 +1,6 @@
 import os
 from dotenv import load_dotenv
 from celery import Celery
-from celery.backends.s3 import S3Backend
 
 load_dotenv()
 
@@ -16,7 +15,7 @@ imports = ['app.tasks.process_ontology',
 
 app = Celery('tasks',
              # backend=os.environ.get("CELERY_BACKEND"),
-             #backend='s3',
+             # backend='s3',
              backend=os.environ.get("CELERY_BACKEND"),
              broker=os.environ.get("CELERY_BROKER")
              # broker = 'redis://localhost:6379/0'

@@ -1,16 +1,12 @@
 # Send an HTML email with an embedded image and a plain text message for
 # email clients that don't want to display the HTML.
+import os
 
 import smtplib, ssl, email, time
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.image import MIMEImage
-from email import charset
-from datetime import datetime
-
 from app.helpers.notifications.email.models.images import Images
-
-import os
 
 
 class MailNotifier:
@@ -36,7 +32,6 @@ class MailNotifier:
 
         self.html_message = open(self.template_path + "main.html", "r").read()
 
-
         if self.username is None:
             self.username = self.strFrom
 
@@ -54,7 +49,7 @@ class MailNotifier:
 
         print("kwargs", kwargs)
 
-        project_name =  kwargs.get("project_name")
+        project_name = kwargs.get("project_name")
         branch = kwargs.get("branch")
         github_username = kwargs.get("github_username")
         commit_user = kwargs.get("commit_user")
@@ -80,7 +75,6 @@ class MailNotifier:
             main_info_file = main_info_file.replace('$COMMIT_TIMESTAMP', commit_timestamp)
             main_info_file = main_info_file.replace('$COMMIT_HASH', commit_hash)
             main_info_file = main_info_file.replace('$COMMIT_URL', commit_url)
-
 
         self.html_message = self.html_message.replace('$MAIN_INFORMATION', main_info_file)
 
@@ -111,7 +105,6 @@ class MailNotifier:
         self.html_message = self.html_message.replace('$MESSAGES', job_details)
         # self.job_details =self.job_details + job_details
 
-
     # alternative method sets job details
     # def set_job_details(self):
     #     self.html_message = self.html_message.replace('$MESSAGES', self.job_details)
@@ -124,13 +117,12 @@ class MailNotifier:
         else:
             job_icon = "cid:red-cross"
 
-
-        job_item= job_item.replace('$JOB_ICON', job_icon)
+        job_item = job_item.replace('$JOB_ICON', job_icon)
         job_item = job_item.replace('$JOB_TEXT', text)
 
         self.job_items = self.job_items + job_item
 
-    def build_mail(self, images:Images):
+    def build_mail(self, images: Images):
 
         # print("html is now", self.html_message)
 
@@ -195,7 +187,6 @@ class MailNotifier:
         # Define the image's ID as referenced above
         msgImage.add_header('Content-ID', '<dataplant-logo>')
         msgRoot.attach(msgImage)
-
 
         # fp = open(self.template_path + 'logo-blue.png', 'rb')
         fp = open(self.template_path + 'swobup-logo-black.png', 'rb')

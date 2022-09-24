@@ -54,6 +54,7 @@ services:
       - DB_URL=bolt://neo4j:7687
       - DB_USER=neo4j
       - DB_PASSWORD=test
+      - DB_BATCH_SIZE=500000
       - ONTOLOGY_REPOSITORY=""
       - TEMPLATE_REPOSITORY=""
       - SWATE_API=https://swate.nfdi4plants.org
