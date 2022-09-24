@@ -47,6 +47,41 @@ const healthStatus = async () => {
 
 }
 
+function build_ontology_buttons(ontology_list) {
+
+    buttons = ""
+
+    button_html = "<div class=\"buttons\">\n" +
+        "\n" +
+        "                                    <div class=\"control\">\n" +
+        "                                        <div class=\"tags has-addons\">\n" +
+        "                                                <span class=\"tag is-success  is-medium\"\n" +
+        "                                                      id=\"number_templates\">$ONTOLOGY_NAME</span>\n" +
+        "                                        </div>\n" +
+        "                                    </div>\n" +
+        "\n" +
+        "                                </div>"
+
+
+    console.log(ontology_list)
+
+
+    for (let i = 0; i < ontology_list.length; i++) {
+
+        console.log(ontology_list[i].name)
+
+
+
+        buttons += button_html
+        buttons = buttons.replace("$ONTOLOGY_NAME", ontology_list[i].name)
+
+    }
+
+    return buttons
+
+
+}
+
 
 const StatusInformation = async () => {
     const response = await fetch('api/v2/status/info');
@@ -56,7 +91,17 @@ const StatusInformation = async () => {
     document.getElementById("number_ontologies").innerHTML = responseJson.number_ontologies.toLocaleString();
     document.getElementById("number_relationships").innerHTML = responseJson.number_relationships.toLocaleString();
     document.getElementById("number_templates").innerHTML = responseJson.number_templates.toLocaleString();
-    // document.getElementById("db_url").innerHTML = responseJson.db_url;
+
+    buttons = build_ontology_buttons(responseJson.main_ontologies)
+
+    let element = document.getElementById("ontology_buttons_area");
+    while (element.firstChild) {
+        element.removeChild(element.firstChild);
+    }
+
+    // document.getElementById("ontology_buttons_area").innerHTML.replace("ontology_buttons_area")
+    document.getElementById("ontology_buttons_area").innerHTML += buttons;
+
 }
 
 
@@ -67,13 +112,13 @@ const Activities = async () => {
     console.log(responseJson)
 
 
-    for (var i=0; i<responseJson.length; i++) {
+    for (var i = 0; i < responseJson.length; i++) {
         const el = document.createElement('div');
         el.textContent = responseJson[i].message
         el.textContent = responseJson[i].color
 
-                  const results = document.getElementById('activity_area');
-          results.appendChild(el);
+        const results = document.getElementById('activity_area');
+        results.appendChild(el);
 
 
     }
@@ -90,7 +135,7 @@ const Activities = async () => {
 }
 
 const query_term = async () => {
-console.log("sending term")
+    console.log("sending term")
     query = document.getElementById("query_input").value
     console.log("query term", query)
     const response = await fetch(`api/v2/search/find?q=${query}`);
@@ -99,24 +144,22 @@ console.log("sending term")
 //    document.getElementById("results").innerHTML = responseJson.results;
     // document.getElementById("db_url").innerHTML = responseJson.db_url;
 
-    result =  responseJson.results;
+    result = responseJson.results;
 
-     const results = document.getElementById('results');
-       while (results.firstChild) {
-    results.removeChild(results.lastChild);
-  }
-
-
+    const results = document.getElementById('results');
+    while (results.firstChild) {
+        results.removeChild(results.lastChild);
+    }
 
 
     console.log("results", result)
 
     for (var i = 0; i < result.length; i++) {
-          console.log(result[i]);
-          const el = document.createElement('div');
-          el.textContent = result[i]
-          const results = document.getElementById('results');
-          results.appendChild(el);
+        console.log(result[i]);
+        const el = document.createElement('div');
+        el.textContent = result[i]
+        const results = document.getElementById('results');
+        results.appendChild(el);
     }
 
 }
@@ -127,7 +170,6 @@ window.onload = function () {
     StatusInformation();
     Activities();
 };
-
 
 
 setInterval(healthStatus, 1000);
