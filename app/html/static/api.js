@@ -55,7 +55,7 @@ function build_ontology_buttons(ontology_list) {
         "\n" +
         "                                    <div class=\"control\">\n" +
         "                                        <div class=\"tags has-addons\">\n" +
-        "                                                <span class=\"tag is-success  is-medium\"\n" +
+        "                                                <span class=\"tag is-success is-medium\"\n" +
         "                                                      id=\"ontology_button\">$ONTOLOGY_NAME</span>\n" +
         "                                        </div>\n" +
         "                                    </div>\n" +
