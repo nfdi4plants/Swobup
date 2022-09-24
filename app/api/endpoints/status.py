@@ -72,7 +72,13 @@ async def status():
     main_ontologies = []
     for main_ontology in main_ontologies_db:
         print(main_ontology)
-        ontology_model = MainOntology(name=main_ontology[0], version=main_ontology[1], lastUpdated=main_ontology[2])
+        ontology_name = main_ontology[0]
+        ontology_version = main_ontology[1]
+        ontology_updated = main_ontology[0]
+
+        print("onto version", ontology_version)
+
+        ontology_model = MainOntology(name=ontology_name, version=ontology_version, lastUpdated=ontology_updated)
         main_ontologies.append(ontology_model)
 
 
