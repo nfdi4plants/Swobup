@@ -1,7 +1,4 @@
-import os
-
 from fastapi import APIRouter, Body, Depends, HTTPException, status, FastAPI, Response
-from fastapi.responses import PlainTextResponse, JSONResponse, HTMLResponse
 from app.neo4j.neo4jConnection import Neo4jConnection
 
 from app.custom.models.health import Health, Services, Neo4j

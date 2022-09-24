@@ -1,34 +1,13 @@
-import obonet
-import networkx
-import datetime
-import sys
-import pandas as pd
-from io import StringIO
-
-import time
 import os
 
 from tasks import app
-from app.github.webhook_payload import PushWebhookPayload
-from app.github.downloader import GitHubDownloader
-from app.helpers.obo_parser import OBO_Parser
-
 from celery.result import AsyncResult
-
 from app.helpers.notifications.email.mail_notifier import MailNotifier
-
 from app.helpers.notifications.models.notification_model import Notifications, Message
 from app.helpers.notifications.models.colors import Colors, Warning, Success
-
 from app.helpers.notifications.models.colors import Colors
 from app.helpers.notifications.email.models.images import Images
 
-from app.neo4j.neo4jConnection import Neo4jConnection
-
-from app.helpers.s3_storage import S3Storage
-
-from celery.backends.s3 import S3Backend
-import json
 
 
 @app.task
