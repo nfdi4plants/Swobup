@@ -2,7 +2,7 @@ from fastapi import APIRouter, Body, Depends, HTTPException, status, FastAPI, Re
 from app.neo4j.neo4jConnection import Neo4jConnection
 
 from app.custom.models.health import Health, Services, Neo4j
-from app.custom.models.status import Status
+from app.custom.models.status import Status, MainOntology
 from app.helpers.models.configuration.configuration import *
 
 from app.helpers.swate_api import SwateAPI
@@ -66,11 +66,21 @@ async def status():
     number_ontologies = conn.get_number_ontologies()
     number_templates = conn.get_number_templates()
     number_relations = conn.get_number_relationships()
+    main_ontologies_db = conn.get_main_ontologies()
 
-    db_url = os.getenv("DB_URL")
+
+    main_ontologies = []
+    for main_ontology in main_ontologies_db:
+        print(main_ontology)
+        ontology_model = MainOntology(name=main_ontology[0], version=main_ontology[1], lastUpdated=main_ontology[2])
+        main_ontologies.append(ontology_model)
+
+
+
+
 
     return Status(number_terms=number_terms, number_ontologies=number_ontologies, number_templates=number_templates,
-                  number_relationships=number_relations, db_url=db_url)
+                  number_relationships=number_relations, main_ontologies=main_ontologies)
 
 
 @router.get("/configuration", response_model=Configuration,

@@ -103,6 +103,12 @@ td {
     float: right;
 }
 
+.ontology-buttons-area .buttons {
+  padding: 2px;
+    /*float: none;*/
+}
+
+
 
 .has-bg-split-20-yellow {
     background-color: #F9CD69;
