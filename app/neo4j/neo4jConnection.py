@@ -415,8 +415,10 @@ class Neo4jConnection:
 
 
     def get_main_ontologies(self):
+        #match(o:Ontology{generated:False})
+
         query = '''
-                match(o:Ontology{generated:False}) 
+                match(o:Ontology{generated:False})
                 return o.name, o.version, o.lastUpdated
                 '''
 
