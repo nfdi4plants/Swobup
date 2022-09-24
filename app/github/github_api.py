@@ -1,5 +1,6 @@
 import requests
 
+
 class GithubAPI:
     def __init__(self, repository_name):
         self.repository_name = repository_name
@@ -19,16 +20,14 @@ class GithubAPI:
 
         response = requests.get(url)
 
-
         result = response.json()
 
         print("result", result)
 
-        #for file in result["tree"]:
+        # for file in result["tree"]:
         #    print(file["path"], file["sha"])
 
         return result
-
 
     def convert_to_raw_url(self, file_name, branch):
         full_name = self.repository_name
@@ -37,9 +36,6 @@ class GithubAPI:
         base_url = "https://raw.githubusercontent.com/%s/%s/%s" % (full_name, branch, file_name)
 
         return base_url
-
-
-
 
 
 if __name__ == "__main__":
@@ -51,4 +47,3 @@ if __name__ == "__main__":
 
     for file in tree:
         print(github_api.convert_to_raw_url(file.get("path"), "main"))
-

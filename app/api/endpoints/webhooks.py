@@ -1,32 +1,7 @@
-import obonet
-from io import StringIO
-import sys
-import requests
-import pandas as pd
-import json
-import base64
-
-from celery.result import AsyncResult
 from celery import chain
 
 from fastapi import APIRouter, Body, Depends, HTTPException, status, Response, Request
 from app.github.webhook_payload import PushWebhookPayload
-
-from app.github.downloader import GitHubDownloader
-from app.helpers.obo_parser import OBO_Parser
-
-from app.helpers.models.ontology.term import Term
-from app.helpers.models.ontology.ontology import Ontology
-from app.helpers.models.ontology.relationships import Relationships
-from app.helpers.models.ontology.obo_file import OboFile
-from app.helpers.general_downloader import GeneralDownloader
-
-from app.tasks.database_tasks import add_ontologies
-from app.tasks.database_tasks import update_ontologies
-
-from app.custom.models.add_ontology import AddOntologyPayload
-from app.custom.models.delete_ontology import DeleteOntologyPayload
-
 from app.api.middlewares.github_authentication import *
 
 from app.tasks.ontology_tasks import add_ontology_task, process_ext_ontolgies
@@ -39,8 +14,6 @@ from app.github.github_api import GithubAPI
 
 from app.helpers.notifications.models.notification_model import Notifications, Message
 from app.tasks.mail_task import show_tasks_results, send_webhook_mail
-
-from app.neo4j.neo4jConnection import Neo4jConnection
 
 router = APIRouter()
 
@@ -56,10 +29,10 @@ def generate_hash_signature(
     return hmac.new(secret, payload, digest_method).hexdigest()
 
 
-# @router.post("/ontology", summary="Ontology Webhook", status_code=status.HTTP_204_NO_CONTENT,
-#              response_class=Response,  dependencies=[Depends(github_authentication)])
 @router.post("/ontology", summary="Ontology Webhook", status_code=status.HTTP_204_NO_CONTENT,
-             response_class=Response)
+             response_class=Response,  dependencies=[Depends(github_authentication)])
+# @router.post("/ontology", summary="Ontology Webhook", status_code=status.HTTP_204_NO_CONTENT,
+#              response_class=Response)
 async def ontology(request: Request, payload: PushWebhookPayload):
     print("sending to celery...")
 
@@ -194,23 +167,3 @@ async def template(request: Request, payload: PushWebhookPayload):
             chain(add_template_custom.s(url, notifications_json), send_webhook_mail.s()).apply_async()
 
     return Response(status_code=status.HTTP_204_NO_CONTENT)
-
-# @router.post("/test", summary="Test authentication Webhook", status_code=status.HTTP_204_NO_CONTENT)
-# async def test(request: Request, x_hub_signature_256:str = Header(None)):
-#     payload = await request.body()
-#     # payload = payload.decode()
-#     print("pp", payload)
-#     secret = os.environ.get("GITHUB_SECRET").encode("utf-8")
-#     # signature = generate_hash_signature(secret, payload.encode())
-#     signature = generate_hash_signature(secret, payload)
-#
-#     print("signature", f"sha256={signature}")
-#     print("xhub", x_hub_signature_256)
-#
-#     if x_hub_signature_256 != f"sha256={signature}":
-#         raise HTTPException(status_code=401, detail="Auth Error")
-#     return {}
-#
-#     print("login successful")
-#
-#     return Response(status_code=204)

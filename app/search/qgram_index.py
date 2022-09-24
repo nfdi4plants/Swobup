@@ -1,11 +1,3 @@
-"""
-Copyright 2019, University of Freiburg
-Chair of Algorithms and Data Structures.
-Hannah Bast <bast@cs.uni-freiburg.de>
-Claudius Korzen <korzen@cs.uni-freiburg.de>
-Patrick Brosi <brosi@cs.uni-freiburg.de>
-"""
-
 import readline  # NOQA
 import sys
 import math

@@ -17,5 +17,5 @@ api_router.include_router(ontologies.router, prefix="/ontology", tags=["Ontologi
 api_router.include_router(templates.router, prefix="/template", tags=["Templates"])
 api_router.include_router(database.router, prefix="/database", tags=["Database"])
 api_router.include_router(notifications.router, prefix="/notification", tags=["Notifications"])
-api_router.include_router(search.router, prefix="/search", tags=["Search"])
+# api_router.include_router(search.router, prefix="/search", tags=["Search"])
 api_router.include_router(activity_database.router, prefix="/activities", tags=["Activities"])

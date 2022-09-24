@@ -23,7 +23,6 @@ class GitHubDownloader:
 
         return file
 
-
     def get_master_tree(self, repository_name, branch):
         # headers = {'Authorization': 'token ' + self.auth_token,
         #            'Accept': 'application/vnd.github.v3.raw'
@@ -38,12 +37,11 @@ class GitHubDownloader:
 
         response = requests.get(url)
 
-
         result = response.json()
 
         print("result", result)
 
-        #for file in result["tree"]:
+        # for file in result["tree"]:
         #    print(file["path"], file["sha"])
 
         return result
