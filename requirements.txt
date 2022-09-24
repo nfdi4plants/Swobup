@@ -15,4 +15,3 @@ flower~=1.1.0
 redis~=4.3.4
 
 SQLAlchemy~=1.4.41
-UltraDict~=0.0.4

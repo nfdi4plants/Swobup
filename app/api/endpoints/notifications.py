@@ -1,24 +1,8 @@
-import obonet
-from io import StringIO
-import sys
-import pandas as pd
-import secrets
-
-from celery.result import AsyncResult
-from celery import chain
-
-from fastapi.security import HTTPBasic, HTTPBasicCredentials
-
 from fastapi import APIRouter, Body, Depends, HTTPException, status, Response
-
-from app.neo4j.neo4jConnection import Neo4jConnection
-
 from app.api.middlewares.http_basic_auth import *
 
 from app.tasks.mail_task import send_testmail, send_webhook_mail
 from app.custom.models.notifications import NotificationPayload
-
-from resource import *
 
 router = APIRouter()
 

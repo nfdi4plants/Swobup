@@ -48,11 +48,7 @@ def delete_ontology_task(payload):
 
     print("payload", payload)
 
-    if payload.get("url"):
-        print("url is available")
-
     if payload.get("ontology"):
-        print("ontologies were given")
         for ontology_name in payload.get("ontology"):
             conn.delete_ontology(ontology_name)
 

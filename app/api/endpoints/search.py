@@ -46,15 +46,7 @@ from app.search.search import *
 
 router = APIRouter()
 
-from app.helpers.shared_memory import Meta
-
-cache = Meta(inverted_list={})
-
 # qgram = QGramIndex(3)
-
-
-
-# ,  dependencies=[Depends(github_authentication)]
 
 # global invertedList
 
