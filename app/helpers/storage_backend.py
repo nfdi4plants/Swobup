@@ -41,13 +41,16 @@ class StorageBackend:
     def __init__(self):
         print("initializing storage backend")
         self.backend = None
-        self.storage_type = os.environ.get("SWOBUP_DATASTORAGE", "s3")
+        self.storage_type = os.environ.get("SWOBUP_DATASTORAGE", "local")
         if self.storage_type == "local":
             print("using local storage")
             self.backend = LocalStorage()
-        else:
+        elif self.storage_type == "s3":
             print("using s3 storage")
             self.backend = S3Backend(app=app)
+        else:
+            print("using local storage")
+            self.backend = LocalStorage()
 
     def set(self, key, value):
         self.backend.set(key=key, value=json.dumps(value))
