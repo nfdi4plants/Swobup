@@ -414,6 +414,20 @@ class Neo4jConnection:
         return result.value().pop()
 
 
+    def get_main_ontologies(self):
+        query = '''
+                match(o:Ontology{generated:False}) 
+                return o.name, o.version, o.lastUpdated
+                '''
+
+        session = self.__driver.session()
+        result = session.run(query)
+
+        # print("res", result.values())
+
+        return result.values()
+
+
     def list_terms(self):
         query = '''
                 MATCH (n:Term) 
