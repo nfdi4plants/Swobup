@@ -103,9 +103,15 @@ td {
     float: right;
 }
 
+.ontology-buttons-area{
+        display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
 .ontology-buttons-area .buttons {
-  padding: 2px;
-    /*float: none;*/
+  padding: 2px; /*float: none;*/
+
 }
 
 
