@@ -184,3 +184,6 @@ MAIL_PORT = ''
 MAIL_SENDER = ''
 MAIL_ADDITIONAL_RECEIVER = '' # list of mail adsresses seperated by comma (,)
 ```
+
+#### Configuration
+
