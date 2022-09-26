@@ -7,18 +7,12 @@ COPY ./requirements.txt /swobup/requirements.txt
 RUN pip install --no-cache-dir --upgrade -r /swobup/requirements.txt
 # RUN pip install uvicorn[standard]
 
-#COPY . /swobup
 COPY app/ /swobup/app
 COPY __init__.py /swobup
 COPY init.sh /swobup
 COPY main.py /swobup
 COPY tasks.py /swobup
 COPY requirements.txt /swobup
-
-
-#RUN rm /swobup/.env
-#RUN rm /swobup/docker-compose.yml
-#RUN rm /swobup/.gitlab-ci.yml
 
 WORKDIR /swobup/app/search/ped_c/
 # RUN python3 /swobup/app/search/ped_c/setup.py build
