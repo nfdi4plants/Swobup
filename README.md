@@ -117,7 +117,25 @@ networks:
 
 ```
 
+It is recommended to use a proxy before Swobup so that traffic is directed to the open port 8000 and accepted at the
+proxy on port 443.
+
 #### Configuration with .env file:
+
+Swobup can also run without Docker. In this case, an .env file must be created in the root folder of Swobup.
+The parameters are listed below. Then swobup can be started with the following commands:
+
+First the Celery worker has to be started:
+
+```
+celery -A tasks worker -l info &
+```
+
+After that Swobup has to be started:
+
+```
+uvicorn --workers 10 --host 0.0.0.0 --port 8000 main:app
+```
 
 ```
 # Celery Configuration
