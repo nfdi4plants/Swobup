@@ -6,7 +6,9 @@
 <p align="center">
 
 [//]: # (<img alt="Logo Banner" src="https://raw.githubusercontent.com/Zerskk/Branding/master/logos/Swobup/logo-text/logo-blue-text.png"/>)
-<img alt="Logo Banner" src="https://raw.githubusercontent.com/nfdi4plants/Branding/master/logos/Swobup/logo/logo-blue.png"/>
+<img alt="Logo Banner"
+src="https://raw.githubusercontent.com/nfdi4plants/Branding/master/logos/Swobup/logo/logo-blue.png" width="auto" height="
+600/>
 
 ---
 
