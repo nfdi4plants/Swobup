@@ -10,6 +10,8 @@
 src="https://raw.githubusercontent.com/nfdi4plants/Branding/master/logos/Swobup/logo/logo-blue.png" width="auto" height="
 600"/>
 
+</p>
+
 ---
 
 Swobup (Swate OBO Updater) is a tool to synchronize terms in a previously defined OBO file uploaded to a Github
