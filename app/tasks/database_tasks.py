@@ -143,7 +143,7 @@ def add_ontologies(self, data):
 
 
 @app.task(name="update ontology in DB", bind=True, max_retries=3)
-def update_ontologies(task_results):
+def update_ontologies(self, task_results):
     print("in update db")
 
     messages = task_results.get("notifications")
