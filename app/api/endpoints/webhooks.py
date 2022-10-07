@@ -44,6 +44,10 @@ async def ontology(request: Request, payload: PushWebhookPayload):
 
     print("payload", payload.dict())
 
+# TODO add branch detection
+#    if payload.ref is not "main":
+#        return
+
     repository_name = payload.repository.full_name
     branch = payload.ref.split("/")[-1]
     branch = payload.after

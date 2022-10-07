@@ -176,7 +176,7 @@ class Neo4jConnection:
                 SET o.lastUpdated = row.lastUpdated
                 SET o.author = row.author
                 SET o.version = row.version
-                SET o.generated = row.generated
+                SET o.generated = COALESCE(o.generated,row.generated)
                 RETURN count(*) as total
                 '''
         return self.insert_data(query, rows, batch_size)
