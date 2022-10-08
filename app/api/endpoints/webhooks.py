@@ -45,11 +45,12 @@ async def ontology(request: Request, payload: PushWebhookPayload):
     print("payload", payload.dict())
 
     # BRANCH DETECTION (TESTING)
-    ontology_branch = os.environ.get("ONTOLOGY_BRANCH", "main")
+    ontology_branch = os.environ.get("ONTOLOGY_BRANCH", "off")
     ref = payload.ref.split("/")[-1]
 
-    if ref != ontology_branch:
-        return
+    if ontology_branch != "off":
+        if ref != ontology_branch:
+            return
 
     repository_name = payload.repository.full_name
     ref = payload.ref.split("/")[-1]
