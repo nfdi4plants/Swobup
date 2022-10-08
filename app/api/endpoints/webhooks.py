@@ -44,12 +44,15 @@ async def ontology(request: Request, payload: PushWebhookPayload):
 
     print("payload", payload.dict())
 
-# TODO add branch detection
-#    if payload.ref is not "main":
-#        return
+    # BRANCH DETECTION (TESTING)
+    ontology_branch = os.environ.get("ONTOLOGY_BRANCH", "main")
+    ref = payload.ref.split("/")[-1]
+
+    if ref != ontology_branch:
+        return
 
     repository_name = payload.repository.full_name
-    branch = payload.ref.split("/")[-1]
+    ref = payload.ref.split("/")[-1]
     branch = payload.after
     hash_id = payload.after
     # commits = payload.commits.pop()
