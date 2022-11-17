@@ -221,7 +221,7 @@ def update_ontologies(self, task_results):
 
 
     # print("adding terms")
-    conn.update_terms(terms_df)
+    conn.add_terms(terms_df)
     # print("connecting ontologies")
     conn.connect_ontology(terms_df)
     # print("connecting relationships")

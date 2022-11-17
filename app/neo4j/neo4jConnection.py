@@ -108,10 +108,10 @@ class Neo4jConnection:
         query = '''
                 UNWIND $rows AS row
                 MERGE (t:Term {accession: row.accession})
-                SET t.name = COALESCE(t.name,row.name)
-                SET t.definition = COALESCE(t.definition,row.definition)
-                SET t.accession = COALESCE(t.accession,row.accession)
-                SET t.is_obsolete = COALESCE(t.is_obsolete,row.is_obsolete)
+                SET t.name = COALESCE(row.name,t.name)
+                SET t.definition = COALESCE(row.definition, t.definition)
+                SET t.accession = COALESCE(row.accession, t.accession)
+                SET t.is_obsolete = COALESCE(row.is_obsolete, t.is_obsolete)
                 RETURN count(*) as total
                 '''
 
