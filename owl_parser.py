@@ -9,17 +9,50 @@ from nxontology import NXOntology
 from collections import Counter
 
 
-ms = pronto.Ontology.from_obo_library("ms.owl")
+# ms = pronto.Ontology.from_obo_library("ms.owl")
+ms = pronto.Ontology(handle="/home/marcel/GIT/swobup/ms.owl", import_depth=0)
+
+# nxo = from_file("/home/marcel/GIT/swobup/ms.owl")
+# print(nxo.n_nodes)
+#
+# nodes = nxo.n_nodes
+# for node in nodes:
+#     try:
+#         print("node: ", node)
+#     except:
+#         print("node already in graph")
+#         continue
+#
+# sys.exit()
 
 terms = ms.terms()
 
 for term in terms:
-    print(term)
+    print("==============")
+    print(term.id)
+    print(term.definition)
+    print(term.name)
+    print(term.relationships.values())
+    print("==============")
+    print("*****")
+    print(term.relationships)
+    relationships = term.relationships
+    print("realtionships are", relationships)
+    print("##", relationships.values())
+    print("##", len(relationships.values()))
+    for bla in relationships.values():
+        print("bla", bla)
+    for relation in relationships:
+        print("name", relation.name)
+        print("ID", relation.id)
+        print("definition", relation.definition)
+        print("definition", relation.relationships)
+    print("*****")
 
-relations = ms.relationships()
-
-for relation in relations:
-    print(relation)
+# relations = ms.relationships()
+#
+# for relation in relations:
+#     print(relation)
 
 sys.exit()
 
