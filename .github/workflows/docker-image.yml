@@ -13,5 +13,5 @@ jobs:
     - uses: actions/checkout@HEAD
     - run: |
        docker login -u ${{github.actor}} -p ${{secrets.GITHUB_TOKEN}} ghcr.io/${{github.repository}}
-       docker build -t ghcr.io/${{github.repository}} .
+       docker build -t swobup .
        docker push ghcr.io/${{github.repository}}
