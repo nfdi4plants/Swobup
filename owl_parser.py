@@ -8,9 +8,14 @@ import sys
 from nxontology import NXOntology
 from collections import Counter
 
-
+url = "http://release.geneontology.org/2021-02-01/ontology/go-basic.json.gz"
 # ms = pronto.Ontology.from_obo_library("ms.owl")
-ms = pronto.Ontology(handle="/home/marcel/GIT/swobup/ms.owl", import_depth=0)
+# ms = pronto.Ontology(handle="/home/marcel/GIT/swobup/ms.owl", import_depth=0)
+
+ms = pronto.Ontology(handle=url, import_depth=0)
+
+
+
 
 # nxo = from_file("/home/marcel/GIT/swobup/ms.owl")
 # print(nxo.n_nodes)
@@ -29,9 +34,9 @@ terms = ms.terms()
 
 for term in terms:
     print("==============")
-    print(term.id)
-    print(term.definition)
-    print(term.name)
+    print("TermID:", term.id)
+    print("TERM Definition", term.definition)
+    print("Term Name", term.name)
     print(term.relationships.values())
     print("==============")
     print("*****")
