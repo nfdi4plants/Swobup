@@ -40,14 +40,22 @@ for term in terms:
     print(term.relationships.values())
     print("==============")
     print("*****")
-    print(term.relationships)
+    for key in term.relationships.keys():
+        print("key", key)
+        print(term.relationships.get(key))
+
+
     relationships = term.relationships
     print("realtionships are", relationships)
     print("##", relationships.values())
     print("##", len(relationships.values()))
     for bla in relationships.values():
-        print("bla", bla)
+        print("relation found", bla)
+        print(bla.names)
+        for rel_terms in bla:
+            print(rel_terms)
     for relation in relationships:
+        print("--->", relation.relationships)
         print("name", relation.name)
         print("ID", relation.id)
         print("definition", relation.definition)
