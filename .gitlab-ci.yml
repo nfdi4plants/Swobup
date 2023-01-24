@@ -1,6 +1,3 @@
-services:
-  - docker:20.10.16-dind
-
 stages:
   - publish
 
@@ -18,8 +15,6 @@ build:
   script:
     - docker build -t swobup .
     #- docker run my-docker-image /script/to/run/tests
-
-
 
 publish:
   image: docker:latest
