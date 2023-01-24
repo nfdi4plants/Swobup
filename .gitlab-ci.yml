@@ -7,14 +7,14 @@ variables:
   GIT_SUBMODULE_STRATEGY: recursive
 
 
-before_script:
-  - docker info
+#before_script:
+#  - docker info
 
-build:
-  stage: build
-  script:
-    - docker build -t swobup .
-    #- docker run my-docker-image /script/to/run/tests
+#build:
+#  stage: build
+#  script:
+#    - docker build -t swobup .
+#    #- docker run my-docker-image /script/to/run/tests
 
 publish:
   image: docker:latest
