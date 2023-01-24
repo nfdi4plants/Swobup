@@ -8,6 +8,7 @@ class Ontology(BaseModel):
     author: Optional[str]
     version: Optional[str]
     generated: Optional[bool]
+    importedFrom: Optional[str]
 
     # @validator("name", "author", "version", "lastUpdated", pre=True)
     # def strip_strings(cls, value):

@@ -45,6 +45,7 @@ for term in terms:
         print(term.relationships.get(key))
 
 
+
     relationships = term.relationships
     print("realtionships are", relationships)
     print("##", relationships.values())

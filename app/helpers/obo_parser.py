@@ -203,7 +203,7 @@ class OBO_Parser:
             if not self.ontology_available(node_prefix):
                 print("prefix", node_prefix)
                 ontology = Ontology(name=node_prefix, lastUpdated=ontology_lastUpdated, author=None,
-                                    version=None, generated=None)
+                                    version=None, generated=None, importedFrom=ontology_name)
                 self.obo_file.ontologies.append(ontology)
                 self.collected_ontologies.add(node_prefix)
 
@@ -222,7 +222,7 @@ class OBO_Parser:
                             self.obo_file.terms.append(term)
                         if not self.ontology_available(node_prefix):
                             ontology = Ontology(name=node_prefix, lastUpdated=ontology_lastUpdated, author=None,
-                                                version=None, generated=None)
+                                                version=None, generated=None, importedFrom=ontology_name)
                             self.obo_file.ontologies.append(ontology)
                             self.collected_ontologies.add(node_prefix)
 
@@ -236,7 +236,7 @@ class OBO_Parser:
                             self.obo_file.terms.append(term)
                         if not self.ontology_available(node_prefix):
                             ontology = Ontology(name=node_prefix, lastUpdated=ontology_lastUpdated, author=None,
-                                                version=None, generated=None)
+                                                version=None, generated=None, importedFrom=ontology_name)
                             self.obo_file.ontologies.append(ontology)
                             self.collected_ontologies.add(node_prefix)
 
@@ -251,7 +251,7 @@ class OBO_Parser:
                             self.obo_file.terms.append(term)
                         if not self.ontology_available(node_prefix):
                             ontology = Ontology(name=node_prefix, lastUpdated=ontology_lastUpdated, author=None,
-                                                version=None, generated=None)
+                                                version=None, generated=None, importedFrom=ontology_name)
                             self.obo_file.ontologies.append(ontology)
                             self.collected_ontologies.add(node_prefix)
 

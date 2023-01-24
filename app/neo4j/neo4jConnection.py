@@ -163,6 +163,7 @@ class Neo4jConnection:
                 SET o.author = COALESCE(o.author,row.author)
                 SET o.version = COALESCE(o.version,row.version)
                 SET o.generated = COALESCE(o.generated,row.generated)
+                SET o.importedFrom = COALESCE(o.importedFrom,row.importedFrom)
                 RETURN count(*) as total
                 '''
         return self.insert_data(query, rows, batch_size)
@@ -177,6 +178,7 @@ class Neo4jConnection:
                 SET o.author = row.author
                 SET o.version = row.version
                 SET o.generated = COALESCE(o.generated,row.generated)
+                SET o.importedFrom = COALESCE(o.importedFrom,row.importedFrom)
                 RETURN count(*) as total
                 '''
         return self.insert_data(query, rows, batch_size)
