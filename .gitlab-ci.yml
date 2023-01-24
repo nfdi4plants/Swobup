@@ -2,7 +2,7 @@ services:
   - docker:20.10.16-dind
 
 stages:
-  - build_image
+  - publish
 
 variables:
   TAG_LATEST: $CI_REGISTRY_IMAGE/$CI_COMMIT_REF_NAME:latest
@@ -23,8 +23,6 @@ build:
 
 publish:
   image: docker:latest
-  needs:
-    - job: build_image
   stage: publish
   services:
     - docker:dind
