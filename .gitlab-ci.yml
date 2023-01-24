@@ -1,6 +1,15 @@
 services:
   - docker:20.10.16-dind
 
+stages:
+  - build_image
+
+variables:
+  TAG_LATEST: $CI_REGISTRY_IMAGE/$CI_COMMIT_REF_NAME:latest
+  TAG_COMMIT: $CI_REGISTRY_IMAGE/$CI_COMMIT_REF_NAME:$CI_COMMIT_SHORT_SHA
+  GIT_SUBMODULE_STRATEGY: recursive
+
+
 before_script:
   - docker info
 
@@ -9,3 +18,20 @@ build:
   script:
     - docker build -t swobup .
     #- docker run my-docker-image /script/to/run/tests
+
+
+
+publish:
+  image: docker:latest
+  needs:
+    - job: build_image
+  stage: publish
+  services:
+    - docker:dind
+  script:
+    - ls -lah
+    - ls -lah build/
+    - docker build -t $TAG_COMMIT -t $TAG_LATEST .
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+    - docker push $TAG_COMMIT
+    - docker push $TAG_LATEST
