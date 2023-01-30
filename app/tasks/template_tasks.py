@@ -25,10 +25,10 @@ def add_template_custom(url, notifications):
 
     converted_json = swate_api.convert_xslx(current_file)
 
-    if converted_json.get("error") is not None:
-        notifications.messages.append(Message(type="fail", message=converted_json.get("error")))
-        notifications = notifications.dict()
-        return notifications
+    # if converted_json.get("error") is not None:
+    #     notifications.messages.append(Message(type="fail", message=converted_json.get("error")))
+    #     notifications = notifications.dict()
+    #     return notifications
 
 
     template = Template.parse_obj(converted_json)
