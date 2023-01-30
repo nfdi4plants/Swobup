@@ -169,9 +169,10 @@ async def template(request: Request, payload: PushWebhookPayload):
     notifications_json = notifications.dict()
 
     for url in update_urls:
+        print("current url", url)
         if ".xlsx" in filename:
             # chain(add_ontology_task.s(url), update_ontologies.s()).apply_async()
             # add_template_custom.delay(url, notifications_json)
-            chain(add_template_custom.s(url, notifications_json), send_webhook_mail.s()).apply_async()
+            chain(add_template_custom.s(url, notifications=notifications_json), send_webhook_mail.s()).apply_async()
 
     return Response(status_code=status.HTTP_204_NO_CONTENT)

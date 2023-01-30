@@ -16,8 +16,17 @@ from app.helpers.notifications.models.notification_model import Notifications, M
 
 
 @app.task(name="adding template to DB")
-def add_template_custom(url, notifications):
-    notifications = Notifications(**notifications)
+def add_template_custom(url, **notis):
+
+    notifications = notis.get("notifications")
+
+    if notifications:
+        notifications = Notifications(**notifications)
+    else:
+        notifications = Notifications(messages=[])
+        notifications.is_webhook = False
+
+    # notifications = Notifications(**notifications)
 
     general_downloader = GeneralDownloader(url)
     current_file = general_downloader.retrieve_xslx()
