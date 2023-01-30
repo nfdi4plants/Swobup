@@ -20,10 +20,17 @@ class SwateAPI:
     def convert_xslx(self, file):
         url = self.backend_url + "/api/IISADotNetCommonAPIv1/toSwateTemplateJson"
 
-        response = requests.post(url, data=file, headers=self.headers, verify=self.verify)
-
-        print("url", url)
-        print("response", response)
+        try:
+            response = requests.post(url, data=file, headers=self.headers, verify=self.verify)
+            response.raise_for_status()
+        except requests.exceptions.HTTPError as errh:
+            print("Http Error:", errh)
+        except requests.exceptions.ConnectionError as errc:
+            print("Error Connecting:", errc)
+        except requests.exceptions.Timeout as errt:
+            print("Timeout Error:", errt)
+        except requests.exceptions.RequestException as err:
+            print("OOps: Something Else", err)
 
         response_json = response.json()
 
