@@ -51,7 +51,9 @@ def add_template_custom(url, **notis):
         notifications = notifications.dict()
         return notifications
 
+    print("adding template: ", template.Name)
     conn.update_template(template)
+    print("adding template finished: ", template.Name)
 
     notifications.messages.append(
         Message(type="success", message="Template " + "<b>" + template.Name + "</b>" + " successfully written "
@@ -115,4 +117,6 @@ def template_build_from_scratch():
         template = Template.parse_obj(converted_json)
 
         conn = Neo4jConnection()
+        print("adding template: ", template.Name)
         conn.update_template(template)
+        print("adding template finished: ", template.Name)
