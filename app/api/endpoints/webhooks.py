@@ -122,6 +122,17 @@ async def template(request: Request, payload: PushWebhookPayload):
     print("webhook")
     body = await request.body()
 
+    ref = payload.ref.split("/")[-1]
+
+
+    # BRANCH DETECTION (TESTING)
+    template_branch = os.environ.get("TEMPLATE_BRANCH", "off")
+    ref = payload.ref.split("/")[-1]
+
+    if template_branch != "off":
+        if ref != template_branch:
+            return
+
     notifications = Notifications(messages=[])
     notifications.is_webhook = True
     notifications.email = payload.commits[-1].author.email
