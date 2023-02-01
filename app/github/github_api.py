@@ -18,7 +18,12 @@ class GithubAPI:
         #                'Accept': 'application/vnd.github.v3.raw'
         #                }
 
-        response = requests.get(url)
+        try:
+            response = requests.get(url)
+            response.raise_for_status()
+        except requests.exceptions.HTTPError as err:
+            print("status code: ", response.status_code)
+            print(response.json().get("message"))
 
         result = response.json()
 
