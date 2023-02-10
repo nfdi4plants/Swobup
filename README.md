@@ -104,7 +104,7 @@ services:
       - MAIL_SENDER=
       - MAIL_ADDITIONAL_RECEIVER=
 
-    image: zersk/swobup:latest
+    image: ghcr.io/nfdi4plants/swobup:main
     ports:
       - "8000:8000"
       - "1111:1111"
