@@ -18,3 +18,8 @@ class Template(BaseModel):
     ER: List[Dict]
     # LastUpdated: str
     # TimesUsed: int
+
+    @validator("Id", pre=True)
+    def strip_accession(cls, value):
+        value = value.replace("-", "_")
+        return value
