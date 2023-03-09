@@ -292,7 +292,7 @@ class Neo4jConnection:
         print("data", data)
 
         query = '''
-                MERGE (t:Template {id:$id})
+                MERGE (t:Template {id:"$id"})
                 SET t.name = $name
                 SET t.description = $description
                 SET t.version = $version
@@ -325,7 +325,7 @@ class Neo4jConnection:
 
     def delete_template(self, template_id):
         query = '''
-                MATCH (t:Template {id: $template_id}) DELETE t
+                MATCH (t:Template {id: "$template_id"}) DELETE t
                 '''
 
         session = self.__driver.session()
