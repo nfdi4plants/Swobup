@@ -68,21 +68,24 @@ def add_template_custom(url, **notis):
 
 @app.task(name="deleting template")
 def delete_template_custom(template_id, **notifications):
-    if notifications:
-        notifications = Notifications(**notifications)
-    else:
-        notifications = Notifications(messages=[])
-        notifications.is_webhook = False
-
-    notifications = Notifications(**notifications)
+    # if notifications:
+    #     notifications = Notifications(**notifications)
+    # else:
+    #     notifications = Notifications(messages=[])
+    #     notifications.is_webhook = False
+    #
+    # notifications = Notifications(**notifications)
 
     conn = Neo4jConnection()
 
+    # Quickfix
+    template_id = template_id.replace("-", "_")
+
     conn.delete_template(template_id)
 
-    result = {}
-    notifications_json = notifications.dict()
-    result["notifications"] = notifications_json
+    # result = {}
+    # notifications_json = notifications.dict()
+    # result["notifications"] = notifications_json
 
 
 @app.task

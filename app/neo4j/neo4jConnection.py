@@ -325,9 +325,6 @@ class Neo4jConnection:
 
     def delete_template(self, template_id):
 
-        # Quickfix
-        template_id = template_id.replace("-", "_")
-
         query = '''
                 MATCH (t:Template {id: $template_id}) DELETE t
                 '''
