@@ -5,6 +5,8 @@ import neo4j
 
 from neo4j import GraphDatabase
 import time
+import logging
+import sys
 
 from app.helpers.models.templates.template import Template
 
@@ -307,6 +309,12 @@ class Neo4jConnection:
                 RETURN t
                 '''
 
+        handler = logging.StreamHandler(sys.stdout)
+        handler.setFormatter(logging.Formatter(
+            "[%(levelname)-8s] %(threadName)s(%(thread)d) %(asctime)s %(message)s"
+        ))
+        logging.getLogger("neo4j").addHandler(handler)
+        logging.getLogger("neo4j").setLevel(logging.DEBUG)
         session = self.__driver.session()
         # response = list(session.run(query, parameters))
 
