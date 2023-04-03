@@ -1,14 +1,17 @@
 from neo4j import GraphDatabase
 import pandas as pd
+import os
+import asyncio
 
+from app.helpers.models.templates.template import Template
 
 class Neo4j_Connection:
 
     def __init__(self):
-        self.username = "user"
-        self.password = "password"
-        self.bach_size = 10000
-        self.uri = "db://bla"
+        self.username = os.getenv("DB_USER")
+        self.password = os.getenv("DB_PASSWORD")
+        self.batch_size = 10000
+        self.uri = os.getenv("DB_URL")
 
     async def write_to_neo4j(self, data: pd.DataFrame, batch_queries):
         uri = "bolt://localhost:7687"
@@ -30,7 +33,10 @@ class Neo4j_Connection:
                             await tx.run(query, **params)
 
 
-    async def add_templates(self, data: pd.DataFrame):
+    def add_templates(self, data):
+
+        print("data", data)
+
         query = '''
                         MERGE (t:Template {id:$id})
                         SET t.name = $name
@@ -46,22 +52,25 @@ class Neo4j_Connection:
                         SET t.TimesUsed = COALESCE(t.timesUsed,0)
                         RETURN t
                         '''
-        for i in range(0,len(data, self.bach_size)):
-            batch_data = data.iloc[i:i+self.bach_size]
+        print("query is ", query)
+
+        for i in range(0, len(data), self.batch_size):
+            batch_data = data.iloc[i:i+self.batch_size]
             batch_queries = []
-            batch_data = []
+            # batch_data = []
+            print("query", batch_queries)
             for index, row in batch_data.iterrows():
-                params = {"id": row["id"],
-                          "name": row["name"],
-                          "description":row["description"],
-                          "version":row["version"],
-                          "authors":row["authors"],
-                          "templateJson":row["templateJson"],
-                          "organisation":row["organisation"],
-                          "lastUpdated":row["lastUpdated"],
-                          "tags":row["tags"],
-                          "erTags":row["erTags"],
-                          "TimesUsed":row["TimesUsed"]
+                params = {"id": row["Id"],
+                          "name": row["Name"],
+                          "description":row["Description"],
+                          "version":row["Version"],
+                          "authors":row["Authors"],
+                          "templateJson":row["TemplateJson"],
+                          "organisation":row["Organisation"],
+                          # "lastUpdated":row["LastUpdated"],
+                          "tags":row["Tags"],
+                          # "erTags":row["ErTags"],
+                          # "TimesUsed":row["TimesUsed"]
                           }
                 batch_queries.append((query, params))
 
