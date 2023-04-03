@@ -1,4 +1,6 @@
 # from .neo4j_Connection import Neo4j_Connection
+import asyncio
+
 from app.neo4j_conc.neo4j_Connection import Neo4j_Connection
 import pandas as pd
 import json
@@ -9,6 +11,12 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from app.helpers.models.templates.template import Template
+
+
+async def add_template(dataframe):
+    await neo4j.add_templates(dataframe)
+
+
 
 if __name__ == '__main__':
     neo4j = Neo4j_Connection()
@@ -40,6 +48,10 @@ if __name__ == '__main__':
 
 
     neo4j.add_templates(dataframe)
+
+    # add_template(dataframe)
+
+    # asyncio.run(neo4j.add_templates(dataframe))
 
     print("after neo4j")
 
