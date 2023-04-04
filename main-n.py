@@ -14,12 +14,12 @@ from app.helpers.models.templates.template import Template
 
 
 async def add_template(dataframe):
-    await neo4j.add_templates(dataframe)
+    await neo4j_conn.add_templates(dataframe)
 
 
 
 if __name__ == '__main__':
-    neo4j = Neo4j_Connection()
+    neo4j_conn = Neo4j_Connection()
     # neo4j.add_templates(data: pd.Dataframe)#
 
     json_file = open("example.json","r")
@@ -46,8 +46,11 @@ if __name__ == '__main__':
     print("after dataframe")
 
 
+    asyncio.run(neo4j_conn.add_temp(dataframe))
 
-    neo4j.add_templates(dataframe)
+
+
+    # neo4j.add_templates(dataframe)
 
     # add_template(dataframe)
 
