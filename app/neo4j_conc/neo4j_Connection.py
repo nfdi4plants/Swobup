@@ -63,10 +63,6 @@ class Neo4j_Connection:
                     SET t.authors = $authors
                     SET t.templateJson = $templateJson
                     SET t.organisation = $organisation
-                    SET t.lastUpdated = $lastUpdated
-                    SET t.tags = $tags
-                    SET t.erTags = $erTags
-                    SET t.lastUpdated = $lastUpdated
                     SET t.TimesUsed = COALESCE(t.timesUsed,0)
                     RETURN t
                     '''
@@ -92,7 +88,7 @@ class Neo4j_Connection:
                               }
                     batch_queries.append((query, dict(params)))
                 print("before loop")
-                async with session.begin_transaction() as tx:
+                async with await session.begin_transaction() as tx:
                     print("loop here---")
                     for query, params in batch_queries:
                         await tx.run(query, **params)
