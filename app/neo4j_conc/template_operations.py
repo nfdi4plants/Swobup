@@ -1,3 +1,5 @@
+import datetime
+
 from neo4j import AsyncGraphDatabase
 import pandas as pd
 import os
@@ -12,21 +14,6 @@ def add_template(data, batch_size=10000):
 
     print("data", data)
 
-    # query = '''
-    # MERGE (t:Template {id:$id})
-    # SET t.name = $name
-    # SET t.description = $description
-    # SET t.version = $version
-    # SET t.authors = $authors
-    # SET t.templateJson = $templateJson
-    # SET t.organisation = $organisation
-    # SET t.lastUpdated = $lastUpdated
-    # SET t.tags = $tags
-    # SET t.erTags = $erTags
-    # SET t.lastUpdated = $lastUpdated
-    # SET t.TimesUsed = COALESCE(t.timesUsed,0)
-    # RETURN t
-    # '''
     query = ''' 
             MERGE (t:Template {id:$id})
             SET t.name = $name
@@ -35,10 +22,16 @@ def add_template(data, batch_size=10000):
             SET t.authors = $authors
             SET t.templateJson = $templateJson
             SET t.organisation = $organisation
+            SET t.lastUpdated = $lastUpdated
+            SET t.tags = $tags
+            SET t.erTags = $erTags
+            SET t.lastUpdated = $lastUpdated
             SET t.TimesUsed = COALESCE(t.timesUsed,0)
             RETURN t
             '''
     print("query is ", query)
+
+    update_time = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
 
     for i in range(0, len(data), batch_size):
         batch_data = data.iloc[i:i + batch_size]
@@ -53,10 +46,9 @@ def add_template(data, batch_size=10000):
                       "authors": str(row["Authors"]),
                       "templateJson": str(row["TemplateJson"]),
                       "organisation": row["Organisation"],
-                      # "lastUpdated":"test",
-                      # "tags": row["Tags"],
-                      # "erTags":"test",
-                      "TimesUsed": "test"
+                      "lastUpdated":update_time,
+                      "tags": str(row["Tags"]),
+                      "erTags":str(row["Tags"])
                       }
             batch_queries.append((query, params))
 
