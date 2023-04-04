@@ -9,7 +9,6 @@ class Neo4jWriter:
     async def write(self, query):
         async with self.driver.session() as session:
             async with await session.begin_transaction() as tx:
-            # bla = await session.begin_transaction()
                 await tx.run(query)
 
     def close(self):
