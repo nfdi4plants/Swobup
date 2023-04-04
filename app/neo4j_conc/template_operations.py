@@ -92,3 +92,12 @@ def delete_all_templates():
     return batch_queries
 
 
+def get_number_templates():
+    # batch_queries = []
+    query = '''
+            MATCH (t:Template) 
+            RETURN count(labels(t));
+            '''
+    return query
+
+
