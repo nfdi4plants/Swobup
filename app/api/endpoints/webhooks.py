@@ -153,11 +153,26 @@ async def template(request: Request, payload: PushWebhookPayload):
     branch = payload.ref.split("/")[-1]
     branch = payload.after
     hash_id = payload.after
-    commits = payload.commits.pop()
+    commits = payload.commits
 
-    modified = commits.modified
-    added = commits.added
-    removed = commits.removed
+
+    modified = []
+    added = []
+    removed = []
+
+    for commit in commits:
+       print("current commit", commit)
+       modified = modified + commit.modified
+       added = added + commit.added
+       removed = removed + commit.removed
+
+
+
+    # print("commits", commits)
+    #
+    # modified = commits.modified
+    # added = commits.added
+    # removed = commits.removed
 
     update_files = modified + added
 
