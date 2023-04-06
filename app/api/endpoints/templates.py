@@ -3,7 +3,7 @@ from fastapi import APIRouter, Body, Depends, HTTPException, status, Response
 from app.custom.models.add_template import AddTemplatePayload, DeleteTemplatePayload
 
 from app.tasks.template_tasks import add_template_custom, delete_template_custom, delete_template_all_custom, \
-    template_build_from_scratch
+    template_build_from_scratch, add_templates
 
 from app.api.middlewares.http_basic_auth import *
 
@@ -19,7 +19,8 @@ async def add_template(payload: AddTemplatePayload):
     # result = chain(add_template_task.s(url), write_to_db.s())
 
     for url in urls:
-        result = add_template_custom.delay(url)
+        # result = add_template_custom.delay(url)
+        result = add_templates.delay(url)
         print("result", result)
 
     return Response(status_code=status.HTTP_204_NO_CONTENT)
@@ -30,7 +31,10 @@ async def add_template(payload: AddTemplatePayload):
 async def delete_template(payload: DeleteTemplatePayload):
     ids = payload.ids
 
+    print("ids", ids)
+
     for id in ids:
+        # result = delete_template_custom.delay(id)
         result = delete_template_custom.delay(id)
         print("result", result)
 

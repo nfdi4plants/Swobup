@@ -2,7 +2,7 @@
 import asyncio
 
 from app.neo4j_conc.neo4j_Connection import Neo4j_Connection
-from app.neo4j_conc.neo4j_writer import Neo4jConnection
+from app.neo4j_conc.neo4jConnection import Neo4jConnection
 import pandas as pd
 import json
 import sys
