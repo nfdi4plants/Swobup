@@ -94,6 +94,8 @@ def add_templates(url, **notis):
 
     converted_json = swate_api.convert_xslx(current_file)
 
+    print("json is", converted_json)
+
     if converted_json.get("error") is not None:
         notifications.messages.append(Message(type="fail", message=converted_json.get("error")))
         notifications = notifications.dict()
@@ -203,8 +205,14 @@ def delete_template_custom(template_id, **notifications):
 
 @app.task
 def delete_template_all_custom():
-    conn = Neo4jConnection()
-    conn.delete_template_all()
+    query = delete_all_templates()
+
+
+    neo4j_conn = Neo4jConnection()
+    neo4j_conn.write(query)
+
+    # conn = Neo4jConnection()
+    # conn.delete_template_all()
 
 
 # @app.task(name="build templates from scratch")

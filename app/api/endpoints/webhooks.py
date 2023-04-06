@@ -8,7 +8,7 @@ from app.tasks.ontology_tasks import add_ontology_task, process_ext_ontolgies
 from app.tasks.database_tasks import update_ontologies
 
 from app.tasks.template_tasks import add_template_custom, delete_template_custom, delete_template_all_custom, \
-    template_build_from_scratch
+    template_build_from_scratch, add_templates
 
 from app.github.github_api import GithubAPI
 
@@ -179,11 +179,14 @@ async def template(request: Request, payload: PushWebhookPayload):
 
     notifications_json = notifications.dict()
 
+    print("urls found", update_urls)
+
     for url in update_urls:
         print("current url", url)
         if ".xlsx" in filename:
             # chain(add_ontology_task.s(url), update_ontologies.s()).apply_async()
             # add_template_custom.delay(url, notifications_json)
-            chain(add_template_custom.s(url, notifications=notifications_json), send_webhook_mail.s()).apply_async()
+            # chain(add_template_custom.s(url, notifications=notifications_json), send_webhook_mail.s()).apply_async()
+            chain(add_templates.s(url, notifications=notifications_json), send_webhook_mail.s()).apply_async()
 
     return Response(status_code=status.HTTP_204_NO_CONTENT)
