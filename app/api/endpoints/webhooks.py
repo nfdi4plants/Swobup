@@ -30,7 +30,7 @@ def generate_hash_signature(
 
 
 @router.post("/ontology", summary="Ontology Webhook", status_code=status.HTTP_204_NO_CONTENT,
-             response_class=Response,  dependencies=[Depends(github_authentication)])
+             response_class=Response, dependencies=[Depends(github_authentication)])
 # @router.post("/ontology", summary="Ontology Webhook", status_code=status.HTTP_204_NO_CONTENT,
 #              response_class=Response)
 async def ontology(request: Request, payload: PushWebhookPayload):
@@ -124,7 +124,6 @@ async def template(request: Request, payload: PushWebhookPayload):
 
     ref = payload.ref.split("/")[-1]
 
-
     # BRANCH DETECTION (TESTING)
     template_branch = os.environ.get("TEMPLATE_BRANCH", "off")
     ref = payload.ref.split("/")[-1]
@@ -155,18 +154,15 @@ async def template(request: Request, payload: PushWebhookPayload):
     hash_id = payload.after
     commits = payload.commits
 
-
     modified = []
     added = []
     removed = []
 
     for commit in commits:
-       print("current commit", commit)
-       modified = modified + commit.modified
-       added = added + commit.added
-       removed = removed + commit.removed
-
-
+        print("current commit", commit)
+        modified = modified + commit.modified
+        added = added + commit.added
+        removed = removed + commit.removed
 
     # print("commits", commits)
     #
