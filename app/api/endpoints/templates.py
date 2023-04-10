@@ -2,7 +2,7 @@ from fastapi import APIRouter, Body, Depends, HTTPException, status, Response
 
 from app.custom.models.add_template import AddTemplatePayload, DeleteTemplatePayload
 
-from app.tasks.template_tasks import add_template_custom, delete_template_custom, delete_template_all_custom, \
+from app.tasks.template_tasks import  delete_template_custom, delete_template_all_custom, \
     template_build_from_scratch, add_templates
 
 from app.api.middlewares.http_basic_auth import *

@@ -35,7 +35,7 @@ from app.api.middlewares.http_basic_auth import *
 from app.tasks.ontology_tasks import add_ontology_task
 from app.tasks.database_tasks import update_ontologies
 
-from app.tasks.template_tasks import add_template_custom, delete_template_custom, delete_template_all_custom, \
+from app.tasks.template_tasks import delete_template_custom, delete_template_all_custom, \
     template_build_from_scratch
 
 from app.github.github_api import GithubAPI
