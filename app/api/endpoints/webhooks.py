@@ -172,6 +172,8 @@ async def template(request: Request, payload: PushWebhookPayload):
 
     update_files = modified + added
 
+    update_files = list(dict.fromkeys(update_files))
+
     print(branch, hash_id, update_files, removed)
 
     update_files = modified + added
