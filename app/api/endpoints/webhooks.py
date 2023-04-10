@@ -176,9 +176,9 @@ async def template(request: Request, payload: PushWebhookPayload):
 
     print(branch, hash_id, update_files, removed)
 
-    update_files = modified + added
+    # update_files = modified + added
 
-    print(branch, hash_id, update_files, removed)
+    # print(branch, hash_id, update_files, removed)
 
     github_api = GithubAPI(repository_name)
 
