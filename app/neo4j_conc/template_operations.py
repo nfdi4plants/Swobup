@@ -8,8 +8,13 @@ import asyncio
 from app.helpers.models.templates.template import Template
 
 
-def add_template(data, batch_size=10000):
-
+def add_template(data, batch_size: int = 10000) -> list:
+    """
+    Build a query to add one or more templates to the neo4j database
+    :param data: pandas dataframe
+    :param batch_size: size of batches
+    :return: list of queries
+    """
     batch_queries = []
 
     print("data", data)
@@ -72,7 +77,11 @@ def delete_template(template_id):
 
     return batch_queries
 
-def delete_all_templates():
+def delete_all_templates() -> list:
+    """
+    Build a query to delete all templates in neo4j database
+    :return: list of queries
+    """
     batch_queries = []
     query = '''
             MATCH (t:Template) DELETE t

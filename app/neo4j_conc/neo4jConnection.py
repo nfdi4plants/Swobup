@@ -30,6 +30,11 @@ class Neo4jConnection:
 
 
     def read(self, query):
+        """
+        Reads some data from neo4j database
+        :param query: neo4j query
+        :return: neo4j record as list?
+        """
         with self.lock:
             with self.driver.session() as session:
                 # async with await session.begin_transaction() as tx:
