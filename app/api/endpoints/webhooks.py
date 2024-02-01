@@ -103,10 +103,10 @@ async def ontology(request: Request, payload: PushWebhookPayload):
 
     for filename in update_files:
         print("filename", filename)
-        if ".obo" in filename:
+        if filename.endswith(".obo"):
             update_urls.append(github_api.convert_to_raw_url(filename, branch))
 
-        if ".include" in filename:
+        if filename.endswith(".include"):
             url_tuple = (github_api.convert_to_raw_url(filename, payload.before),
                          github_api.convert_to_raw_url(filename, payload.after))
             include_urls.append(url_tuple)
@@ -207,7 +207,7 @@ async def template(request: Request, payload: PushWebhookPayload):
 
     for url in update_urls:
         print("current url", url)
-        if ".xlsx" in filename:
+        if filename.endswith(".xlsx"):
             # chain(add_ontology_task.s(url), update_ontologies.s()).apply_async()
             # add_template_custom.delay(url, notifications_json)
             # chain(add_template_custom.s(url, notifications=notifications_json), send_webhook_mail.s()).apply_async()
