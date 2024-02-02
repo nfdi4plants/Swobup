@@ -255,13 +255,13 @@ def template_build_from_scratch():
     file_list = github_api.get_master_tree(branch).get("tree")
 
     files = []
-    print("files creeated")
     # data_list = []
 
     for file in file_list:
+        current_path = github_api.convert_to_raw_url(file.get("path"), branch)
         print("ff", file.get("path"))
-        if ".xlsx" in file.get("path"):
-            files.append(file.get("url"))
+        if ".xlsx" in current_path:
+            files.append(current_path)
 
     for file in files:
         result = requests.get(file)

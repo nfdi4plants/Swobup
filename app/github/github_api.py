@@ -6,10 +6,10 @@ class GithubAPI:
         self.repository_name = repository_name
         # self.branch = branch
 
-        GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "off")
+        GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "")
 
         if GITHUB_TOKEN is not "":
-            self.auth_token = "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"
+            self.auth_token = GITHUB_TOKEN
         else:
             self.auth_token = ""
 
@@ -63,4 +63,5 @@ if __name__ == "__main__":
     print("tree", tree)
 
     for file in tree:
+        print("file: ",file)
         print(github_api.convert_to_raw_url(file.get("path"), "main"))
