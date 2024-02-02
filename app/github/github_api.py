@@ -1,10 +1,21 @@
 import requests
-
+import os
 
 class GithubAPI:
     def __init__(self, repository_name):
         self.repository_name = repository_name
         # self.branch = branch
+
+        GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "off")
+
+        if GITHUB_TOKEN is not "":
+            self.auth_token = "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"
+        else:
+            self.auth_token = ""
+
+        self.headers = {'Authorization': 'token ' + self.auth_token,
+                    'Accept': 'application/vnd.github.v3.raw'
+                    }
 
     def get_master_tree(self, branch):
         # headers = {'Authorization': 'token ' + self.auth_token,
@@ -19,7 +30,7 @@ class GithubAPI:
         #                }
 
         try:
-            response = requests.get(url)
+            response = requests.get(url, headers=self.headers)
             response.raise_for_status()
         except requests.exceptions.HTTPError as err:
             print("status code: ", response.status_code)
@@ -44,6 +55,7 @@ class GithubAPI:
 
 
 if __name__ == "__main__":
+
     github_api = GithubAPI("nfdi4plants/nfdi4plants_ontology")
 
     tree = github_api.get_master_tree("main").get("tree")
