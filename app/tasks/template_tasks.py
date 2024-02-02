@@ -265,11 +265,11 @@ def template_build_from_scratch():
 
     for file in files:
         result = requests.get(file)
-        data = json.loads(result.content)
-        decoded_content = base64.b64decode(data["content"])
+        # data = json.loads(result.content)
+        # decoded_content = base64.b64decode(data["content"])
 
         swate_api = SwateAPI()
-        converted_json = swate_api.convert_xslx(decoded_content)
+        converted_json = swate_api.convert_xslx(result.content)
 
         print("conv_json", converted_json)
         # data_list.append(converted_json)
