@@ -6,16 +6,16 @@ class GithubAPI:
         self.repository_name = repository_name
         # self.branch = branch
 
-        GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "")
-
-        if GITHUB_TOKEN is not "":
-            self.auth_token = GITHUB_TOKEN
-        else:
-            self.auth_token = ""
-
-        self.headers = {'Authorization': 'token ' + self.auth_token,
-                    'Accept': 'application/vnd.github.v3.raw'
-                    }
+        # GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "")
+        #
+        # if GITHUB_TOKEN is not "":
+        #     self.auth_token = GITHUB_TOKEN
+        # else:
+        #     self.auth_token = ""
+        #
+        # self.headers = {'Authorization': 'token ' + self.auth_token,
+        #             'Accept': 'application/vnd.github.v3.raw'
+        #             }
 
     def get_master_tree(self, branch):
         # headers = {'Authorization': 'token ' + self.auth_token,
@@ -30,7 +30,7 @@ class GithubAPI:
         #                }
 
         try:
-            response = requests.get(url, headers=self.headers)
+            response = requests.get(url)
             response.raise_for_status()
         except requests.exceptions.HTTPError as err:
             print("status code: ", response.status_code)
