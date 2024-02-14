@@ -65,6 +65,10 @@ async def ontology(request: Request, payload: PushWebhookPayload):
     #added = commits.added
     #removed = commits.removed
 
+    modified = []
+    added = []
+    removed = []
+
     # TODO: check if thats working
     commits = payload.commits
     for commit in commits:
