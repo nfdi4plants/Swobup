@@ -8,7 +8,6 @@ class GithubAPI:
         # self.branch = branch
 
         self.auth_token = os.environ.get("GITHUB_TOKEN", "")
-        # GITHUB_TOKEN = ""
 
         self.headers = {'Authorization': 'token ' + self.auth_token,
                         'Accept': 'application/vnd.github.v3.raw'
