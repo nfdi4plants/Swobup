@@ -6,7 +6,7 @@ from app.api.endpoints import database
 from app.api.endpoints import ontologies
 from app.api.endpoints import webhooks
 from app.api.endpoints import notifications
-from app.api.endpoints import search
+# from app.api.endpoints import search
 from app.api.endpoints import activity_database
 
 api_router = APIRouter(prefix="/api/v2")
