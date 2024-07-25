@@ -1,5 +1,5 @@
 fastapi~=0.78.0
-neo4j==5.7.0
+neo4j
 pydantic~=1.9.1
 requests~=2.28.0
 starlette~=0.19.1
