@@ -90,7 +90,7 @@ const StatusInformation = async () => {
     document.getElementById("number_terms").innerHTML = responseJson.number_terms.toLocaleString();
     document.getElementById("number_ontologies").innerHTML = responseJson.number_ontologies.toLocaleString();
     document.getElementById("number_relationships").innerHTML = responseJson.number_relationships.toLocaleString();
-    document.getElementById("number_templates").innerHTML = responseJson.number_templates.toLocaleString();
+    // document.getElementById("number_templates").innerHTML = responseJson.number_templates.toLocaleString();
 
     buttons = build_ontology_buttons(responseJson.main_ontologies)
 
