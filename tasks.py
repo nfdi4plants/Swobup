@@ -33,4 +33,23 @@ app.conf["s3_base_path"] = os.environ.get("s3_base_path")
 app.conf["s3_endpoint_url"] = os.environ.get("s3_endpoint_url")
 app.conf["s3_region"] = os.environ.get("s3_region")
 
+
+# Define the queues
+app.conf.task_queues = {
+    'default': {
+        'exchange': 'default',
+        'binding_key': 'default'
+    },
+    'database_queue': {
+        'exchange': 'database_queue',
+        'binding_key': 'database_queue'
+    }
+}
+
+# Define the routes
+app.conf.task_routes = {
+    'app.tasks.add_to_database': {'queue': 'database_queue'},
+    '*': {'queue': 'default'}  # All other tasks go to the default queue
+}
+
 print("configuration: ", app.conf)

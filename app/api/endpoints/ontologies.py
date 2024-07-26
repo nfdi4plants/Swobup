@@ -39,7 +39,7 @@ async def build_from_scratch():
                 urls.append(url.decode().strip())
 
     for url in urls:
-        chain(add_ontology_task.s(url), add_ontologies.s()).apply_async()
+        chain(add_ontology_task.s(url), add_ontologies.s().set(queue='neo4j_write_queue')).apply_async()
 
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
