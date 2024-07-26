@@ -1,14 +1,18 @@
-from typing import Optional, List, Dict
-
-from pydantic import BaseModel
-
+from pydantic import BaseModel, Field
 
 class Services(BaseModel):
-    neo4j: str
-    swate: str
-    rabbitmq: str
+    neo4j: str = Field(default="")
+    swate: str = Field(default="")
+    rabbitmq: str = Field(default="")
 
+    model_config = {
+        'validate_assignment': True
+    }
 
 class Health(BaseModel):
     services: Services
-    status: str
+    status: str = Field(default="")
+
+    model_config = {
+        'validate_assignment': True
+    }

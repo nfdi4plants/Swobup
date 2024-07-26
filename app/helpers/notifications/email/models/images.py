@@ -1,9 +1,11 @@
-from typing import Optional, List, Dict
-
-from pydantic import BaseModel
-
+from typing import Optional
+from pydantic import BaseModel, Field
 
 class Images(BaseModel):
-    success: Optional[bool]
-    warning: Optional[bool]
-    webhook: Optional[bool]
+    success: Optional[bool] = Field(default=None)
+    warning: Optional[bool] = Field(default=None)
+    webhook: Optional[bool] = Field(default=None)
+
+    model_config = {
+        'validate_assignment': True
+    }

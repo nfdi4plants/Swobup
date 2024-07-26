@@ -1,11 +1,12 @@
-from typing import Optional, List, Dict
-
-from pydantic import BaseModel
-
+from pydantic import BaseModel, Field
 
 class Account(BaseModel):
-    sender: str
-    account_name: str
-    password: str
-    server_address: str
-    port: int
+    sender: str = Field(...)
+    account_name: str = Field(...)
+    password: str = Field(...)
+    server_address: str = Field(...)
+    port: int = Field(...)
+
+    model_config = {
+        'validate_assignment': True
+    }
