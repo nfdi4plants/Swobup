@@ -1,10 +1,8 @@
-from typing import Optional , Dict, List
-
-from pydantic import BaseModel, validator
+from typing import Optional, Dict, List
+from pydantic import BaseModel, Field, field_validator
 
 from app.github.models.user import User
 from app.github.models.author import Author
-
 
 class Template(BaseModel):
     Id: str
@@ -16,10 +14,13 @@ class Template(BaseModel):
     Authors: List[Dict]
     Tags: List[Dict]
     ER: List[Dict]
-    # LastUpdated: str
-    # TimesUsed: int
+    # LastUpdated: Optional[str] = Field(default=None)
+    # TimesUsed: Optional[int] = Field(default=None)
 
-    @validator("Id", pre=True)
+    @field_validator("Id", mode="before")
     def strip_accession(cls, value):
-        value = value.replace("-", "_")
-        return value
+        return value.replace("-", "_") if value is not None else value
+
+    model_config = {
+        'validate_assignment': True
+    }

@@ -1,8 +1,10 @@
-from typing import Optional, List, Dict
-
-from pydantic import BaseModel
-
+from typing import Optional, List
+from pydantic import BaseModel, Field
 
 class CustomPayload(BaseModel):
-    url: Optional[List[str]]
-    ontology: Optional[List[str]]
+    url: Optional[List[str]] = Field(default=None)
+    ontology: Optional[List[str]] = Field(default=None)
+
+    model_config = {
+        'validate_assignment': True
+    }

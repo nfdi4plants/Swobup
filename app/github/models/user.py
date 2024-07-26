@@ -1,11 +1,13 @@
 from typing import Optional
-
-from pydantic import BaseModel
-
+from pydantic import BaseModel, Field
 
 class User(BaseModel):
-    login: Optional[str]
-    name: Optional[str]
-    email: Optional[str]
-    id: Optional[int]
-    html_url: Optional[str]
+    login: Optional[str] = Field(default=None)
+    name: Optional[str] = Field(default=None)
+    email: Optional[str] = Field(default=None)
+    id: Optional[int] = Field(default=None)
+    html_url: Optional[str] = Field(default=None)
+
+    model_config = {
+        'validate_assignment': True
+    }

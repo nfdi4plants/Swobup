@@ -1,23 +1,21 @@
 from typing import Optional
-
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, Field, field_validator
 
 class Ontology(BaseModel):
-    name: Optional[str]
-    lastUpdated: Optional[str]
-    author: Optional[str]
-    version: Optional[str]
-    generated: Optional[bool]
-    importedFrom: Optional[str]
+    name: Optional[str] = Field(default=None)
+    lastUpdated: Optional[str] = Field(default=None)
+    author: Optional[str] = Field(default=None)
+    version: Optional[str] = Field(default=None)
+    generated: Optional[bool] = Field(default=None)
+    importedFrom: Optional[str] = Field(default=None)
 
-    # @validator("name", "author", "version", "lastUpdated", pre=True)
-    # def strip_strings(cls, value):
-    #     if value is not None:
-    #         return value.strip()
-    #     return value
-
-    @validator("name")
+    @field_validator("name")
     def rewrite_name(cls, value):
-        value = value.split("/")[-1]
-        value = value.split(".")[0]
+        if value:
+            value = value.split("/")[-1]
+            value = value.split(".")[0]
         return value
+
+    model_config = {
+        'validate_assignment': True
+    }

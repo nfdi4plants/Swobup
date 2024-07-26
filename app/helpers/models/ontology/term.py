@@ -1,31 +1,29 @@
 from typing import Optional
-
-from pydantic import BaseModel, ValidationError, validator
-
-# from app.helpers.notifications.models.notification_model import Notifications, Message
-
+from pydantic import BaseModel, Field, field_validator
 
 class Term(BaseModel):
-    accession: Optional[str]
-    name: Optional[str]
-    definition: Optional[str]
-    is_obsolete: Optional[bool]
-    ontology_origin: Optional[str]
+    accession: Optional[str] = Field(default=None)
+    name: Optional[str] = Field(default=None)
+    definition: Optional[str] = Field(default=None)
+    is_obsolete: Optional[bool] = Field(default=None)
+    ontology_origin: Optional[str] = Field(default=None)
 
-    # @validator("accession", "name", "definition", "ontology_origin", pre=True)
+    # @field_validator("accession", "name", "definition", "ontology_origin", mode="before")
     # def strip_accession(cls, value):
     #     if value is not None:
     #         return value.strip()
     #     return value
-
-    # @validator("is_obsolete", pre=True)
+    #
+    # @field_validator("is_obsolete", mode="before")
     # def check_bool(cls, value):
-    #     # if value is None:
-    #     #     return
     #     if isinstance(value, str):
-    #         # value = value.strip()
-    #         if value == "true" or value == "True":
+    #         value = value.strip().lower()
+    #         if value in ["true", "1"]:
     #             return True
-    #         elif value == "false" or value == "true":
+    #         elif value in ["false", "0"]:
     #             return False
     #     return value
+
+    model_config = {
+        'validate_assignment': True
+    }
