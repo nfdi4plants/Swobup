@@ -49,3 +49,4 @@ six~=1.16.0
 python-multipart~=0.0.9
 prompt_toolkit~=3.0.47
 flower~=2.0.1
+pronto~=2.5.8

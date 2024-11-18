@@ -28,7 +28,7 @@ async def build_from_scratch():
 
     for file in tree:
         current_path = github_api.convert_to_raw_url(file.get("path"), branch)
-        if current_path.endswith(".obo"):
+        if current_path.endswith(".obo") or current_path.endswith(".owl"):
             urls.append(current_path)
         if current_path.endswith(".include"):
             general_downloader = GeneralDownloader(current_path)

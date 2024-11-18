@@ -8,6 +8,7 @@ import datetime
 import sys
 import pandas as pd
 from io import StringIO
+import pronto
 
 import requests
 
@@ -41,6 +42,48 @@ from celery.backends.s3 import S3Backend
 from celery.backends.base import BaseKeyValueStoreBackend
 from app.helpers.storage_backend import StorageBackend
 
+
+# def convert_owl_to_obo_in_memory(input_file: str):
+#     # Load the OWL file
+#     ontology = pronto.Ontology(input_file)
+#
+#     # Create an in-memory bytes buffer
+#     obo_bytes = io.BytesIO()
+#
+#     # Save the ontology in OBO format to the buffer
+#     ontology.dump(obo_bytes, format='obo')
+#
+#     # Seek to the beginning of the BytesIO object
+#     obo_bytes.seek(0)
+#
+#     # Read the content from the BytesIO object as a text string
+#     obo_str = obo_bytes.read().decode('utf-8')
+#
+#     # Use a StringIO object to read it with obonet
+#     obo_io = io.StringIO(obo_str)
+#
+#     # Parse the OBO content using obonet
+#     graph = obonet.read_obo(obo_io)
+#
+#     print(f"Conversion and parsing successful: {input_file}")
+#
+#     return graph
+
+def convert_owl_to_obo(input_file: str) -> str:
+    # Load the OWL file
+    ontology = pronto.Ontology(input_file)
+    # Create a binary stream instead of a file
+    binary_stream = io.BytesIO()
+    # Save the ontology in OBO format
+    ontology.dump(binary_stream, format='obo')
+    # Get the OBO content from the binary stream
+    obo_content = binary_stream.getvalue().decode('utf-8')
+    # Close the stream
+    binary_stream.close()
+    return obo_content
+
+
+
 @app.task
 def delete_ontology_task(payload):
 
@@ -67,9 +110,14 @@ def add_ontology_task(self, url, **notis):
     print("pay", notifications)
 
     general_downloader = GeneralDownloader(url)
+
     current_file = general_downloader.download_file()
 
-    ontology_buffer = io.TextIOWrapper(current_file, newline=None)
+    if url.endswith(".owl"):
+        print("owl file detected")
+        ontology_buffer = convert_owl_to_obo(current_file)
+    else:
+        ontology_buffer = io.TextIOWrapper(current_file, newline=None)
 
     obo_parser = OBO_Parser(ontology_buffer)
     data = obo_parser.parse(notifications)
