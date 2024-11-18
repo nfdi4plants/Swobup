@@ -16,7 +16,7 @@ COPY requirements.txt /swobup
 
 WORKDIR /swobup/app/search/ped_c/
 # RUN python3 /swobup/app/search/ped_c/setup.py build
-RUN python3 /swobup/app/search/ped_c/setup.py install
+# RUN python3 /swobup/app/search/ped_c/setup.py install
 
 WORKDIR /swobup
 
