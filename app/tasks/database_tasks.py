@@ -10,7 +10,7 @@ from app.helpers.storage_backend import StorageBackend
 import json
 
 
-@app.task(name="add ontology to DB", bind=True, max_retries=3)
+@app.task(name="add ontology to DB", bind=True, max_retries=3, queue='database_queue')
 def add_ontologies(self, data):
     print("in write db")
     batch_size = int(os.environ.get("DB_BATCH_SIZE", 100000))

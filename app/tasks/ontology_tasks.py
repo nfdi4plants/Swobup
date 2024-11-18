@@ -137,7 +137,9 @@ def add_ontology_task(self, url, **notis):
     s3_key = base_backend.get_key_for_task(self.request.id).decode()
 
     # s3_key = backend.get_key_for_task(self.request.id).decode()
-    s3_key = str(s3_key)+"-results"
+    # s3_key = str(s3_key)+"-results"
+
+    s3_key = f"{s3_key}-results"
     print("s3_key", s3_key)
     backend.set(key=s3_key, value=json.dumps(data))
 
