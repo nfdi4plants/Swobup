@@ -183,7 +183,13 @@ def update_ontologies(self, task_results):
         notifications = notifications.dict()
         return notifications
 
-    ontology_name = data.get("ontologies")[0].get("name")
+
+    try:
+        ontology_name = data.get("ontologies")[0].get("name")
+    except:
+        notifications.messages.append(
+            Message(type="fail", message="No valid ontology found, skipping..."))
+        return notifications
 
     # get list of to deleted terms
     db_term_list = conn.list_terms_of_ontology(ontology_name)
