@@ -36,11 +36,13 @@ from app.tasks.mail_task import show_tasks_results, send_webhook_mail
 from resource import *
 
 from app.tasks.database_tasks import add_ontologies
-from app.helpers.notifications.models.notification_model import Notifications
+from app.helpers.notifications.models.notification_model import Notifications, Message
 
 from celery.backends.s3 import S3Backend
 from celery.backends.base import BaseKeyValueStoreBackend
 from app.helpers.storage_backend import StorageBackend
+
+from app.helpers.models.ontology.obo_file import *
 
 
 # def convert_owl_to_obo_in_memory(input_file: str):
@@ -69,20 +71,38 @@ from app.helpers.storage_backend import StorageBackend
 #
 #     return graph
 
+# def convert_owl_to_obo(input_file: str) -> str:
+#     # Load the OWL file
+#     ontology = pronto.Ontology(input_file)
+#     # Create a binary stream instead of a file
+#     binary_stream = io.BytesIO()
+#     # Save the ontology in OBO format
+#     ontology.dump(binary_stream, format='obo')
+#     # Get the OBO content from the binary stream
+#     obo_content = binary_stream.getvalue().decode('utf-8')
+#     # Close the stream
+#     binary_stream.close()
+#     print(f"Conversion and parsing successful: {input_file}")
+#     return obo_content
+
+
 def convert_owl_to_obo(input_file: str) -> str:
-    # Load the OWL file
-    ontology = pronto.Ontology(input_file)
-    # Create a binary stream instead of a file
-    binary_stream = io.BytesIO()
-    # Save the ontology in OBO format
-    ontology.dump(binary_stream, format='obo')
-    # Get the OBO content from the binary stream
-    obo_content = binary_stream.getvalue().decode('utf-8')
-    # Close the stream
-    binary_stream.close()
-    return obo_content
-
-
+    try:
+        # Load the OWL file
+        ontology = pronto.Ontology(input_file)
+        # Create a binary stream instead of a file
+        binary_stream = io.BytesIO()
+        # Save the ontology in OBO format
+        ontology.dump(binary_stream, format='obo')
+        # Get the OBO content from the binary stream
+        obo_content = binary_stream.getvalue().decode('utf-8')
+        # Close the stream
+        binary_stream.close()
+        print("returning obo conversion")
+        return obo_content
+    except Exception as e:
+        print("Failed to convert OWL to OBO: %s", e)
+        raise RuntimeError(f"Failed to convert OWL to OBO: {e}")
 
 @app.task
 def delete_ontology_task(payload):
@@ -113,20 +133,137 @@ def add_ontology_task(self, url, **notis):
 
     current_file = general_downloader.download_file()
 
+    # if url.endswith(".owl"):
+    #     print("owl file detected")
+    #     ontology_buffer = convert_owl_to_obo(current_file)
+    # else:
+    #     ontology_buffer = io.TextIOWrapper(current_file, newline=None)
+
+    # data = None
+    #
+    #
+    # try:
+    #     if url.endswith(".owl"):
+    #         print("owl file detected")
+    #         ontology_buffer = convert_owl_to_obo(url)
+    #     else:
+    #         ontology_buffer = io.TextIOWrapper(current_file, newline=None)
+    #
+    #     obo_parser = OBO_Parser(ontology_buffer)
+    #     data = obo_parser.parse(notifications)
+    # except Exception as e:
+    #     print("e", e)
+    #     notifications.messages.append(f"Error in Pronto conversion. Detailed message: {e}")
+    #     # raise self.retry(exc=e)
+
+    data = None
+
+    # if url.endswith(".owl"):
+    #     print("owl file detected")
+    #     try:
+    #         obo_converted = convert_owl_to_obo(current_file)
+    #
+    #         # ontology_buffer = io.TextIOWrapper(obo_converted, newline=None)
+    #
+    #         ontology_buffer = io.TextIOWrapper(io.BytesIO(obo_converted.encode('utf-8')), newline=None)
+    #
+    #         obo_parser = OBO_Parser(ontology_buffer)
+    #
+    #         data = obo_parser.parse(notifications)
+    #     except:
+    #         print("failed")
+    #         data = None
+    #         notifications.messages.append(Message(type="fail", message="Error in Pronto conversion"))
+    #
+    #         print(f"notificatoins {notifications}")
+    # else:
+    #     ontology_buffer = io.TextIOWrapper(current_file, newline=None)
+    #
+    #     # print("ontology buffer", ontology_buffer)
+    #     print("after ontology buffer", ontology_buffer)
+    #
+    #     obo_parser = OBO_Parser(ontology_buffer)
+    #     data = obo_parser.parse(notifications)
+    #
+    #
+    #     print("data is", data)
+    #
+    #     # print("data", data)
+    #
+    #     print("finished")
+
+
+    # if url.endswith(".owl"):
+    #     print("owl file detected")
+    #     try:
+    #         obo_converted = convert_owl_to_obo(current_file)
+    #
+    #         # ontology_buffer = io.TextIOWrapper(obo_converted, newline=None)
+    #
+    #         ontology_buffer = io.TextIOWrapper(io.BytesIO(obo_converted.encode('utf-8')), newline=None)
+    #
+    #         obo_parser = OBO_Parser(ontology_buffer)
+    #
+    #         data = obo_parser.parse(notifications)
+    #     except:
+    #         print("failed")
+    #         data = None
+    #         notifications.messages.append(Message(type="fail", message="Error in Pronto conversion"))
+    #
+    #         print(f"notificatoins {notifications}")
+    # else:
+    #     ontology_buffer = io.TextIOWrapper(current_file, newline=None)
+    #
+    #     # print("ontology buffer", ontology_buffer)
+    #     print("after ontology buffer", ontology_buffer)
+    #
+    #     obo_parser = OBO_Parser(ontology_buffer)
+    #     data = obo_parser.parse(notifications)
+    #
+    #
+    #     print("data is", data)
+    #
+    #     # print("data", data)
+    #
+    #     print("finished")
+
+
     if url.endswith(".owl"):
         print("owl file detected")
-        ontology_buffer = convert_owl_to_obo(current_file)
+        try:
+            obo_converted = convert_owl_to_obo(current_file)
+
+            ontology_buffer = io.TextIOWrapper(io.BytesIO(obo_converted.encode('utf-8')), newline=None)
+
+            # obo_parser = OBO_Parser(ontology_buffer)
+
+            # data = obo_parser.parse(notifications)
+        except:
+            print("failed")
+            # data = None
+            ontology_buffer = None
+            notifications.messages.append(Message(type="fail", message="Error in Pronto conversion"))
+
+            print(f"notificatoins {notifications}")
     else:
         ontology_buffer = io.TextIOWrapper(current_file, newline=None)
+
 
     obo_parser = OBO_Parser(ontology_buffer)
     data = obo_parser.parse(notifications)
 
+
+
+
     # stop if ontology could not be parsed
-    if data is None:
-        notifications_json = notifications.dict()
-        res = {"task_id": self.request.id, "notifications": notifications_json}
-        return res
+    # if data is None:
+    #     print("data is None")
+    #     notifications_json = notifications.dict()
+    #     res = {"task_id": self.request.id, "notifications": notifications_json}
+    #     return res
+
+    # if data is None:
+    #     data = {"terms":[], "relationships":[], "ontologies":[]}
 
     print("parsing finished")
 

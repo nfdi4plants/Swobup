@@ -90,6 +90,19 @@ class OBO_Parser:
         return ontology.name
 
     def parse(self, notifications: Notifications):
+
+        if self.ontology_file is None:
+            self.obo_file.ontologies = self.ontolgies
+            self.obo_file.terms = self.obo_file.terms
+            self.obo_file.relationships = self.obo_file.relationships
+
+            notifications.messages.append(Message(type="fail", message="Ontology could not be read"))
+
+
+
+            return self.obo_file.dict()
+
+
         # try to read ontology file
         try:
             graph = obonet.read_obo(self.ontology_file, ignore_obsolete=False)
