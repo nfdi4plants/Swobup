@@ -99,7 +99,14 @@ def add_ontologies(self, data):
         notifications = notifications.dict()
         return notifications
 
-    ontology_name = data.get("ontologies")[0].get("name")
+    # ontology_name = data.get("ontologies")[0].get("name")
+
+    try:
+        ontology_name = data.get("ontologies")[0].get("name")
+    except:
+        notifications.messages.append(
+            Message(type="fail", message="No valid ontology found, skipping..."))
+        return notifications
 
     # print("status", status)
 
