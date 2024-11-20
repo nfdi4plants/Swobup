@@ -144,8 +144,6 @@ def add_ontologies(self, data):
 
     notifications = notifications.dict()
 
-    print("notis", notifications)
-
     return notifications
 
 
@@ -155,7 +153,9 @@ def update_ontologies(self, task_results):
 
     messages = task_results.get("notifications")
 
+
     notifications = Notifications(**messages)
+
 
     # backend = S3Backend(app=app)
     backend = StorageBackend()
@@ -167,8 +167,9 @@ def update_ontologies(self, task_results):
     if data is None:
         print("could not connect to storage backend")
         notifications.messages.append(Message(type="fail", message="Could not connect to storage backend"))
-        notifications = notifications.dict()
+        notifications = notifications.model_dump()
         return notifications
+
 
     data = json.loads(data)
 
@@ -180,14 +181,15 @@ def update_ontologies(self, task_results):
     for term in terms:
         term_accessions.append(term.get("accession"))
 
+
+
     conn = Neo4jConnection()
 
     status = conn.check()
 
     if status is False:
-        print("database not connected")
         notifications.messages.append(Message(type="fail", message="Could not connect to database"))
-        notifications = notifications.dict()
+        notifications = notifications.model_dump()
         return notifications
 
 
@@ -196,7 +198,9 @@ def update_ontologies(self, task_results):
     except:
         notifications.messages.append(
             Message(type="fail", message="No valid ontology found, skipping..."))
-        return notifications
+
+        return notifications.model_dump()
+
 
     # get list of to deleted terms
     db_term_list = conn.list_terms_of_ontology(ontology_name)
@@ -213,7 +217,6 @@ def update_ontologies(self, task_results):
 
     conn.delete_terms(terms_remove_df)
 
-    print("after deletion")
 
     terms_df = pd.DataFrame(data.get("terms"), index=None)
 
@@ -257,7 +260,8 @@ def update_ontologies(self, task_results):
     notifications.messages.append(Message(type="success", message="File contained " +str(len( relations_df)) +" relations"))
 
 
-    notifications = notifications.dict()
+    notifications = notifications.model_dump()
+
 
     return notifications
 

@@ -242,7 +242,7 @@ def add_ontology_task(self, url, **notis):
             print("failed")
             # data = None
             ontology_buffer = None
-            # notifications.messages.append(Message(type="fail", message="Error in Pronto conversion"))
+            notifications.messages.append(Message(type="fail", message="Error in converting OWL file to OBO file"))
 
             print(f"notificatoins {notifications}")
     else:

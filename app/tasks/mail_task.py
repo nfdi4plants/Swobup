@@ -79,9 +79,12 @@ def send_webhook_mail(messages):
 
     print("messages", messages)
 
-
+    print("notifications", messages)
+    print("type", type(messages))
 
     notifications = Notifications(**messages)
+
+    print("notifications", notifications)
 
     print("after import")
 
