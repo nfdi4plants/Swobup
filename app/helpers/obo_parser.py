@@ -188,7 +188,8 @@ class OBO_Parser:
             # print("current node is ", node)
 
             node_prefix = node.split(":")[0].lower().rstrip()
-            term = Term(name=name, accession=node, definition=definition, is_obsolete=is_obsolete,
+            accession = str(node).upper()
+            term = Term(name=name, accession=accession, definition=definition, is_obsolete=is_obsolete,
                         ontology_origin=node_prefix)
             self.obo_file.terms.append(term)
             self.collected_terms.add(node)
@@ -226,11 +227,17 @@ class OBO_Parser:
                 for x_reference in xref:
                     node_prefix = x_reference.split(":")[0].lower().rstrip()
 
+                    x_reference_accession = x_reference.upper()
+
+
                     ontology_lastUpdated = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
 
                     if node_prefix in treat_isa:
                         if not self.term_available(x_reference):
-                            term = Term(name=None, accession=x_reference, definition=None, is_obsolete=None,
+
+
+
+                            term = Term(name=None, accession=x_reference_accession, definition=None, is_obsolete=None,
                                         ontology_origin=node_prefix)
                             self.obo_file.terms.append(term)
                         if not self.ontology_available(node_prefix):
@@ -239,12 +246,12 @@ class OBO_Parser:
                             self.obo_file.ontologies.append(ontology)
                             self.collected_ontologies.add(node_prefix)
 
-                        relationship = Relationships(node_from=node, node_to=x_reference, rel_type="is_a")
+                        relationship = Relationships(node_from=node, node_to=x_reference_accession, rel_type="is_a")
                         self.obo_file.relationships.append(relationship)
 
                     if node_prefix in relationships_dict:
                         if not self.term_available(x_reference):
-                            term = Term(name=None, accession=x_reference, definition=None, is_obsolete=None,
+                            term = Term(name=None, accession=x_reference_accession, definition=None, is_obsolete=None,
                                         ontology_origin=node_prefix)
                             self.obo_file.terms.append(term)
                         if not self.ontology_available(node_prefix):
@@ -253,13 +260,13 @@ class OBO_Parser:
                             self.obo_file.ontologies.append(ontology)
                             self.collected_ontologies.add(node_prefix)
 
-                        relationship = Relationships(node_from=node, node_to=x_reference,
+                        relationship = Relationships(node_from=node, node_to=x_reference_accession,
                                                      rel_type=relationships_dict.get(node_prefix))
                         self.obo_file.relationships.append(relationship)
 
                     if node_prefix in treat_equivalent:
                         if not self.term_available(x_reference):
-                            term = Term(name=None, accession=x_reference, definition=None, is_obsolete=None,
+                            term = Term(name=None, accession=x_reference_accession, definition=None, is_obsolete=None,
                                         ontology_origin=node_prefix)
                             self.obo_file.terms.append(term)
                         if not self.ontology_available(node_prefix):
@@ -268,26 +275,30 @@ class OBO_Parser:
                             self.obo_file.ontologies.append(ontology)
                             self.collected_ontologies.add(node_prefix)
 
-                        relationship = Relationships(node_from=node, node_to=x_reference,
+                        relationship = Relationships(node_from=node, node_to=x_reference_accession,
                                                      rel_type="is_equivalent")
                         self.obo_file.relationships.append(relationship)
-                        relationship = Relationships(node_from=x_reference, node_to=node,
+                        relationship = Relationships(node_from=x_reference_accession, node_to=node,
                                                      rel_type="is_equivalent")
                         self.obo_file.relationships.append(relationship)
 
             # search all child nodes of current node and add to relation list
             for child, parent, rel_type in graph.out_edges(node, keys=True):
 
+                child_accession = str(child).upper()
+
+
                 if rel_type in self.typedefs:
                     # print("typedef found", rel_type)
                     rel_type = self.typedefs.get(rel_type)
 
-                relationship = Relationships(node_from=child, node_to=parent, rel_type=rel_type)
+                relationship = Relationships(node_from=child_accession, node_to=parent, rel_type=rel_type)
                 self.obo_file.relationships.append(relationship)
 
                 if not self.term_available(child):
                     node_prefix = node.split(":")[0].lower().rstrip()
-                    term = Term(name=None, accession=child, definition=None, is_obsolete=None,
+
+                    term = Term(name=None, accession=child_accession, definition=None, is_obsolete=None,
                                 ontology_origin=node_prefix)
                     self.obo_file.terms.append(term)
                     self.obo_file.relationships.append(relationship)
